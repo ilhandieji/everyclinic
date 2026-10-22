@@ -3,7 +3,9 @@ import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import "@radix-ui/themes/styles.css";
-import { SiteNavbar } from "@/components/layout/site-navbar";
+import { Suspense } from "react";
+import { AuthOverlayProvider } from "@/components/auth/auth-overlay";
+import { SiteHeader } from "@/components/layout/site-header";
 import { AuthSessionProvider } from "@/components/providers/session-provider";
 import { StyledComponentsRegistry } from "@/components/providers/styled-components-registry";
 import { AppThemeProvider } from "@/components/providers/theme-provider";
@@ -21,8 +23,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "فروشگاه",
-  description: "فروشگاه آنلاین",
+  title: " ",
+  description: "",
 };
 
 const themeInitScript = `(function(){try{var m=document.cookie.match(/(?:^|; )theme=([^;]*)/);var t=m?decodeURIComponent(m[1]):"dark";if(t==="light"){document.documentElement.classList.remove("dark");}else{document.documentElement.classList.add("dark");}}catch(e){document.documentElement.classList.add("dark");}})();`;
@@ -49,8 +51,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <StyledComponentsRegistry>
           <AuthSessionProvider>
             <AppThemeProvider>
-              <SiteNavbar />
-              <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+              <AuthOverlayProvider>
+                <Suspense
+                  fallback={
+                    <header className="h-12 border-b border-border bg-background" />
+                  }
+                >
+                  <SiteHeader />
+                </Suspense>
+                <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+              </AuthOverlayProvider>
             </AppThemeProvider>
           </AuthSessionProvider>
         </StyledComponentsRegistry>

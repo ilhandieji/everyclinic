@@ -74,7 +74,7 @@ Do not call these for a trivial copy or style edit.
 - Auth route and credentials flow exist in source. `User` has no role. Runtime auth has not been verified by tests in this repo.
 - Migration history is inconsistent. See `backend-security` and `domain-model.md`. Do not run destructive Prisma commands unless the user asks.
 - Prisma config file: `prisma7.config.ts`.
-- No Dockerfile or Compose file exists. Native `pnpm dev` is not Docker verification.
+- Local Compose is `compose.yml`. Native `pnpm dev` is not Docker verification.
 - [README.md](../../README.md) introduces the platform and still links to Next.js learning docs. It does not list unimplemented features as available.
 - Store wording remains in the layout, home page, navbar, and auth card until a later UI task.
 

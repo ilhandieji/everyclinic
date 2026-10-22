@@ -4,13 +4,40 @@ Authentication is implemented in source. Appointments, clinical records, and pay
 
 ## Getting Started
 
-Run the development server with pnpm:
+Native development:
 
 ```bash
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). There is no Docker Compose file in the repo; `pnpm dev` does not verify a container stack.
+Open [http://localhost:3000](http://localhost:3000).
+
+## Local Docker
+
+`compose.yml` runs Postgres and the Next dev server. The repo directory is mounted into the app container, so source edits are picked up without rebuilding the image. Rebuild only after `package.json` or `pnpm-lock.yaml` changes.
+
+Create a `.env` with `NEXTAUTH_SECRET` before the first start. Compose overrides `DATABASE_URL` to the Postgres service. The database password in `compose.yml` is a local default, not a production secret.
+
+```bash
+docker compose up --build
+```
+
+Registration creates a patient. A physician row is not created by the app. After the account exists, connect to the database and insert one profile. `singleton` must stay `1`.
+
+From the host, Postgres is published on port `5433` (inside Compose the app still uses `db:5432`).
+
+```bash
+docker compose exec db psql -U clinic -d clinic
+```
+
+```sql
+INSERT INTO physician_profiles (id, user_id, singleton, created_at, updated_at)
+SELECT 'phy_' || md5(id), id, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+FROM users
+WHERE email = 'physician@example.com';
+```
+
+Replace the email with the registered account. A second physician row is rejected.
 
 ## Learn More
 

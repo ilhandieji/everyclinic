@@ -32,6 +32,7 @@ export async function POST(request: Request) {
       data: {
         email,
         passwordHash,
+        patientProfile: { create: {} },
       },
     });
   } catch (error) {

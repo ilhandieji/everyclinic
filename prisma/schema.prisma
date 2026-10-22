@@ -38,16 +38,119 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime? @map("email_verified")
-  image         String?
-  passwordHash  String    @map("password_hash")
-  accounts      Account[]
-  sessions      Session[]
+  id               String            @id @default(cuid())
+  name             String?
+  email            String            @unique
+  emailVerified    DateTime?         @map("email_verified")
+  image            String?
+  passwordHash     String            @map("password_hash")
+  accounts         Account[]
+  sessions         Session[]
+  patientProfile   PatientProfile?
+  physicianProfile PhysicianProfile?
 
   @@map("users")
+}
+
+/// Public registration creates this row. It holds no clinical fields.
+model PatientProfile {
+  id                String             @id @default(cuid())
+  userId            String             @unique @map("user_id")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requests          ServiceRequest[]
+  careRelationships CareRelationship[]
+
+  @@map("patient_profiles")
+}
+
+/// Inserted only by a direct database statement. Application code must not create this row.
+/// `singleton` is always 1 so the public site has one physician.
+model PhysicianProfile {
+  id                String             @id @default(cuid())
+  userId            String             @unique @map("user_id")
+  singleton         Int                @unique @default(1)
+  displayName       String?            @map("display_name")
+  gender            String?
+  bio               String?            @db.Text
+  photoKey          String?            @map("photo_key")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  services          MedicalService[]
+  careRelationships CareRelationship[]
+
+  @@map("physician_profiles")
+}
+
+model MedicalService {
+  id                 String           @id @default(cuid())
+  physicianProfileId String           @map("physician_profile_id")
+  title              String
+  description        String           @db.Text
+  priceMin           Int?             @map("price_min")
+  priceMax           Int?             @map("price_max")
+  currencyLabel      String?          @map("currency_label")
+  imageKey           String?          @map("image_key")
+  published          Boolean          @default(false)
+  sortOrder          Int              @default(0) @map("sort_order")
+  createdAt          DateTime         @default(now()) @map("created_at")
+  updatedAt          DateTime         @updatedAt @map("updated_at")
+  physician          PhysicianProfile @relation(fields: [physicianProfileId], references: [id], onDelete: Cascade)
+  sections           ServiceSection[]
+  requests           ServiceRequest[]
+
+  @@index([physicianProfileId, sortOrder])
+  @@map("medical_services")
+}
+
+model ServiceSection {
+  id        String         @id @default(cuid())
+  serviceId String         @map("service_id")
+  title     String
+  body      String         @db.Text
+  sortOrder Int            @default(0) @map("sort_order")
+  service   MedicalService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId, sortOrder])
+  @@map("service_sections")
+}
+
+enum ServiceRequestStatus {
+  pending
+  accepted
+  declined
+  cancelled
+
+  @@map("service_request_status")
+}
+
+model ServiceRequest {
+  id               String               @id @default(cuid())
+  patientProfileId String               @map("patient_profile_id")
+  serviceId        String               @map("service_id")
+  note             String?              @db.Text
+  status           ServiceRequestStatus @default(pending)
+  createdAt        DateTime             @default(now()) @map("created_at")
+  updatedAt        DateTime             @updatedAt @map("updated_at")
+  patient          PatientProfile       @relation(fields: [patientProfileId], references: [id], onDelete: Cascade)
+  service          MedicalService       @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+
+  @@index([patientProfileId, status])
+  @@index([serviceId, status])
+  @@map("service_requests")
+}
+
+model CareRelationship {
+  id                 String           @id @default(cuid())
+  physicianProfileId String           @map("physician_profile_id")
+  patientProfileId   String           @map("patient_profile_id")
+  createdAt          DateTime         @default(now()) @map("created_at")
+  physician          PhysicianProfile @relation(fields: [physicianProfileId], references: [id], onDelete: Cascade)
+  patient            PatientProfile   @relation(fields: [patientProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([physicianProfileId, patientProfileId])
+  @@map("care_relationships")
 }
 
 model VerificationToken {

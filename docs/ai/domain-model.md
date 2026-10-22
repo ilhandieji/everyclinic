@@ -4,7 +4,7 @@ This document is the agent-facing source for the doctor–patient platform. It i
 
 The product is a Persian-first platform for physician sites, medical services, appointments, patient history, prescriptions, reminders, visit payments, and installment schedules. Ecommerce catalog behavior is obsolete.
 
-Open decisions at the end are unresolved. Do not implement a guessed answer. Stop and ask before adding the first tenant-scoped table.
+Open decisions at the end are unresolved unless a row is marked decided. Do not implement a guessed answer for the remaining rows.
 
 ## What exists today
 
@@ -21,7 +21,7 @@ Implemented in source, unverified at runtime:
 Gaps:
 
 - `User` has no role, physician, patient, or practice relation. A login proves email and password only.
-- Open registration creates that role-less user. It is not physician onboarding and grants no clinical access.
+- Open registration creates a `User` and a `PatientProfile`. It does not create a physician and grants no clinical access. A physician exists only after a direct database insert into `physician_profiles`.
 - `Account` and `VerificationToken` are unused. `emailVerified` is never set.
 - Session claims are `id` and `email`. There is no route middleware.
 - `prisma/migrations/20261022132459_init/migration.sql` was rewritten in place from legacy `User`/`Post` to the current NextAuth tables. `20261022180000_nextauth_credentials` still drops `Post` and `User` and creates the same tables again. Fresh migrate is inconsistent. Repair is a future task. Do not rewrite those files unless the user asks.
@@ -30,7 +30,7 @@ UI copy in `src/app/layout.tsx`, `src/app/page.tsx`, `src/components/layout/site
 
 The npm package name remains `store`. Renaming it is an open decision.
 
-No Docker Compose files exist. No payment, appointment, or clinical code exists.
+Local Docker Compose is `compose.yml` (Postgres and the Next dev server, source mounted from the repo). No payment, timed appointment, or clinical code exists.
 
 ## Boundaries
 
@@ -107,10 +107,10 @@ Do these in order. Each one is a separate approved task.
 
 | Decision | Needed before |
 |----------|----------------|
-| Tenant is one physician, one clinic, or a group practice | The first private or public owned table |
-| Whether one login may be both a physician and a patient | Profile schema |
-| Physician accounts are open registration, invitation, or platform-admin created | Any physician onboarding |
-| Whether a patient record can exist before a login | Patient profile |
+| Tenant is one physician site for this release (`PhysicianProfile.singleton`). Clinic or group practice is not built | Decided |
+| One login may hold both `PatientProfile` and `PhysicianProfile`. Neither row removes the other | Decided |
+| A physician row is created only by a direct database insert. The app rejects `PhysicianProfile` create, createMany, and upsert. Public registration creates a patient | Decided |
+| A patient profile before a login is not built. `PatientProfile.userId` is required | Decided for this release |
 | Confirmation, cancellation, no-show, and whether a service is required on an appointment | Appointment status transitions |
 | Timezone, display calendar, and toman versus rial | Appointment or money UI. No calendar or i18n library without approval. `Asia/Tehran` is not an implemented default |
 | Who sets follow-up intervals, and whether templates exist | Follow-up configuration. Medication reminders stay out of scope |

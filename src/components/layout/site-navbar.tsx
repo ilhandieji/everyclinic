@@ -3,13 +3,23 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { useAuthOverlay } from "@/components/auth/auth-overlay";
 import { useAppTheme } from "@/components/providers/theme-provider";
 import { Button } from "@/components/ui/button";
 import SkyToggle from "@/components/ui/sky-toggle";
 
-export function SiteNavbar() {
+export function SiteNavbar({
+  brand,
+  physician,
+  showServices,
+}: {
+  brand: string;
+  physician: boolean;
+  showServices: boolean;
+}) {
   const { data: session, status } = useSession();
   const { theme, toggleTheme } = useAppTheme();
+  const { openAuth } = useAuthOverlay();
   const signedIn = Boolean(session?.user?.email) && !session?.error;
 
   return (
@@ -20,12 +30,28 @@ export function SiteNavbar() {
       >
         <Link
           href="/"
-          className="text-sm font-semibold text-foreground hover:text-foreground/80 rounded-sm outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50"
+          aria-label={brand || "خانه"}
+          className="min-w-0 max-w-[40%] truncate rounded-sm text-sm font-semibold text-foreground outline-none hover:text-foreground/80 focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50"
         >
-          فروشگاه
+          {brand}
         </Link>
 
         <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
+          {showServices ? (
+            <Button asChild size="sm" variant="ghost">
+              <Link href="/services">خدمات</Link>
+            </Button>
+          ) : null}
+          {physician ? (
+            <>
+              <Button asChild size="sm" variant="ghost">
+                <Link href="/manage/services">ویرایش خدمات</Link>
+              </Button>
+              <Button asChild size="sm" variant="ghost">
+                <Link href="/manage/requests">درخواست‌ها</Link>
+              </Button>
+            </>
+          ) : null}
           <SkyToggle
             checked={theme === "dark"}
             onCheckedChange={() => toggleTheme()}
@@ -47,11 +73,16 @@ export function SiteNavbar() {
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <Button asChild size="sm" variant="outline">
-                <Link href="/login">ورود</Link>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => openAuth("login")}
+              >
+                ورود
               </Button>
-              <Button asChild size="sm">
-                <Link href="/register">ثبت‌نام</Link>
+              <Button type="button" size="sm" onClick={() => openAuth("register")}>
+                ثبت‌نام
               </Button>
             </div>
           )}

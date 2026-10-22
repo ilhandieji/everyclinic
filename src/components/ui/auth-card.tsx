@@ -40,7 +40,15 @@ type FocusField = "email" | "password" | "confirmPassword" | null;
 
 export type AuthCardMode = "login" | "register";
 
-export function AuthCard({ mode }: { mode: AuthCardMode }) {
+export function AuthCard({
+  mode,
+  onModeChange,
+  onSuccess,
+}: {
+  mode: AuthCardMode;
+  onModeChange?: (mode: AuthCardMode) => void;
+  onSuccess?: () => void;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = safeCallbackUrl(searchParams.get("callbackUrl"));
@@ -104,6 +112,11 @@ export function AuthCard({ mode }: { mode: AuthCardMode }) {
         return;
       }
 
+      if (onSuccess) {
+        onSuccess();
+        router.refresh();
+        return;
+      }
       router.push(callbackUrl);
       router.refresh();
     } catch {
@@ -116,7 +129,7 @@ export function AuthCard({ mode }: { mode: AuthCardMode }) {
   const title = isLogin ? "خوش آمدید" : "ثبت‌نام";
   const subtitle = isLogin
     ? "برای ادامه وارد حساب خود شوید"
-    : "حساب جدید برای فروشگاه بسازید";
+    : "حساب بیمار ساخته می‌شود";
   const submitLabel = isLogin ? "ورود" : "ثبت‌نام";
   const alternateHref = isLogin ? "/register" : "/login";
   const alternatePrompt = isLogin
@@ -125,27 +138,11 @@ export function AuthCard({ mode }: { mode: AuthCardMode }) {
   const alternateAction = isLogin ? "ثبت‌نام" : "ورود";
 
   return (
-    <div className="min-h-screen w-full bg-black relative overflow-hidden flex items-center justify-center px-4">
-      <div className="absolute inset-0 bg-gradient-to-b from-purple-500/40 via-purple-700/50 to-black" />
-      <div
-        className="absolute inset-0 opacity-[0.03] mix-blend-soft-light"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-          backgroundSize: "200px 200px",
-        }}
-      />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[120vh] max-w-[100vw] h-[60vh] rounded-b-[50%] bg-purple-400/20 blur-[80px]" />
       <motion.div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[100vh] max-w-[100vw] h-[60vh] rounded-b-full bg-purple-300/20 blur-[60px]"
-        animate={{ opacity: [0.15, 0.3, 0.15], scale: [0.98, 1.02, 0.98] }}
-        transition={{ duration: 8, repeat: Infinity, repeatType: "mirror" }}
-      />
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="w-full max-w-sm relative z-10"
+        transition={{ duration: 0.35 }}
+        className="w-full max-w-sm"
         style={{ perspective: 1500 }}
       >
         <motion.div
@@ -155,7 +152,7 @@ export function AuthCard({ mode }: { mode: AuthCardMode }) {
           onMouseLeave={handleMouseLeave}
         >
           <div className="relative group">
-            <div className="relative bg-black/40 backdrop-blur-xl rounded-2xl p-6 border border-white/[0.05] shadow-2xl overflow-hidden">
+            <div className="relative rounded-2xl border border-border bg-card/80 p-6 shadow-lg backdrop-blur-md overflow-hidden text-card-foreground">
               <div className="text-center space-y-1 mb-5">
                 <motion.div
                   initial={{ scale: 0.5, opacity: 0 }}
@@ -163,7 +160,7 @@ export function AuthCard({ mode }: { mode: AuthCardMode }) {
                   transition={{ type: "spring", duration: 0.8 }}
                   className="mx-auto w-10 h-10 rounded-full border border-white/10 flex items-center justify-center relative overflow-hidden"
                 >
-                  <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-white/70">
+                  <span className="text-lg font-bold text-primary">
                     ف
                   </span>
                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-50" />
@@ -172,7 +169,7 @@ export function AuthCard({ mode }: { mode: AuthCardMode }) {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-white/80"
+                  className="text-xl font-bold text-foreground"
                 >
                   {title}
                 </motion.h1>
@@ -180,7 +177,7 @@ export function AuthCard({ mode }: { mode: AuthCardMode }) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="text-white/60 text-xs"
+                  className="text-muted-foreground text-xs"
                 >
                   {subtitle}
                 </motion.p>
@@ -203,13 +200,16 @@ export function AuthCard({ mode }: { mode: AuthCardMode }) {
                       focusedInput === "email" && "z-10",
                     )}
                   >
-                    <div className="relative flex items-center overflow-hidden rounded-lg">
+                    <label htmlFor="auth-email" className="sr-only">
+                      ایمیل
+                    </label>
+                    <div dir="ltr" className="relative flex items-center rounded-lg">
                       <Mail
                         className={cn(
                           "absolute start-3 w-4 h-4 transition-all duration-300",
                           focusedInput === "email"
-                            ? "text-white"
-                            : "text-white/40",
+                            ? "text-foreground"
+                            : "text-muted-foreground",
                         )}
                         aria-hidden
                       />
@@ -226,7 +226,7 @@ export function AuthCard({ mode }: { mode: AuthCardMode }) {
                         onChange={(e) => setEmail(e.target.value)}
                         onFocus={() => setFocusedInput("email")}
                         onBlur={() => setFocusedInput(null)}
-                        className="w-full bg-white/5 border-transparent focus:border-white/20 text-white placeholder:text-white/30 h-10 transition-all duration-300 ps-10 pe-3 focus:bg-white/10 text-start"
+                        className="w-full border-input bg-background/40 text-foreground placeholder:text-muted-foreground h-10 transition-all duration-300 ps-10 pe-3 focus:bg-background/70 text-start"
                       />
                     </div>
                   </div>
@@ -237,13 +237,16 @@ export function AuthCard({ mode }: { mode: AuthCardMode }) {
                       focusedInput === "password" && "z-10",
                     )}
                   >
-                    <div className="relative flex items-center overflow-hidden rounded-lg">
+                    <label htmlFor="auth-password" className="sr-only">
+                      رمز عبور
+                    </label>
+                    <div dir="ltr" className="relative flex items-center rounded-lg">
                       <Lock
                         className={cn(
                           "absolute start-3 w-4 h-4 transition-all duration-300",
                           focusedInput === "password"
-                            ? "text-white"
-                            : "text-white/40",
+                            ? "text-foreground"
+                            : "text-muted-foreground",
                         )}
                         aria-hidden
                       />
@@ -261,12 +264,12 @@ export function AuthCard({ mode }: { mode: AuthCardMode }) {
                         onChange={(e) => setPassword(e.target.value)}
                         onFocus={() => setFocusedInput("password")}
                         onBlur={() => setFocusedInput(null)}
-                        className="w-full bg-white/5 border-transparent focus:border-white/20 text-white placeholder:text-white/30 h-10 transition-all duration-300 ps-10 pe-10 focus:bg-white/10 text-start"
+                        className="w-full border-input bg-background/40 text-foreground placeholder:text-muted-foreground h-10 transition-all duration-300 ps-10 pe-10 focus:bg-background/70 text-start"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute end-3 cursor-pointer text-white/40 hover:text-white transition-colors duration-300"
+                        className="absolute end-3 cursor-pointer text-muted-foreground hover:text-foreground transition-colors duration-300"
                         aria-label={
                           showPassword ? "پنهان کردن رمز" : "نمایش رمز"
                         }
@@ -287,13 +290,16 @@ export function AuthCard({ mode }: { mode: AuthCardMode }) {
                         focusedInput === "confirmPassword" && "z-10",
                       )}
                     >
-                      <div className="relative flex items-center overflow-hidden rounded-lg">
+                      <label htmlFor="auth-confirm-password" className="sr-only">
+                        تکرار رمز عبور
+                      </label>
+                      <div dir="ltr" className="relative flex items-center rounded-lg">
                         <Lock
                           className={cn(
                             "absolute start-3 w-4 h-4 transition-all duration-300",
                             focusedInput === "confirmPassword"
-                              ? "text-white"
-                              : "text-white/40",
+                              ? "text-foreground"
+                              : "text-muted-foreground",
                           )}
                           aria-hidden
                         />
@@ -309,14 +315,14 @@ export function AuthCard({ mode }: { mode: AuthCardMode }) {
                           onChange={(e) => setConfirmPassword(e.target.value)}
                           onFocus={() => setFocusedInput("confirmPassword")}
                           onBlur={() => setFocusedInput(null)}
-                          className="w-full bg-white/5 border-transparent focus:border-white/20 text-white placeholder:text-white/30 h-10 transition-all duration-300 ps-10 pe-10 focus:bg-white/10 text-start"
+                          className="w-full border-input bg-background/40 text-foreground placeholder:text-muted-foreground h-10 transition-all duration-300 ps-10 pe-10 focus:bg-background/70 text-start"
                         />
                         <button
                           type="button"
                           onClick={() =>
                             setShowConfirmPassword(!showConfirmPassword)
                           }
-                          className="absolute end-3 cursor-pointer text-white/40 hover:text-white transition-colors duration-300"
+                          className="absolute end-3 cursor-pointer text-muted-foreground hover:text-foreground transition-colors duration-300"
                           aria-label={
                             showConfirmPassword
                               ? "پنهان کردن تکرار رمز"
@@ -343,13 +349,13 @@ export function AuthCard({ mode }: { mode: AuthCardMode }) {
                         type="checkbox"
                         checked={rememberMe}
                         onChange={() => setRememberMe(!rememberMe)}
-                        className="appearance-none h-4 w-4 rounded border border-white/20 bg-white/5 checked:bg-white checked:border-white focus:outline-none focus:ring-1 focus:ring-white/30 transition-all duration-200"
+                        className="appearance-none h-4 w-4 rounded border border-border bg-background/40 checked:bg-primary checked:border-primary focus:outline-none focus:ring-1 focus:ring-ring/40 transition-all duration-200"
                       />
                       {rememberMe ? (
                         <motion.div
                           initial={{ opacity: 0, scale: 0.5 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          className="absolute inset-0 flex items-center justify-center text-black pointer-events-none"
+                          className="absolute inset-0 flex items-center justify-center text-primary-foreground pointer-events-none"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -370,13 +376,13 @@ export function AuthCard({ mode }: { mode: AuthCardMode }) {
                     </div>
                     <label
                       htmlFor="remember-me"
-                      className="text-xs text-white/60 hover:text-white/80 transition-colors duration-200 cursor-pointer"
+                      className="text-xs text-muted-foreground hover:text-foreground/80 transition-colors duration-200 cursor-pointer"
                     >
                       مرا به خاطر بسپار
                     </label>
                   </div>
                 ) : (
-                  <p className="text-[11px] leading-relaxed text-white/50 pt-1">
+                  <p className="text-[11px] leading-relaxed text-muted-foreground pt-1">
                     رمز باید حداقل ۸ نویسه، شامل حرف، عدد و نماد باشد.
                   </p>
                 )}
@@ -388,7 +394,7 @@ export function AuthCard({ mode }: { mode: AuthCardMode }) {
                   disabled={isLoading}
                   className="w-full relative group/button mt-2"
                 >
-                  <div className="relative overflow-hidden bg-white text-black font-medium h-10 rounded-lg transition-all duration-300 flex items-center justify-center disabled:opacity-70">
+                  <div className="relative overflow-hidden bg-primary text-primary-foreground font-medium h-10 rounded-lg transition-all duration-300 flex items-center justify-center disabled:opacity-70">
                     <AnimatePresence mode="wait">
                       {isLoading ? (
                         <motion.div
@@ -398,7 +404,8 @@ export function AuthCard({ mode }: { mode: AuthCardMode }) {
                           exit={{ opacity: 0 }}
                           className="flex items-center justify-center"
                         >
-                          <div className="w-4 h-4 border-2 border-black/70 border-t-transparent rounded-full animate-spin" />
+                          <div className="w-4 h-4 border-2 border-primary-foreground/70 border-t-transparent rounded-full animate-spin" />
+                          <span className="sr-only">در حال انجام</span>
                         </motion.div>
                       ) : (
                         <motion.span
@@ -417,27 +424,36 @@ export function AuthCard({ mode }: { mode: AuthCardMode }) {
                 </motion.button>
 
                 <motion.p
-                  className="text-center text-xs text-white/60 mt-4"
+                  className="text-center text-xs text-muted-foreground mt-4"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
                 >
                   {alternatePrompt}{" "}
-                  <Link
-                    href={alternateHref}
-                    className="relative inline-block group/signup"
-                  >
-                    <span className="relative z-10 text-white group-hover/signup:text-white/70 transition-colors duration-300 font-medium">
+                  {onModeChange ? (
+                    <button
+                      type="button"
+                      onClick={() => onModeChange(isLogin ? "register" : "login")}
+                      className="font-medium text-foreground"
+                    >
                       {alternateAction}
-                    </span>
-                    <span className="absolute bottom-0 start-0 w-0 h-px bg-white group-hover/signup:w-full transition-all duration-300" />
-                  </Link>
+                    </button>
+                  ) : (
+                    <Link
+                      href={alternateHref}
+                      className="relative inline-block group/signup"
+                    >
+                      <span className="relative z-10 text-foreground group-hover/signup:text-foreground/70 transition-colors duration-300 font-medium">
+                        {alternateAction}
+                      </span>
+                      <span className="absolute bottom-0 start-0 w-0 h-px bg-white group-hover/signup:w-full transition-all duration-300" />
+                    </Link>
+                  )}
                 </motion.p>
               </form>
             </div>
           </div>
         </motion.div>
       </motion.div>
-    </div>
   );
 }

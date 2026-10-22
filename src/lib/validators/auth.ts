@@ -25,7 +25,7 @@ export const emailSchema = z
   .pipe(z.email({ message: "ایمیل معتبر وارد کنید." }));
 
 export const registerBodySchema = z
-  .object({
+  .strictObject({
     email: emailSchema,
     password: passwordSchema,
     confirmPassword: z.string(),
