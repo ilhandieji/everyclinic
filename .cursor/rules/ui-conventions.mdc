@@ -1,0 +1,30 @@
+---
+description: shadcn/Radix UI patterns, accessibility, states, and restrained design for this store
+globs: "src/**/*.tsx,src/**/*.css"
+alwaysApply: false
+---
+
+# UI and UX
+
+## Foundation
+
+- Use existing shadcn components under [src/components/ui](src/components/ui) and [components.json](components.json) (`radix-lyra`, `mist`, Lucide, CSS variables in [src/app/globals.css](src/app/globals.css)).
+- Inspect local components before adding new ones; do not duplicate primitives that already exist.
+- Do not build a parallel design system on `@radix-ui/themes` unless the task is explicitly about that package (layout currently imports Themes CSS only).
+
+## Quality bar
+
+- Semantic HTML, keyboard navigation, visible focus, labels, and clear validation feedback.
+- Responsive layouts (mobile, tablet, desktop).
+- Loading, empty, error, success, and destructive-action states for admin flows.
+- Forms must stay usable with long descriptions and validation text.
+
+## Avoid generic AI UI
+
+No unmotivated gradients, glow, glassmorphism, decorative backgrounds, excessive nested cards/shadows, emoji as icons, decorative motion, fake stats, invented products/reviews, or arbitrary typography/color.
+
+The create-next-app starter on [src/app/page.tsx](src/app/page.tsx) is **not** the product design direction; follow shadcn tokens and existing `Button` patterns.
+
+## Persian RTL
+
+All UI must follow [persian-rtl.mdc](.cursor/rules/persian-rtl.mdc) (mandatory, always on). [components.json](components.json) `"rtl": true` supports the kit; application copy and document `lang`/`dir` are defined there, not here.

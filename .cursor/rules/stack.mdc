@@ -1,0 +1,45 @@
+---
+description: Verified stack versions and patterns for TypeScript, Next.js, Prisma 7, UI, and HTTP
+globs: "**/*.{ts,tsx,css,prisma}"
+alwaysApply: false
+---
+
+# Stack (source of truth: package.json + lockfile)
+
+## Installed versions (verify in lockfile before relying on memory)
+
+| Area | Version |
+|------|---------|
+| Next.js | 16.4.2 |
+| React / React DOM | 19.3.1 |
+| TypeScript | 6.0.3 |
+| Tailwind CSS | 4.3.3 (`@tailwindcss/turbopack`) |
+| Prisma / `@prisma/client` / `@prisma/adapter-pg` | 7.10.1 |
+| next-auth | 4.24.15 (v4, not Auth.js v5) |
+| Zod | 4.6.7 |
+| TanStack React Table | 9.3.1 |
+| Axios | 1.20.0 |
+| pg | 8.23.1 |
+| shadcn CLI | 4.22.1 |
+| radix-ui / @radix-ui/themes | 1.8.1 / 3.3.0 |
+
+Package manager: **pnpm@12.11.2** only (`pnpm` scripts).
+
+## Patterns to follow
+
+- **Prisma 7:** Generator `prisma-client`, client import from generated output under `src/app/generated/prisma`. Use the existing [src/lib/prisma.ts](src/lib/prisma.ts) `PrismaPg` singleton. Config file is [prisma7.config.ts](prisma7.config.ts) (not default `prisma.config.ts`) — confirm CLI picks it up before running Prisma commands.
+- **Database:** PostgreSQL via adapter; no second ORM. Raw SQL only with documented justification.
+- **Auth:** Extend existing NextAuth v4 + Prisma persistence; do not swap libraries or upgrade to Auth.js v5 without approval.
+- **Validation:** Zod 4 on server trust boundaries (mutations, API inputs).
+- **Tables:** TanStack Table v9 for real admin data tables only; run Intent table skill (`pnpm exec intent load …`) before Table work. Not for simple static lists.
+- **HTTP:** Axios for appropriate **client** HTTP; avoid extra server round trips where server code can call Prisma or internal modules directly.
+- **UI:** shadcn + Radix primitives; tokens in [src/app/globals.css](src/app/globals.css). No separate `tailwind.config` — CSS-first Tailwind 4.
+- **Runtime:** Default Node.js on Next.js; do not add `export const runtime = 'edge'` without a specific reason.
+
+## Avoid outdated examples
+
+Do not copy Prisma 5/6 init patterns, Auth.js v5 `auth.ts` layout, Zod 3 APIs, React Table v8, or Tailwind 3 JS config patterns.
+
+## Non-default installed deps
+
+`class-validator`, `@prisma/extension-accelerate`, and `@hookform/resolvers` are present; prefer Zod + existing patterns unless the user directs otherwise. `react-hook-form` is not a direct dependency — do not add a form stack without approval.

@@ -1,0 +1,31 @@
+---
+description: Administrator-managed catalog, no hardcoded products, native dev vs Docker verification
+alwaysApply: true
+---
+
+# Product and environments
+
+## Catalog and scope
+
+This is a small, administrator-managed ecommerce site. There are **no** predefined products, categories, or catalog entries the app may assume.
+
+- Administrators create and manage sale items, content, images, order, and publication state.
+- Do not hardcode fictional products in production pages, public defaults, or seed data meant for production.
+- Isolated test fixtures are acceptable when clearly scoped to tests or dev-only paths.
+- Do not assume cart, checkout, payments, shipping, customer accounts, or order management unless the user explicitly requests them.
+
+Keep models and admin flows generic enough for different product kinds.
+
+## Local development
+
+1. **Native local development:** Source in the repo; use `pnpm dev` and local tooling.
+2. **Local Docker verification:** A separate Compose-based environment for consistent checks. **No Docker/Compose files exist in the repo yet** — document and use them when added; do not treat a successful native dev run as Docker verification.
+
+## Docker and data (when Compose exists)
+
+- Inspect existing Docker/Compose config before changing or adding infrastructure.
+- Prefer reproducible Compose over ad hoc container commands.
+- Use environment variables; never put real credentials in tracked files.
+- Keep Docker volumes and host database data separate.
+- Do not delete volumes, wipe databases, or run destructive cleanup without explicit authorization.
+- Do not deploy to cloud providers as part of routine development.

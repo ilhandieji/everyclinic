@@ -1,0 +1,60 @@
+---
+description: Mandatory pre-edit review, verification, Git restrictions, and dependency approval
+alwaysApply: true
+---
+
+# Core workflow
+
+## Before starting a task
+
+1. Read [package.json](package.json) and the project importer section of [pnpm-lock.yaml](pnpm-lock.yaml).
+2. Check `git status` and preserve all pre-existing user modifications.
+3. Read the source files directly involved in the task, plus their imports, callers, types, and related config.
+4. Do not assume a previous agent’s code is correct; verify against the actual files.
+
+## Immediately before editing
+
+Re-read the **complete** contents of every file you will modify. For multi-file work, inspect the full relevant implementation across layers before changing any file.
+
+## After editing
+
+1. Review the diff for every modified file (imports, duplicated logic, security, regressions).
+2. Do not suppress TypeScript, ESLint, or test failures to make checks pass.
+3. When application code changed, run `pnpm lint` and report pass, fail, or not run.
+4. For UI or behavior changes, verify in the browser when browser tools are available; otherwise state what was not verified.
+
+## Git and publishing
+
+- Stay on the branch already checked out; do not create a new branch unless the user explicitly asks.
+- Do not commit, push, deploy, or rewrite history unless the user explicitly requests it. Plan or code approval is not commit approval.
+- Do not change `git config` identity settings. Do not stage unrelated files.
+- Never log or report credentials, tokens, or secret env values.
+
+## Dependencies
+
+Do not install, upgrade, downgrade, or remove packages without explaining why and getting explicit user approval.
+
+## Intent skills
+
+Follow the Intent block in [AGENTS.md](AGENTS.md): run `pnpm exec intent list` and load a matching skill before substantial edits. If Intent is unavailable, report it; do not download a replacement.
+
+## Scope
+
+Make the smallest change that satisfies the request. Avoid drive-by refactors and unrelated files.
+
+## Subagents (read-only specialists)
+
+Project subagents live in `.cursor/agents/`. Delegate when complexity, security impact, or independent review justifies it. Do **not** invoke every specialist for trivial, localized edits, and do not delegate only to duplicate your own analysis.
+
+| Specialist | Use when |
+|------------|----------|
+| `architecture-reviewer` | Significant multi-file or cross-layer design before implementation |
+| `security-auditor` | Auth, authorization, validation, data exposure, uploads, secrets |
+| `ui-rtl-reviewer` | Substantial storefront or admin UI (Persian RTL, a11y, states) |
+| `implementation-verifier` | Before declaring significant feature work complete |
+
+Independent specialists may run in parallel when their questions do not depend on each other. Prefer an appropriate review before calling substantial work done.
+
+The **main agent** merges findings, resolves disagreements, implements edits, runs lint/browser/Docker checks, and reports the final result. Subagents do not waive pre-edit review, Git restrictions, dependency approval, Docker rules, or security rules.
+
+Invoke project subagents **read-only** in this working tree only. Do not use cloud agents, Git worktrees, or parallel edits from subagents. Subagents must not create branches, commit, push, install packages, or modify files.

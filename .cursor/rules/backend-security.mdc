@@ -1,0 +1,38 @@
+---
+description: Server authorization, Zod validation, Prisma usage, uploads, and migration safety
+globs: "src/**/*.{ts,tsx},prisma/**/*.{prisma,sql}"
+alwaysApply: false
+---
+
+# Backend, auth, and security
+
+## Authentication vs authorization
+
+- Use the existing NextAuth v4 route and Prisma models in [prisma/schema.prisma](prisma/schema.prisma). The route handler may be incomplete; do not assume auth works until verified in code.
+- **Authentication** identifies the user; **authorization** decides what they may do.
+- There is **no admin role** on `User` today. Authenticated ≠ administrator.
+- Protect every administrative mutation and restricted server entry point with **server-side** authorization. UI hiding is not access control.
+- Do not expose unpublished items, admin-only data, or internal errors to public clients.
+
+## Validation and data access
+
+- Validate untrusted input with **Zod** on the server. Client validation is UX only.
+- Use **Prisma** for database access; use transactions and DB constraints when consistency requires them.
+- Return safe, intentional error messages to clients; do not leak stack traces, SQL, or secrets.
+
+## Schema and migrations
+
+- [prisma/schema.prisma](prisma/schema.prisma) (NextAuth models) **does not match** [prisma/migrations/20261022132459_init/migration.sql](prisma/migrations/20261022132459_init/migration.sql) (legacy User/Post). Read both before any migration work.
+- Do not run `migrate`, `db push`, `migrate reset`, or other destructive DB commands unless the user explicitly asks.
+
+## File uploads (when implemented)
+
+- Restrict to authorized users on the server.
+- Enforce size limits and allowed types; validate file **content**, not only filename or client MIME.
+- Use safe storage keys; prevent unintended public access to private files.
+- Keep DB references and stored objects in sync on replace/delete; do not remove files still referenced elsewhere.
+- Do not add cloud storage SDKs or image pipelines without user approval.
+
+## Maintainability
+
+Prefer focused changes over broad refactors. No unnecessary repository/DI layers for this small app.
