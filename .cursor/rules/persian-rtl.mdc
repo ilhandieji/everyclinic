@@ -1,20 +1,20 @@
 ---
-description: Persian-first fa-IR RTL for storefront and admin; typography and formatting constraints
+description: Mandatory Persian-first fa-IR RTL for physician sites, care workflows, and admin
 alwaysApply: true
 ---
 
-# Persian-first RTL (Iranian ecommerce)
+# Persian-first RTL
 
-This rule is **removable as a whole file** if product direction changes. It applies to all UI work and UI-related reviews.
+Persian (`fa-IR`) and RTL are mandatory for this doctor–patient platform. Apply them to public physician pages and to administrative, clinical, and financial interfaces.
 
 ## Language and direction
 
 - Default language is **Persian (Farsi)** for Iranian users.
 - Root HTML must use `lang="fa-IR"` and `dir="rtl"` (and keep them consistent on layout shells).
-- Design **RTL from the start** for storefront and admin: product create/edit, image uploads, ordering, forms, dialogs, menus, navigation, tables, pagination, and notifications.
+- Design **RTL from the start** for public physician pages, service management, appointment flows, patient forms, clinical records, prescriptions, financial displays, dialogs, menus, navigation, tables, pagination, and notifications.
 - Prefer **CSS logical properties** (`margin-inline`, `padding-inline`, `inset-inline`, `text-start`/`text-end`) and RTL-compatible Tailwind utilities. Do not ship an English left/right layout and patch RTL afterward.
 - **Radix UI and shadcn/ui** must behave correctly in RTL: menus, popovers, dialogs, directional icons, and keyboard interaction.
-- **Mixed-direction content** (Persian + English, numbers, URLs, emails, code) must stay readable; isolate Latin spans with `dir="ltr"` / `lang="en"` or `<code>` where needed.
+- **Mixed-direction content** (Persian + English, names, numbers, phone numbers, URLs, emails, medical abbreviations, code) must stay readable; isolate Latin spans with `dir="ltr"` / `lang="en"` or `<code>` where needed.
 - User-facing labels, validation errors, empty states, confirmations, and toasts must be **natural Persian**. English UI text only when the user explicitly requests it.
 
 ## Typography and formatting
@@ -22,10 +22,11 @@ This rule is **removable as a whole file** if product direction changes. It appl
 - Inspect existing fonts and assets before choosing typography. **No local font files** exist in the repo today; [src/app/layout.tsx](src/app/layout.tsx) uses Latin `next/font` subsets (Geist, Inter) — not a Persian type system.
 - Do **not** download or install a font dependency without user approval; propose options after inspection.
 - Ensure Persian and Latin text, punctuation, and numerals render without awkward spacing or clipping.
-- **Currency:** Do not assume toman or rial. Ask the user before fixing the convention, or keep display unit configurable.
+- **Currency:** Do not assume toman or rial. Ask the user before fixing the convention, or keep the display unit configurable. `Asia/Tehran` is not an implemented default timezone.
 - Do **not** add a calendar library or general i18n framework without approval. If dates or numeric formatting are needed, inspect the project and propose an approach first.
 
 ## Design and verification
 
 - Avoid literal translation of English-first layouts; use wording and alignment natural for Persian reading direction.
+- Physician public sites are configured through validated settings. Customization must not break RTL, accessibility, or the design-system constraints in [ui-conventions.mdc](.cursor/rules/ui-conventions.mdc).
 - Verify RTL layout at **mobile, tablet, and desktop** when implementing or reviewing UI (browser tools when available).

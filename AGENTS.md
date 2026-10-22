@@ -19,3 +19,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Product domain
+
+This repository is a Persian-first doctor–patient platform. Ecommerce catalog assumptions are obsolete. Read [docs/ai/domain-model.md](docs/ai/domain-model.md) and [.cursor/rules/medical-domain.mdc](.cursor/rules/medical-domain.mdc) before domain work. Do not edit the Intent or Next.js managed blocks above.

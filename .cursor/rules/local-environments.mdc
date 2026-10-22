@@ -1,0 +1,27 @@
+---
+description: Native local development, Docker verification, and local data safety
+alwaysApply: true
+---
+
+# Local environments
+
+## Local development
+
+1. **Native local development:** Source in the repo; use `pnpm dev` and local tooling.
+2. **Local Docker verification:** A separate Compose-based environment for consistent checks. **No Docker/Compose files exist in the repo yet.** Document and use them when added. A successful native dev run is not Docker verification.
+
+## Docker and data (when Compose exists)
+
+- Inspect existing Docker/Compose config before changing or adding infrastructure.
+- Prefer reproducible Compose over ad hoc container commands.
+- Use environment variables; never put real credentials in tracked files.
+- Keep Docker volumes and host database data separate.
+- Do not delete volumes, wipe databases, or run destructive cleanup without explicit authorization.
+- Do not deploy to cloud providers as part of routine development.
+- Do not create or alter Docker infrastructure unless the user explicitly asks.
+
+## Local data safety
+
+Local databases, Docker volumes, fixtures, and development dumps are not safe for real patient information. Use synthetic data only. Never copy real clinical records into local testing, screenshots, or AI context.
+
+See [medical-domain.mdc](.cursor/rules/medical-domain.mdc) for clinical-data handling.

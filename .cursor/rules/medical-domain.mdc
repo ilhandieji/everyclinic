@@ -1,0 +1,54 @@
+---
+description: Persian-first doctor–patient domain boundaries; blocks ecommerce assumptions
+alwaysApply: true
+---
+
+# Medical domain
+
+This is a Persian-first doctor–patient platform: physician sites, medical services, appointments, patient history, prescriptions, reminders, visit payments, and installment schedules. It is not an ecommerce store.
+
+Read [docs/ai/domain-model.md](docs/ai/domain-model.md) before implementing domain behavior. That document holds the entity proposal, consistency rules, and open decisions. Do not invent answers to open decisions.
+
+## Concept boundaries
+
+- **Medical service:** a configurable offering by a physician or practice. A title, image, and price do not make it stock, a brand, or a cart item.
+- **Service card:** public presentation of a service and its price. It does not require a product catalog.
+- **Appointment:** a scheduled healthcare interaction. It is not a cart or an order. Physicians schedule patients. Patient self-booking is not a current requirement.
+- **Patient:** a person receiving care. A patient is not a generic shopper.
+- **Clinical visit:** an encounter with authored records. Completing it is not an order-completion event.
+- **Prescription:** a clinician-authored medication record. It is not a purchase.
+- **Medication history:** current and historical medication information. It is not inventory.
+- **Follow-up reminder:** future care, which may exist before any appointment is booked. It is not the same as an appointment reminder. A reminder row is not proof of delivery.
+- **Payment:** a transaction toward an approved obligation. It is not an appointment-status field. Client-supplied success is not proof of payment.
+- **Installment plan:** a schedule of obligations and payments. It is not partial checkout.
+- **Physician site configuration:** validated settings for supported public elements. It is not an unrestricted page builder.
+
+Do not name new medical entities `Product`, `Cart`, or `Order`. Do not rename existing source files, schema fields, or tables unless the user explicitly requests that rename.
+
+There are no predefined services. Illustrative procedures must never become required catalog or seed rows. Do not invent patients, diagnoses, allergies, prescriptions, doses, or clinical notes.
+
+## Boundaries that must stay separate
+
+- Public site content and private clinical records.
+- Appointment status and payment status.
+- Service price, amount owed, payment attempt, confirmed payment, and installment schedule.
+- Appointment reminders, follow-up reminders, and any future medication reminder. Medication reminders are out of scope until the user adds them.
+- Creating a notification record and delivering it.
+
+Public configuration is structured and validated: navigation, section visibility and order, service cards, and contact details. Reject arbitrary HTML, scripts, and untrusted code in physician-editable content. One application serves every physician; do not build a separate app per physician.
+
+## Authorization and sensitive data
+
+`User` has no role today. Authenticated is not physician, patient, or platform administrator. Open registration does not grant clinical access.
+
+The tenant (physician, clinic, or group practice) is unresolved. Stop and ask before adding the first tenant-scoped table. Do not create a global unscoped patient table, and do not silently choose solo physician or clinic.
+
+Do not trust a browser-supplied `doctorId`, `patientId`, or `practiceId`. Authorize the referenced resource on the server.
+
+Never put real patient data in prompts, documentation, screenshots, tests, fixtures, or logs. Do not claim compliance with Iranian healthcare, privacy, or payment regulations.
+
+Agents must not prescribe, choose doses, or present unverified medical guidance as clinical advice. This platform records clinician-controlled workflows.
+
+## Scope control
+
+Build payments, reminders, or clinical records only when the user requested that slice and the required policy in the domain doc is decided. Do not install SMS, email, push, scheduling, or payment dependencies without approval.

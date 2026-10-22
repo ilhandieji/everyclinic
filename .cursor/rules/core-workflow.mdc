@@ -11,6 +11,8 @@ alwaysApply: true
 2. Check `git status` and preserve all pre-existing user modifications.
 3. Read the source files directly involved in the task, plus their imports, callers, types, and related config.
 4. Do not assume a previous agent’s code is correct; verify against the actual files.
+5. Review the applicable project rules and skills.
+6. For medical-domain changes, name the entities, authorization boundaries, and historical records affected. Read [docs/ai/domain-model.md](docs/ai/domain-model.md) before implementing domain behavior.
 
 ## Immediately before editing
 
@@ -22,6 +24,7 @@ Re-read the **complete** contents of every file you will modify. For multi-file 
 2. Do not suppress TypeScript, ESLint, or test failures to make checks pass.
 3. When application code changed, run `pnpm lint` and report pass, fail, or not run.
 4. For UI or behavior changes, verify in the browser when browser tools are available; otherwise state what was not verified.
+5. Distinguish what was implemented from what was actually verified.
 
 ## Git and publishing
 
@@ -29,6 +32,7 @@ Re-read the **complete** contents of every file you will modify. For multi-file 
 - Do not commit, push, deploy, or rewrite history unless the user explicitly requests it. Plan or code approval is not commit approval.
 - Do not change `git config` identity settings. Do not stage unrelated files.
 - Never log or report credentials, tokens, or secret env values.
+- Never create a Git worktree.
 
 ## Dependencies
 
@@ -40,17 +44,19 @@ Follow the Intent block in [AGENTS.md](AGENTS.md): run `pnpm exec intent list` a
 
 ## Scope
 
-Make the smallest change that satisfies the request. Avoid drive-by refactors and unrelated files.
+Make the smallest change that satisfies the request. Avoid drive-by refactors and unrelated files. Do not expand a task into an architectural rewrite without approval.
 
 ## Subagents (read-only specialists)
 
-Project subagents live in `.cursor/agents/`. Delegate when complexity, security impact, or independent review justifies it. Do **not** invoke every specialist for trivial, localized edits, and do not delegate only to duplicate your own analysis.
+Project subagents live in `.cursor/agents/`. Delegate when complexity, security impact, or independent review justifies it. Do **not** invoke specialists for trivial copy or style edits, and do not delegate only to duplicate your own analysis.
 
 | Specialist | Use when |
 |------------|----------|
 | `architecture-reviewer` | Significant multi-file or cross-layer design before implementation |
-| `security-auditor` | Auth, authorization, validation, data exposure, uploads, secrets |
-| `ui-rtl-reviewer` | Substantial storefront or admin UI (Persian RTL, a11y, states) |
+| `security-auditor` | Auth, authorization, patient-record access, tenant isolation, uploads, secrets |
+| `medical-domain-reviewer` | Domain models or workflows for physicians, services, appointments, encounters, prescriptions, or reminders |
+| `scheduling-payments-reviewer` | Scheduling, availability, reminder delivery, prices, payments, or installments |
+| `ui-rtl-reviewer` | Substantial Persian RTL UI (physician site, admin, clinical, or financial) |
 | `implementation-verifier` | Before declaring significant feature work complete |
 
 Independent specialists may run in parallel when their questions do not depend on each other. Prefer an appropriate review before calling substantial work done.

@@ -1,5 +1,5 @@
 ---
-description: Server authorization, Zod validation, Prisma usage, uploads, and migration safety
+description: Server authorization, Zod validation, Prisma usage, sensitive data, and migration safety
 globs: "src/**/*.{ts,tsx},prisma/**/*.{prisma,sql}"
 alwaysApply: false
 ---
@@ -8,26 +8,42 @@ alwaysApply: false
 
 ## Authentication vs authorization
 
-- Use the existing NextAuth v4 route and Prisma models in [prisma/schema.prisma](prisma/schema.prisma). The route handler may be incomplete; do not assume auth works until verified in code.
+- Keep the existing NextAuth v4 credentials flow in [src/lib/auth.ts](src/lib/auth.ts) and [src/app/api/auth/[...nextauth]/route.ts](src/app/api/auth/[...nextauth]/route.ts). Do not replace the library or upgrade to Auth.js v5 without approval.
+- The route delegates to `authOptions`. Static review shows credentials login, JWT sessions, a Prisma `Session` row, and registration in [src/app/api/register/route.ts](src/app/api/register/route.ts). Runtime success is unverified until exercised. Do not claim the flow works without evidence.
 - **Authentication** identifies the user; **authorization** decides what they may do.
-- There is **no admin role** on `User` today. Authenticated ≠ administrator.
-- Protect every administrative mutation and restricted server entry point with **server-side** authorization. UI hiding is not access control.
-- Do not expose unpublished items, admin-only data, or internal errors to public clients.
+- `User` has no role. Authenticated is not physician, patient, or platform administrator. Open registration creates a role-less user and does not grant clinical access.
+- Session claims today are `id` and `email`. Re-check authorization on the server for every restricted query and mutation. UI hiding is not access control.
+- Do not trust a browser-supplied `doctorId`, `patientId`, `practiceId`, or similar id. Load the resource and confirm the caller may access it.
+- Once a tenant exists, every tenant-scoped query and mutation must filter by that tenant on the server. The tenant model is unresolved; see [docs/ai/domain-model.md](docs/ai/domain-model.md). Stop and ask before adding the first tenant-scoped table.
+- Separate public physician content from clinical records in queries. Do not return unpublished configuration or private records to public clients.
+- Do not expose internal errors, SQL, stack traces, or secrets to clients.
+
+## Sensitive healthcare data
+
+- Clinical notes, prescriptions, medication history, and patient identifiers are highly sensitive.
+- Least privilege: a physician may access only patients linked by an authorized care relationship. Do not assume every physician can read every patient.
+- Do not log clinical payloads, full prescriptions, or patient identifiers in application logs, analytics, or error reports. Log a stable event id when a failure must be diagnosable.
+- Clinically significant writes must keep author and timestamp. Recommended audit bar, until the owner confirms retention: attribute clinical writes; record access to clinical detail without copying note bodies into logs; do not audit ordinary public page views.
+- Preserve history. Do not silently overwrite prescriptions or medication history.
+- Do not put real patient data in fixtures, prompts, or debug output. Local databases are not a safe place for real records; see [local-environments.mdc](.cursor/rules/local-environments.mdc).
+- Do not claim regulatory compliance.
 
 ## Validation and data access
 
 - Validate untrusted input with **Zod** on the server. Client validation is UX only.
-- Use **Prisma** for database access; use transactions and DB constraints when consistency requires them.
-- Return safe, intentional error messages to clients; do not leak stack traces, SQL, or secrets.
+- Use **Prisma** for database access through [src/lib/prisma.ts](src/lib/prisma.ts). Use transactions and database constraints when consistency requires them, including future appointment overlap prevention.
+- Appointment status and payment status stay separate. Payment success must be verified on the server. A client success flag or unverified callback is not proof of payment.
 
 ## Schema and migrations
 
-- [prisma/schema.prisma](prisma/schema.prisma) (NextAuth models) **does not match** [prisma/migrations/20261022132459_init/migration.sql](prisma/migrations/20261022132459_init/migration.sql) (legacy User/Post). Read both before any migration work.
+- [prisma/schema.prisma](prisma/schema.prisma) matches the **current** text of [prisma/migrations/20261022132459_init/migration.sql](prisma/migrations/20261022132459_init/migration.sql) (NextAuth tables). That init file was rewritten in place. [prisma/migrations/20261022180000_nextauth_credentials/migration.sql](prisma/migrations/20261022180000_nextauth_credentials/migration.sql) still drops legacy `Post` and `User` and creates the same tables again. Fresh migrate of both files is inconsistent, and a database that applied the original init can have a checksum mismatch. Read both files before any migration work. Do not rewrite applied migrations unless the user explicitly asks for a repair plan.
 - Do not run `migrate`, `db push`, `migrate reset`, or other destructive DB commands unless the user explicitly asks.
+- Do not rename existing auth tables or fields as part of an unrelated change.
 
 ## File uploads (when implemented)
 
 - Restrict to authorized users on the server.
+- Public service images and private clinical attachments are different access domains. Clinical attachments are not a current requirement; do not add them unless the task asks.
 - Enforce size limits and allowed types; validate file **content**, not only filename or client MIME.
 - Use safe storage keys; prevent unintended public access to private files.
 - Keep DB references and stored objects in sync on replace/delete; do not remove files still referenced elsewhere.
@@ -35,4 +51,4 @@ alwaysApply: false
 
 ## Maintainability
 
-Prefer focused changes over broad refactors. No unnecessary repository/DI layers for this small app.
+Prefer focused changes over broad refactors. No unnecessary repository/DI layers for this application.
