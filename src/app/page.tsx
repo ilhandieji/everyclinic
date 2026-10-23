@@ -2,8 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { PriceText } from "@/components/site/price-text";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SiteShell } from "@/components/layout/site-shell";
+import { HeroMark } from "@/components/site/hero-mark";
+import { ServiceCard } from "@/components/site/service-card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
 
 async function Landing() {
@@ -27,6 +30,7 @@ async function Landing() {
         priceMin: true,
         priceMax: true,
         currencyLabel: true,
+        imageKey: true,
       },
     }),
   ]);
@@ -37,92 +41,77 @@ async function Landing() {
   const hasProfile = Boolean(name || gender || bio || profile?.photoKey);
 
   return (
-    <div className="flex w-full flex-col gap-8 px-4 py-10 md:px-8">
-      {hasProfile ? (
-        <Card className="max-w-3xl">
-          <CardHeader className="items-center text-center sm:flex-row sm:items-start sm:text-start">
-            {profile?.photoKey ? (
-              <Image
-                src={`/media/${profile.photoKey}`}
-                alt={name || "تصویر پزشک"}
-                width={112}
-                height={112}
-                unoptimized
-                className="size-28 rounded-full object-cover ring-2 ring-border/60"
-              />
-            ) : null}
-            <div className="flex flex-col gap-1">
-              <CardTitle className="text-xl">{name || "معرفی پزشک"}</CardTitle>
-              {gender ? <CardDescription>{gender}</CardDescription> : null}
-            </div>
-          </CardHeader>
-          {bio ? (
-            <CardContent>
-              <p className="max-w-prose whitespace-pre-wrap text-sm leading-relaxed">{bio}</p>
-            </CardContent>
+    <SiteShell className="flex flex-col gap-10">
+      <section className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.16fr)_minmax(0,0.84fr)]">
+        <div className="flex min-w-0 flex-col items-start gap-4">
+          {profile?.photoKey ? (
+            <Image
+              src={`/media/${profile.photoKey}`}
+              alt={name || "تصویر پزشک"}
+              width={96}
+              height={96}
+              unoptimized
+              className="size-24 rounded-full object-cover ring-2 ring-border"
+            />
           ) : null}
-        </Card>
-      ) : (
-        <Card className="max-w-3xl">
-          <CardHeader>
-            <CardTitle>معرفی پزشک</CardTitle>
-            <CardDescription>پروفایل عمومی هنوز تکمیل نشده است.</CardDescription>
-          </CardHeader>
-        </Card>
-      )}
+          <div className="flex flex-col gap-1">
+            <h1 className="text-3xl font-semibold text-balance text-foreground">
+              {name || "معرفی پزشک"}
+            </h1>
+            {gender ? <p className="text-sm text-muted-foreground">{gender}</p> : null}
+          </div>
+          {bio ? (
+            <p className="max-w-[65ch] whitespace-pre-wrap text-sm leading-relaxed">{bio}</p>
+          ) : !hasProfile ? (
+            <p className="text-sm text-muted-foreground">پروفایل عمومی هنوز تکمیل نشده است.</p>
+          ) : null}
+          <Button asChild size="lg" className="h-10 px-4 text-sm">
+            <Link href="/services">مشاهده خدمات</Link>
+          </Button>
+        </div>
+        <HeroMark />
+      </section>
 
-      <section className="flex flex-col gap-4">
+      <section id="services" className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold">خدمات</h2>
-          <p className="max-w-prose text-sm text-muted-foreground">
+          <h2 className="text-xl font-semibold">خدمات</h2>
+          <p className="max-w-[65ch] text-sm text-muted-foreground">
             نوع ویزیت را ببینید و برای هماهنگی، درخواست ثبت کنید.
           </p>
         </div>
         {services.length === 0 ? (
-          <Card className="max-w-3xl">
+          <Card>
             <CardContent>
               <p className="text-sm text-muted-foreground">فعلاً خدمتی برای نمایش نیست.</p>
             </CardContent>
           </Card>
         ) : (
-          <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <ul className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 lg:grid-cols-3">
             {services.map((service) => (
-              <li key={service.id}>
-                <Card className="h-full">
-                  <CardHeader>
-                    <CardTitle>{service.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex flex-col gap-3">
-                    {service.description ? (
-                      <p className="line-clamp-4 whitespace-pre-wrap text-sm text-muted-foreground">
-                        {service.description}
-                      </p>
-                    ) : null}
-                    <PriceText
-                      min={service.priceMin}
-                      max={service.priceMax}
-                      label={service.currencyLabel}
-                    />
-                    <Link
-                      href={`/services/${service.id}`}
-                      className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
-                    >
-                      جزئیات و درخواست
-                    </Link>
-                  </CardContent>
-                </Card>
+              <li key={service.id} className="min-w-0">
+                <ServiceCard
+                  id={service.id}
+                  title={service.title}
+                  description={service.description}
+                  priceMin={service.priceMin}
+                  priceMax={service.priceMax}
+                  currencyLabel={service.currencyLabel}
+                  imageKey={service.imageKey}
+                />
               </li>
             ))}
           </ul>
         )}
       </section>
 
-      <Card className="max-w-3xl">
+      <Card>
         <CardHeader>
           <CardTitle>چطور درخواست بدهم</CardTitle>
-          <CardDescription>نوبت را پزشک هماهنگ می‌کند. ثبت درخواست به‌معنای وقت قطعی نیست.</CardDescription>
         </CardHeader>
         <CardContent>
+          <p className="mb-3 max-w-[65ch] text-sm text-muted-foreground">
+            نوبت را پزشک هماهنگ می‌کند. ثبت درخواست به‌معنای وقت قطعی نیست.
+          </p>
           <ol className="flex list-decimal flex-col gap-2 ps-5 text-sm leading-relaxed">
             <li>خدمت مورد نظر را باز کنید.</li>
             <li>اگر وارد حساب نشده‌اید، وارد شوید.</li>
@@ -131,7 +120,7 @@ async function Landing() {
           </ol>
         </CardContent>
       </Card>
-    </div>
+    </SiteShell>
   );
 }
 

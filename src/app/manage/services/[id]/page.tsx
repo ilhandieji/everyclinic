@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
+import { SiteShell } from "@/components/layout/site-shell";
 import { ServiceForm } from "@/components/site/service-form";
 import { updateService } from "@/lib/actions/services";
 import { currentPhysician } from "@/lib/access";
@@ -22,7 +23,7 @@ async function EditService({ id }: { id: string }) {
   }
 
   return (
-    <div className="w-full px-4 py-10 md:px-8">
+    <SiteShell>
       <ServiceForm
         action={updateService}
         service={{
@@ -41,7 +42,7 @@ async function EditService({ id }: { id: string }) {
           })),
         }}
       />
-    </div>
+    </SiteShell>
   );
 }
 

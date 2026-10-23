@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "shadcn": {
-      "command": "pnpx",
+      "command": "pnx",
       "args": [
         "shadcn@latest",
         "mcp"

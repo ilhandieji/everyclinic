@@ -1,0 +1,16 @@
+---
+description: Locked clinic visual system for public pages and service management
+globs: "src/**/*.tsx,src/**/*.css"
+alwaysApply: false
+---
+
+# Design system
+
+Before changing public clinic UI or service-management UI, read [DESIGN.md](DESIGN.md) and keep its tokens.
+
+- Semantic color lives in `src/app/globals.css`. Do not paint cards with the page green, and do not put white text on `#38b000` for a primary action.
+- Use the shared content width (`80rem`, logical padding). Do not pin a form to half the viewport with `max-w-3xl` and no centered shell.
+- RTL uses `dir="rtl"` and logical CSS. Do not fake direction with `row-reverse`.
+- Service cards need a real `Button` to `/services/[id]`. Do not invent duration, patients, or prices.
+- The hero graphic is the only decorative motion. Respect `prefers-reduced-motion`. Do not copy that motion onto forms.
+- Keep Radix Themes and shadcn together. Do not add a second color source.

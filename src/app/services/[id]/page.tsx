@@ -2,6 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
+import { SiteShell } from "@/components/layout/site-shell";
 import { PriceText } from "@/components/site/price-text";
 import { RequestPanel } from "@/components/site/request-panel";
 import { currentPatient, currentPhysician, currentUser } from "@/lib/access";
@@ -40,7 +41,8 @@ async function ServiceDetail({ id }: { id: string }) {
     : null;
 
   return (
-    <article className="flex w-full flex-col gap-6 px-4 py-10 md:px-8">
+    <SiteShell>
+    <article className="flex w-full flex-col gap-6">
       {service.imageKey ? (
         <Image
           src={`/media/${service.imageKey}`}
@@ -78,6 +80,7 @@ async function ServiceDetail({ id }: { id: string }) {
         />
       )}
     </article>
+    </SiteShell>
   );
 }
 

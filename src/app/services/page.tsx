@@ -1,9 +1,7 @@
-import Image from "next/image";
-import Link from "next/link";
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { PriceText } from "@/components/site/price-text";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SiteShell } from "@/components/layout/site-shell";
+import { ServiceCard } from "@/components/site/service-card";
 import prisma from "@/lib/prisma";
 
 async function ServiceList() {
@@ -24,48 +22,30 @@ async function ServiceList() {
 
   if (services.length === 0) {
     return (
-      <p className="mx-auto w-full px-4 py-10 md:px-8 text-center text-sm text-muted-foreground">
-        فعلاً خدمتی برای نمایش نیست.
-      </p>
+      <SiteShell>
+        <p className="text-sm text-muted-foreground">فعلاً خدمتی برای نمایش نیست.</p>
+      </SiteShell>
     );
   }
 
   return (
-    <ul className="mx-auto grid w-full gap-4 px-4 py-10 md:px-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {services.map((service) => (
-        <li key={service.id}>
-          <Link href={`/services/${service.id}`} className="block h-full">
-            <Card className="h-full transition-colors hover:bg-card/80">
-            {service.imageKey ? (
-              <Image
-                src={`/media/${service.imageKey}`}
-                alt={service.title}
-                width={800}
-                height={320}
-                unoptimized
-                className="h-40 w-full object-cover"
-              />
-            ) : null}
-            <CardHeader>
-              <CardTitle>{service.title}</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3">
-              {service.description ? (
-                <p className="line-clamp-3 whitespace-pre-wrap text-sm text-muted-foreground">
-                  {service.description}
-                </p>
-              ) : null}
-              <PriceText
-                min={service.priceMin}
-                max={service.priceMax}
-                label={service.currencyLabel}
-              />
-            </CardContent>
-            </Card>
-          </Link>
-        </li>
-      ))}
-    </ul>
+    <SiteShell>
+      <ul className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {services.map((service) => (
+          <li key={service.id} className="min-w-0">
+            <ServiceCard
+              id={service.id}
+              title={service.title}
+              description={service.description}
+              priceMin={service.priceMin}
+              priceMax={service.priceMax}
+              currencyLabel={service.currencyLabel}
+              imageKey={service.imageKey}
+            />
+          </li>
+        ))}
+      </ul>
+    </SiteShell>
   );
 }
 

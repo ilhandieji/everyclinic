@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
+import { SiteShell } from "@/components/layout/site-shell";
 import { ServiceForm } from "@/components/site/service-form";
 import { createService } from "@/lib/actions/services";
 import { currentPhysician } from "@/lib/access";
@@ -23,7 +24,7 @@ async function ManageServices() {
   });
 
   return (
-    <div className="flex w-full flex-col gap-10 px-4 py-10 md:px-8">
+    <SiteShell className="flex flex-col gap-10">
       <header className="flex flex-col gap-1">
         <h1 className="text-lg font-semibold text-foreground">خدمات</h1>
         <p className="text-sm text-muted-foreground">
@@ -38,7 +39,7 @@ async function ManageServices() {
           </CardContent>
         </Card>
       ) : (
-        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => (
             <li key={service.id}>
               <Link href={`/manage/services/${service.id}`} className="block h-full">
@@ -58,15 +59,11 @@ async function ManageServices() {
         </ul>
       )}
 
-      <Card className="max-w-3xl">
-        <CardHeader>
-          <CardTitle>خدمت جدید</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ServiceForm action={createService} />
-        </CardContent>
-      </Card>
-    </div>
+      <section className="flex flex-col gap-4">
+        <h2 className="text-lg font-semibold">خدمت جدید</h2>
+        <ServiceForm action={createService} />
+      </section>
+    </SiteShell>
   );
 }
 

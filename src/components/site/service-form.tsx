@@ -91,14 +91,14 @@ export function ServiceForm({
   }
 
   return (
-    <div className="flex max-w-3xl flex-col gap-8">
+    <div className="flex w-full flex-col gap-8">
       <form action={formAction}>
         {service ? <input type="hidden" name="id" value={service.id} /> : null}
         <input type="hidden" name="sections" value={JSON.stringify(sections)} />
         <input type="hidden" name="currencyLabel" value={currency} />
         <input type="hidden" name="published" value={published ? "on" : ""} />
         <FieldGroup>
-          <Field className="max-w-md">
+          <Field>
             <FieldLabel htmlFor="service-title">نام</FieldLabel>
             <Input
               id="service-title"
@@ -116,10 +116,11 @@ export function ServiceForm({
               rows={5}
               maxLength={8000}
               defaultValue={service?.description ?? ""}
+              className="min-h-32"
             />
           </Field>
-          <FieldGroup className="sm:flex-row sm:items-end">
-            <Field className="sm:max-w-36">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <Field>
               <FieldLabel htmlFor="price-min">حداقل قیمت</FieldLabel>
               <Input
                 id="price-min"
@@ -130,7 +131,7 @@ export function ServiceForm({
                 defaultValue={service?.priceMin ?? ""}
               />
             </Field>
-            <Field className="sm:max-w-36">
+            <Field>
               <FieldLabel htmlFor="price-max">حداکثر قیمت</FieldLabel>
               <Input
                 id="price-max"
@@ -141,7 +142,7 @@ export function ServiceForm({
                 defaultValue={service?.priceMax ?? ""}
               />
             </Field>
-            <Field className="sm:max-w-32">
+            <Field>
               <FieldLabel htmlFor="currency-label">واحد پول</FieldLabel>
               <Select
                 value={currency === "" ? undefined : currency}
@@ -161,7 +162,7 @@ export function ServiceForm({
                 </SelectContent>
               </Select>
             </Field>
-            <Field className="sm:max-w-24">
+            <Field>
               <FieldLabel htmlFor="sort-order">ترتیب نمایش</FieldLabel>
               <Input
                 id="sort-order"
@@ -173,7 +174,7 @@ export function ServiceForm({
                 defaultValue={service?.sortOrder ?? 0}
               />
             </Field>
-          </FieldGroup>
+          </div>
           <Field orientation="horizontal" className="w-fit">
             <Checkbox
               id="published"
@@ -192,7 +193,7 @@ export function ServiceForm({
                 </CardHeader>
                 <CardContent>
                   <FieldGroup>
-                    <Field className="max-w-sm">
+                    <Field>
                       <FieldLabel htmlFor={`section-title-${index}`}>عنوان</FieldLabel>
                       <Input
                         id={`section-title-${index}`}
@@ -211,7 +212,8 @@ export function ServiceForm({
                         id={`section-body-${index}`}
                         value={section.body}
                         maxLength={4000}
-                        rows={4}
+                        rows={5}
+                        className="min-h-32"
                         onChange={(event) => {
                           const next = sections.slice();
                           next[index] = { ...section, body: event.target.value };
@@ -221,7 +223,8 @@ export function ServiceForm({
                     </Field>
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="destructive"
+                      className="w-fit"
                       onClick={() => setSections(sections.filter((_, item) => item !== index))}
                     >
                       حذف بخش
@@ -233,6 +236,7 @@ export function ServiceForm({
             <Button
               type="button"
               variant="outline"
+              className="w-fit"
               onClick={() => setSections([...sections, { title: "", body: "" }])}
             >
               افزودن بخش
@@ -245,14 +249,14 @@ export function ServiceForm({
               ذخیره شد.
             </p>
           ) : null}
-          <Button type="submit" disabled={pending}>
+          <Button type="submit" size="lg" className="h-10 w-fit px-4 text-sm" disabled={pending}>
             {pending ? "در حال ذخیره" : "ذخیره"}
           </Button>
         </FieldGroup>
       </form>
 
       {service ? (
-        <Card size="sm" className="max-w-sm">
+        <Card size="sm">
           <CardHeader>
             <CardTitle>تصویر</CardTitle>
           </CardHeader>

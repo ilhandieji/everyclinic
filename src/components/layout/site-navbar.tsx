@@ -21,13 +21,14 @@ import { useAuthOverlay } from "@/components/auth/auth-overlay";
 import { useAppTheme } from "@/components/providers/theme-provider";
 import { Button } from "@/components/ui/button";
 import SkyToggle from "@/components/ui/sky-toggle";
+import { siteShellClass } from "@/components/layout/site-shell";
 import { cn } from "@/lib/utils";
 
 function navLinkClass(active: boolean) {
   return cn(
     "inline-flex items-center gap-1.5 border-b-2 px-1.5 py-1 text-sm font-medium transition-colors outline-none focus-visible:ring-1 focus-visible:ring-ring/50",
     active
-      ? "border-accent text-foreground"
+      ? "border-primary text-foreground"
       : "border-transparent text-muted-foreground hover:text-foreground",
   );
 }
@@ -163,7 +164,7 @@ export function SiteNavbar({
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/85 backdrop-blur-md">
       <nav
-        className="flex w-full items-center justify-between gap-3 px-4 py-2.5 md:px-8"
+        className={cn(siteShellClass, "flex items-center justify-between gap-3 py-2.5")}
         aria-label="ناوبری اصلی"
       >
         <Link
@@ -174,7 +175,7 @@ export function SiteNavbar({
           className={cn(
             "inline-flex min-w-0 max-w-[40%] items-center gap-1.5 border-b-2 text-sm font-semibold outline-none focus-visible:ring-1 focus-visible:ring-ring/50",
             homeActive
-              ? "border-accent text-foreground"
+              ? "border-primary text-foreground"
               : "border-transparent text-foreground hover:text-foreground/85",
           )}
         >
@@ -188,9 +189,9 @@ export function SiteNavbar({
           {account}
           <Button
             type="button"
-            size="icon-sm"
+            size="icon"
             variant="outline"
-            className="md:hidden"
+            className="size-11 md:hidden"
             aria-expanded={menuOpen}
             aria-controls="site-nav-menu"
             onClick={() => setMenuOpen((open) => !open)}
@@ -203,7 +204,7 @@ export function SiteNavbar({
       {menuOpen ? (
         <div
           id="site-nav-menu"
-          className="flex flex-col items-start gap-2 border-t border-border/70 px-4 py-3 md:hidden"
+          className={cn(siteShellClass, "flex flex-col items-start gap-2 border-t border-border/70 py-3 md:hidden")}
         >
           {links}
         </div>
