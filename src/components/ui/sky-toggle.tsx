@@ -64,8 +64,12 @@ const StyledWrapper = styled.div`
     --container-width: 5.625em;
     --container-height: 2.5em;
     --container-radius: 6.25em;
-    --container-light-bg: color-mix(in oklch, var(--palette-sky-aqua) 62%, var(--palette-sky-deep));
-    --container-night-bg: #141210;
+    --container-light-bg: color-mix(
+      in oklch,
+      var(--palette-blue-mist) 55%,
+      var(--palette-sky-deep)
+    );
+    --container-night-bg: #000000;
     --circle-container-diameter: 3.375em;
     --sun-moon-diameter: 2.125em;
     --sun-bg: #ecca2f;

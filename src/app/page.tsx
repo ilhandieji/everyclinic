@@ -38,7 +38,6 @@ async function Landing() {
 
   return (
     <div className="flex w-full flex-col gap-8 px-4 py-10 md:px-8">
-      <section className="rounded-lg bg-secondary px-4 py-6 md:px-6">
       {hasProfile ? (
         <Card className="max-w-3xl">
           <CardHeader className="items-center text-center sm:flex-row sm:items-start sm:text-start">
@@ -71,7 +70,6 @@ async function Landing() {
           </CardHeader>
         </Card>
       )}
-      </section>
 
       <section className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">

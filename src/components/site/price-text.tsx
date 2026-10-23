@@ -1,3 +1,7 @@
+function formatAmount(value: number) {
+  return value.toLocaleString("en-US").replaceAll(",", "،");
+}
+
 export function PriceText({
   min,
   max,
@@ -10,13 +14,28 @@ export function PriceText({
   if (min == null || max == null) {
     return null;
   }
-  const range = min === max ? String(min) : `${min} – ${max}`;
+
   return (
     <p className="text-sm text-foreground">
-      <span dir="ltr" lang="en">
-        {range}
-      </span>
-      {label ? <span> {label}</span> : null}
+      {min === max ? (
+        <>
+          <span dir="ltr" lang="en">
+            {formatAmount(min)}
+          </span>
+          {label ? <span> {label}</span> : null}
+        </>
+      ) : (
+        <>
+          <span dir="ltr" lang="en">
+            {formatAmount(min)}
+          </span>
+          {" الی "}
+          <span dir="ltr" lang="en">
+            {formatAmount(max)}
+          </span>
+          {label ? <span> {label}</span> : null}
+        </>
+      )}
     </p>
   );
 }

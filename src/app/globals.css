@@ -60,10 +60,13 @@
   --palette-sky-aqua: #33ccff;
   --palette-ink: #1a120c;
   --palette-sky-deep: #0b7ea8;
+  --palette-blue-deep: #0c1c28;
+  --palette-blue-harbor: #163044;
+  --palette-blue-mist: #9ec9de;
 
-  --background: #f6f5f2;
+  --background: #eefff3;
   --foreground: #241c16;
-  --card: #ffffff;
+  --card: color-mix(in oklch, var(--palette-sky-deep) 25%, var(--background));
   --card-foreground: #241c16;
   --popover: #ffffff;
   --popover-foreground: #241c16;
@@ -95,31 +98,32 @@
   --sidebar-ring: var(--ring);
 }
 
+html.dark,
 .dark {
-  /* Warm charcoal canvas. Greens stay on filled controls, not on the page. */
-  --background: #141210;
-  --foreground: #f3eee8;
-  --card: #1e1b18;
-  --card-foreground: #f3eee8;
-  --popover: #221e1b;
-  --popover-foreground: #f3eee8;
+  /* Black canvas; green on filled controls; blue accents only (ring, charts, toggle). */
+  --background: #000000;
+  --foreground: #f5f5f5;
+  --card: #141414;
+  --card-foreground: #f5f5f5;
+  --popover: #141414;
+  --popover-foreground: #f5f5f5;
   --primary: var(--palette-bright-fern);
-  --primary-foreground: var(--palette-ink);
-  --secondary: #2a2622;
-  --secondary-foreground: #f3eee8;
-  --muted: #2a2622;
-  --muted-foreground: #c4a890;
+  --primary-foreground: #06141c;
+  --secondary: #1a1a1a;
+  --secondary-foreground: #f5f5f5;
+  --muted: #1a1a1a;
+  --muted-foreground: #a3a3a3;
   --accent: var(--palette-bright-fern);
-  --accent-foreground: var(--palette-ink);
+  --accent-foreground: #06141c;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: color-mix(in oklch, #f3eee8 18%, transparent);
-  --input: color-mix(in oklch, #f3eee8 10%, transparent);
+  --border: color-mix(in oklch, #ffffff 14%, transparent);
+  --input: color-mix(in oklch, #ffffff 8%, transparent);
   --ring: var(--palette-sky-aqua);
   --chart-1: var(--palette-green);
   --chart-2: var(--palette-bright-fern);
   --chart-3: var(--palette-radioactive-grass-2);
   --chart-4: var(--palette-tropical-mint);
-  --chart-5: var(--palette-sky-aqua);
+  --chart-5: var(--palette-sky-deep);
 }
 
 html:root,
