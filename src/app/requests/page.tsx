@@ -39,7 +39,7 @@ async function MyRequests() {
         <Card className="max-w-xl">
           <CardContent className="flex flex-col gap-3">
             <p className="text-sm text-muted-foreground">هنوز درخواستی ثبت نکرده‌اید.</p>
-            <Link href="/services" className="text-sm font-medium text-primary underline-offset-4 hover:underline">
+            <Link href="/services" className="text-sm font-medium text-foreground underline-offset-4 hover:underline">
               مشاهدهٔ خدمات
             </Link>
           </CardContent>

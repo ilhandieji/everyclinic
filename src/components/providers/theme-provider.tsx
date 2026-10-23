@@ -72,6 +72,7 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
     <ThemeContext.Provider value={value}>
       <Theme
         appearance={theme}
+        accentColor="grass"
         dir="rtl"
         className="flex min-h-full flex-1 flex-col"
       >

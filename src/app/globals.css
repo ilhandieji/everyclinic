@@ -49,72 +49,84 @@
 }
 
 :root {
-  --background: oklch(0.955 0.028 150);
-  --foreground: oklch(0.24 0.03 165);
-  --card: oklch(0.9 0.05 155);
-  --card-foreground: oklch(0.24 0.03 165);
-  --popover: oklch(0.93 0.04 155);
-  --popover-foreground: oklch(0.24 0.03 165);
-  --primary: oklch(0.48 0.07 160);
-  --primary-foreground: oklch(0.98 0.01 150);
-  --secondary: oklch(0.93 0.025 155);
-  --secondary-foreground: oklch(0.28 0.04 165);
-  --muted: oklch(0.94 0.02 155);
-  --muted-foreground: oklch(0.42 0.03 165);
-  --accent: oklch(0.78 0.08 155);
-  --accent-foreground: oklch(0.24 0.04 160);
+  /* Greens fill brand surfaces. The page and its type stay warm and neutral. */
+  --palette-radioactive-grass: #1de92e;
+  --palette-green: #006400;
+  --palette-green-2: #007200;
+  --palette-green-3: #008000;
+  --palette-bright-fern: #38b000;
+  --palette-radioactive-grass-2: #70e000;
+  --palette-tropical-mint: #1af09e;
+  --palette-sky-aqua: #33ccff;
+  --palette-ink: #1a120c;
+  --palette-sky-deep: #0b7ea8;
+
+  --background: #f6f5f2;
+  --foreground: #241c16;
+  --card: #ffffff;
+  --card-foreground: #241c16;
+  --popover: #ffffff;
+  --popover-foreground: #241c16;
+  --primary: var(--palette-green);
+  --primary-foreground: #ffffff;
+  --secondary: #efece7;
+  --secondary-foreground: #241c16;
+  --muted: #efece7;
+  --muted-foreground: #6e5646;
+  --accent: var(--palette-green);
+  --accent-foreground: #ffffff;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.86 0.03 155);
-  --input: oklch(0.97 0.015 150);
-  --ring: oklch(0.55 0.08 160);
-  --chart-1: oklch(0.7 0.08 160);
-  --chart-2: oklch(0.62 0.07 175);
-  --chart-3: oklch(0.5 0.06 155);
-  --chart-4: oklch(0.42 0.05 145);
-  --chart-5: oklch(0.34 0.04 165);
+  --border: #e6e1da;
+  --input: #ffffff;
+  --ring: var(--palette-sky-deep);
+  --chart-1: var(--palette-green);
+  --chart-2: var(--palette-bright-fern);
+  --chart-3: var(--palette-radioactive-grass-2);
+  --chart-4: var(--palette-tropical-mint);
+  --chart-5: var(--palette-sky-aqua);
   --radius: 0.625rem;
-  --sidebar: oklch(0.955 0.02 155);
-  --sidebar-foreground: oklch(0.24 0.03 165);
-  --sidebar-primary: oklch(0.48 0.07 160);
-  --sidebar-primary-foreground: oklch(0.98 0.01 150);
-  --sidebar-accent: oklch(0.9 0.04 155);
-  --sidebar-accent-foreground: oklch(0.24 0.04 160);
-  --sidebar-border: oklch(0.86 0.03 155);
-  --sidebar-ring: oklch(0.55 0.08 160);
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--muted);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
 }
 
 .dark {
-  --background: oklch(0.17 0.02 165);
-  --foreground: oklch(0.96 0.015 150);
-  --card: oklch(0.28 0.04 160);
-  --card-foreground: oklch(0.96 0.015 150);
-  --popover: oklch(0.3 0.04 160);
-  --popover-foreground: oklch(0.96 0.015 150);
-  --primary: oklch(0.78 0.09 155);
-  --primary-foreground: oklch(0.18 0.03 165);
-  --secondary: oklch(0.3 0.035 160);
-  --secondary-foreground: oklch(0.96 0.015 150);
-  --muted: oklch(0.28 0.03 160);
-  --muted-foreground: oklch(0.78 0.03 155);
-  --accent: oklch(0.68 0.1 155);
-  --accent-foreground: oklch(0.97 0.02 150);
-  --destructive: oklch(64.694% 0.23876 26.592);
-  --border: oklch(0.72 0.06 155 / 32%);
-  --input: oklch(0.78 0.07 155 / 28%);
-  --ring: oklch(0.75 0.09 155);
-  --chart-1: oklch(0.78 0.09 155);
-  --chart-2: oklch(0.68 0.08 170);
-  --chart-3: oklch(0.55 0.06 155);
-  --chart-4: oklch(0.42 0.05 150);
-  --chart-5: oklch(0.32 0.04 165);
-  --sidebar: oklch(0.16 0.02 165);
-  --sidebar-foreground: oklch(0.96 0.015 150);
-  --sidebar-primary: oklch(0.78 0.09 155);
-  --sidebar-primary-foreground: oklch(0.18 0.03 165);
-  --sidebar-accent: oklch(0.32 0.05 155);
-  --sidebar-accent-foreground: oklch(0.96 0.02 150);
-  --sidebar-border: oklch(0.72 0.06 155 / 32%);
-  --sidebar-ring: oklch(0.75 0.09 155);
+  /* Warm charcoal canvas. Greens stay on filled controls, not on the page. */
+  --background: #141210;
+  --foreground: #f3eee8;
+  --card: #1e1b18;
+  --card-foreground: #f3eee8;
+  --popover: #221e1b;
+  --popover-foreground: #f3eee8;
+  --primary: var(--palette-bright-fern);
+  --primary-foreground: var(--palette-ink);
+  --secondary: #2a2622;
+  --secondary-foreground: #f3eee8;
+  --muted: #2a2622;
+  --muted-foreground: #c4a890;
+  --accent: var(--palette-bright-fern);
+  --accent-foreground: var(--palette-ink);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: color-mix(in oklch, #f3eee8 18%, transparent);
+  --input: color-mix(in oklch, #f3eee8 10%, transparent);
+  --ring: var(--palette-sky-aqua);
+  --chart-1: var(--palette-green);
+  --chart-2: var(--palette-bright-fern);
+  --chart-3: var(--palette-radioactive-grass-2);
+  --chart-4: var(--palette-tropical-mint);
+  --chart-5: var(--palette-sky-aqua);
+}
+
+html:root,
+html.dark,
+html .radix-themes,
+html.dark .radix-themes {
+  --color-background: var(--background);
 }
 
 @layer base {

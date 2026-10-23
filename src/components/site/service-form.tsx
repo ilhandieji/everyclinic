@@ -241,7 +241,7 @@ export function ServiceForm({
 
           {state?.ok === false ? <FieldError>{state.error}</FieldError> : null}
           {state?.ok ? (
-            <p role="status" className="text-sm text-accent">
+            <p role="status" className="text-sm text-foreground">
               ذخیره شد.
             </p>
           ) : null}

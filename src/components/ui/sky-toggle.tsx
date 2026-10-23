@@ -64,8 +64,8 @@ const StyledWrapper = styled.div`
     --container-width: 5.625em;
     --container-height: 2.5em;
     --container-radius: 6.25em;
-    --container-light-bg: #3d7eae;
-    --container-night-bg: #1d1f2c;
+    --container-light-bg: color-mix(in oklch, var(--palette-sky-aqua) 62%, var(--palette-sky-deep));
+    --container-night-bg: #141210;
     --circle-container-diameter: 3.375em;
     --sun-moon-diameter: 2.125em;
     --sun-bg: #ecca2f;
@@ -75,8 +75,8 @@ const StyledWrapper = styled.div`
       (var(--circle-container-diameter) - var(--container-height)) / 2 * -1
     );
     --stars-color: #fff;
-    --clouds-color: #f3fdff;
-    --back-clouds-color: #aacadf;
+    --clouds-color: color-mix(in oklch, var(--palette-tropical-mint) 18%, white);
+    --back-clouds-color: color-mix(in oklch, var(--palette-tropical-mint) 42%, white);
     --transition: 0.5s cubic-bezier(0, -0.02, 0.4, 1.25);
     --circle-transition: 0.3s cubic-bezier(0, -0.02, 0.35, 1.17);
   }

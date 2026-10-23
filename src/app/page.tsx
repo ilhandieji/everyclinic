@@ -107,7 +107,7 @@ async function Landing() {
                     />
                     <Link
                       href={`/services/${service.id}`}
-                      className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+                      className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
                     >
                       جزئیات و درخواست
                     </Link>

@@ -187,7 +187,7 @@ export function AuthCard({
                 {error ? (
                   <p
                     role="alert"
-                    className="text-xs text-red-300 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 text-center"
+                    className="text-xs text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2 text-center"
                   >
                     {error}
                   </p>
@@ -446,7 +446,7 @@ export function AuthCard({
                       <span className="relative z-10 text-foreground group-hover/signup:text-foreground/70 transition-colors duration-300 font-medium">
                         {alternateAction}
                       </span>
-                      <span className="absolute bottom-0 start-0 w-0 h-px bg-white group-hover/signup:w-full transition-all duration-300" />
+                      <span className="absolute bottom-0 start-0 w-0 h-px bg-foreground group-hover/signup:w-full transition-all duration-300" />
                     </Link>
                   )}
                 </motion.p>
