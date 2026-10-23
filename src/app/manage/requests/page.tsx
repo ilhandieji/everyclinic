@@ -3,6 +3,8 @@ import { Suspense } from "react";
 import { connection } from "next/server";
 import { RequestDecision } from "@/components/site/request-decision";
 import { currentPhysician } from "@/lib/access";
+import { surfaceCardClass } from "@/lib/ui-classes";
+import { cn } from "@/lib/utils";
 import prisma from "@/lib/prisma";
 
 const statusLabel = {
@@ -32,32 +34,39 @@ async function RequestList() {
     },
   });
 
-  if (requests.length === 0) {
-    return (
-      <p className="mx-auto w-full max-w-3xl px-4 py-10 text-sm text-muted-foreground">
-        درخواستی نیست.
-      </p>
-    );
-  }
-
   return (
-    <ul className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-4 py-10">
-      {requests.map((request) => (
-        <li key={request.id} className="flex flex-col gap-2 border border-border p-4">
-          <p className="text-sm font-semibold">{request.service.title}</p>
-          <p className="text-sm text-muted-foreground">
-            <span dir="ltr" lang="en" className="inline-block font-mono text-xs">
-              {request.patient.user.email}
-            </span>
-          </p>
-          <p className="text-xs text-muted-foreground">{statusLabel[request.status]}</p>
-          {request.note ? (
-            <p className="whitespace-pre-wrap text-sm">{request.note}</p>
-          ) : null}
-          {request.status === "pending" ? <RequestDecision id={request.id} /> : null}
-        </li>
-      ))}
-    </ul>
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-10">
+      <header className="flex flex-col gap-1">
+        <h1 className="text-lg font-semibold text-foreground">درخواست‌های رزرو</h1>
+        <p className="text-sm text-muted-foreground">
+          درخواست‌های بیماران برای خدمات شما.
+        </p>
+      </header>
+
+      {requests.length === 0 ? (
+        <p className={cn(surfaceCardClass, "p-4 text-sm text-muted-foreground")}>
+          درخواستی نیست.
+        </p>
+      ) : (
+        <ul className="flex flex-col gap-4">
+          {requests.map((request) => (
+            <li key={request.id} className={cn(surfaceCardClass, "flex flex-col gap-2 p-4")}>
+              <p className="text-sm font-semibold">{request.service.title}</p>
+              <p className="text-sm text-muted-foreground">
+                <span dir="ltr" lang="en" className="inline-block font-mono text-xs">
+                  {request.patient.user.email}
+                </span>
+              </p>
+              <p className="text-xs text-muted-foreground">{statusLabel[request.status]}</p>
+              {request.note ? (
+                <p className="whitespace-pre-wrap text-sm">{request.note}</p>
+              ) : null}
+              {request.status === "pending" ? <RequestDecision id={request.id} /> : null}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 

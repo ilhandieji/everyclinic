@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { PriceText } from "@/components/site/price-text";
+import { surfaceCardClass } from "@/lib/ui-classes";
 import prisma from "@/lib/prisma";
 
 async function ServiceList() {
@@ -22,14 +23,21 @@ async function ServiceList() {
   });
 
   if (services.length === 0) {
-    return null;
+    return (
+      <p className="mx-auto w-full max-w-5xl px-4 py-10 text-center text-sm text-muted-foreground">
+        فعلاً خدمتی برای نمایش نیست.
+      </p>
+    );
   }
 
   return (
     <ul className="mx-auto grid w-full max-w-5xl gap-4 px-4 py-10 sm:grid-cols-2">
       {services.map((service) => (
-        <li key={service.id} className="border border-border bg-card/70">
-          <Link href={`/services/${service.id}`} className="flex h-full flex-col gap-3 p-4">
+        <li key={service.id} className={surfaceCardClass}>
+          <Link
+            href={`/services/${service.id}`}
+            className="flex h-full flex-col gap-3 p-4 transition-colors hover:bg-card/90"
+          >
             {service.imageKey ? (
               <Image
                 src={`/media/${service.imageKey}`}

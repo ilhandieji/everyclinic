@@ -5,6 +5,8 @@ import { connection } from "next/server";
 import { PriceText } from "@/components/site/price-text";
 import { RequestPanel } from "@/components/site/request-panel";
 import { currentPatient, currentPhysician, currentUser } from "@/lib/access";
+import { surfaceCardClass } from "@/lib/ui-classes";
+import { cn } from "@/lib/utils";
 import prisma from "@/lib/prisma";
 
 async function ServiceDetail({ id }: { id: string }) {
@@ -60,7 +62,7 @@ async function ServiceDetail({ id }: { id: string }) {
         label={service.currencyLabel}
       />
       {service.sections.map((section) => (
-        <section key={section.id} className="flex flex-col gap-2 border border-border p-4">
+        <section key={section.id} className={cn(surfaceCardClass, "flex flex-col gap-2 p-4")}>
           <h2 className="text-base font-semibold">{section.title}</h2>
           <p className="whitespace-pre-wrap text-sm leading-relaxed">{section.body}</p>
         </section>

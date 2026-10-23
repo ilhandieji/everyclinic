@@ -9,6 +9,8 @@ import type { ActionState } from "@/lib/actions/profile";
 
 function revalidateRequest(serviceId: string) {
   revalidatePath("/manage/requests");
+  revalidatePath("/manage/patients");
+  revalidatePath("/requests");
   revalidatePath(`/services/${serviceId}`);
   revalidatePath("/services");
 }

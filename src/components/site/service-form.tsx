@@ -6,6 +6,12 @@ import { useRouter } from "next/navigation";
 import { deleteService } from "@/lib/actions/services";
 import type { ActionState } from "@/lib/actions/profile";
 import { Button } from "@/components/ui/button";
+import {
+  fieldControlInputClass,
+  fieldControlTextareaClass,
+  surfaceCardClass,
+} from "@/lib/ui-classes";
+import { cn } from "@/lib/utils";
 
 type SectionDraft = { title: string; body: string };
 
@@ -76,7 +82,7 @@ export function ServiceForm({
             required
             maxLength={120}
             defaultValue={service?.title ?? ""}
-            className="h-10 rounded-md border border-input bg-transparent px-3"
+            className={fieldControlInputClass}
           />
         </label>
         <label className="flex flex-col gap-1 text-sm" htmlFor="service-description">
@@ -87,7 +93,7 @@ export function ServiceForm({
             rows={5}
             maxLength={8000}
             defaultValue={service?.description ?? ""}
-            className="rounded-md border border-input bg-transparent px-3 py-2"
+            className={fieldControlTextareaClass}
           />
         </label>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -100,7 +106,7 @@ export function ServiceForm({
               dir="ltr"
               lang="en"
               defaultValue={service?.priceMin ?? ""}
-              className="h-10 rounded-md border border-input bg-transparent px-3 text-start"
+              className={cn(fieldControlInputClass, "text-start")}
             />
           </label>
           <label className="flex flex-col gap-1 text-sm" htmlFor="price-max">
@@ -112,7 +118,7 @@ export function ServiceForm({
               dir="ltr"
               lang="en"
               defaultValue={service?.priceMax ?? ""}
-              className="h-10 rounded-md border border-input bg-transparent px-3 text-start"
+              className={cn(fieldControlInputClass, "text-start")}
             />
           </label>
         </div>
@@ -123,7 +129,7 @@ export function ServiceForm({
             name="currencyLabel"
             maxLength={32}
             defaultValue={service?.currencyLabel ?? ""}
-            className="h-10 rounded-md border border-input bg-transparent px-3"
+            className={fieldControlInputClass}
           />
         </label>
         <label className="flex flex-col gap-1 text-sm" htmlFor="sort-order">
@@ -136,7 +142,7 @@ export function ServiceForm({
             max={10000}
             dir="ltr"
             defaultValue={service?.sortOrder ?? 0}
-            className="h-10 w-28 rounded-md border border-input bg-transparent px-3"
+            className={cn(fieldControlInputClass, "w-28")}
           />
         </label>
         <label className="flex items-center gap-2 text-sm" htmlFor="published">
@@ -149,10 +155,10 @@ export function ServiceForm({
           نمایش در صفحه خدمات
         </label>
 
-        <fieldset className="flex flex-col gap-3 border border-border p-3">
+        <fieldset className={cn(surfaceCardClass, "flex flex-col gap-3 p-4")}>
           <legend className="px-1 text-sm">بخش‌های سفارشی</legend>
           {sections.map((section, index) => (
-            <div key={index} className="flex flex-col gap-2 border border-border p-3">
+            <div key={index} className={cn(surfaceCardClass, "flex flex-col gap-2 p-3")}>
               <label className="flex flex-col gap-1 text-sm" htmlFor={`section-title-${index}`}>
                 عنوان
                 <input
@@ -164,7 +170,7 @@ export function ServiceForm({
                     next[index] = { ...section, title: event.target.value };
                     setSections(next);
                   }}
-                  className="h-10 rounded-md border border-input bg-transparent px-3"
+                  className={fieldControlInputClass}
                 />
               </label>
               <label className="flex flex-col gap-1 text-sm" htmlFor={`section-body-${index}`}>
@@ -179,7 +185,7 @@ export function ServiceForm({
                     next[index] = { ...section, body: event.target.value };
                     setSections(next);
                   }}
-                  className="rounded-md border border-input bg-transparent px-3 py-2"
+                  className={fieldControlTextareaClass}
                 />
               </label>
               <Button

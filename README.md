@@ -4,7 +4,20 @@ Authentication is implemented in source. Appointments, clinical records, and pay
 
 ## Getting Started
 
-Native development:
+There are two local modes. Do not run both app servers at once: they share port `3000`, and Docker `prisma generate` writes into the same repo tree as native TypeScript.
+
+### Native
+
+Set `DATABASE_URL` in `.env` to your local Postgres (or Compose **Postgres only** on `localhost:5433` if you run `docker compose up db` without the app).
+
+After cloning, changing `prisma/schema.prisma`, or pulling new migrations, apply them once (same database as `DATABASE_URL`):
+
+```bash
+pnpm exec prisma generate --config prisma7.config.ts
+pnpm db:migrate
+```
+
+Then start the dev server:
 
 ```bash
 pnpm dev
@@ -12,15 +25,25 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Local Docker
+If a previous Docker run left `nobody`-owned files under `.next` and `pnpm dev` fails with a lockfile permission error:
 
-`compose.yml` runs Postgres and the Next dev server. The repo directory is mounted into the app container, so source edits are picked up without rebuilding the image. Rebuild only after `package.json` or `pnpm-lock.yaml` changes.
+```bash
+rm -rf .next
+```
+
+If `rm` is denied, take ownership first (`chown -R "$USER:$USER" .next`) then remove the directory.
+
+### Local Docker
+
+`compose.yml` runs Postgres and the Next dev server as the host UID/GID. The repo is bind-mounted; `.next`, `node_modules`, and `storage` are named volumes so the container does not leave root/`nobody` files on the host. Rebuild the image after `package.json` or `pnpm-lock.yaml` changes.
 
 Create a `.env` with `NEXTAUTH_SECRET` before the first start. Compose overrides `DATABASE_URL` to the Postgres service. The database password in `compose.yml` is a local default, not a production secret.
 
 ```bash
 docker compose up --build
 ```
+
+If the first non-root `pnpm install` inside Compose fails because the old `node_modules` volume was created as root, recreate **that volume only** after you explicitly choose to delete it. Do not delete `pgdata` or `uploads`.
 
 Registration creates a patient. A physician row is not created by the app. After the account exists, connect to the database and insert one profile. `singleton` must stay `1`.
 

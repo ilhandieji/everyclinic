@@ -5,6 +5,8 @@ import { connection } from "next/server";
 import { ServiceForm } from "@/components/site/service-form";
 import { createService } from "@/lib/actions/services";
 import { currentPhysician } from "@/lib/access";
+import { surfaceCardClass } from "@/lib/ui-classes";
+import { cn } from "@/lib/utils";
 import prisma from "@/lib/prisma";
 
 async function ManageServices() {
@@ -22,18 +24,40 @@ async function ManageServices() {
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-10 px-4 py-10">
-      <ul className="flex flex-col gap-2">
-        {services.map((service) => (
-          <li key={service.id}>
-            <Link href={`/manage/services/${service.id}`} className="text-sm underline">
-              {service.title}
-              {service.published ? "" : " (پنهان)"}
-            </Link>
-          </li>
-        ))}
-      </ul>
-      <section className="flex flex-col gap-4">
-        <h1 className="text-lg font-semibold">خدمت جدید</h1>
+      <header className="flex flex-col gap-1">
+        <h1 className="text-lg font-semibold text-foreground">خدمات</h1>
+        <p className="text-sm text-muted-foreground">
+          خدمات منتشرشده در صفحهٔ عمومی «خدمات» دیده می‌شوند.
+        </p>
+      </header>
+
+      {services.length === 0 ? (
+        <p className={cn(surfaceCardClass, "p-4 text-sm text-muted-foreground")}>
+          هنوز خدمتی ثبت نشده است.
+        </p>
+      ) : (
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {services.map((service) => (
+            <li key={service.id}>
+              <Link
+                href={`/manage/services/${service.id}`}
+                className={cn(
+                  surfaceCardClass,
+                  "flex h-full flex-col gap-1 p-4 transition-colors hover:bg-card/90",
+                )}
+              >
+                <span className="text-sm font-semibold text-foreground">{service.title}</span>
+                <span className="text-xs text-muted-foreground">
+                  {service.published ? "نمایش در سایت" : "پنهان"}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <section className={cn(surfaceCardClass, "flex flex-col gap-4 p-5")}>
+        <h2 className="text-base font-semibold">خدمت جدید</h2>
         <ServiceForm action={createService} />
       </section>
     </div>

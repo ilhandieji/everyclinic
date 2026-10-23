@@ -5,12 +5,32 @@ alwaysApply: true
 
 # Local environments
 
-## Local development
+## Two local modes
 
-1. **Native local development:** Source in the repo; use `pnpm dev` and local tooling.
-2. **Local Docker verification:** A separate Compose-based environment for consistent checks. **No Docker/Compose files exist in the repo yet.** Document and use them when added. A successful native dev run is not Docker verification.
+This project runs locally in **exactly two** ways:
 
-## Docker and data (when Compose exists)
+1. **Native:** source in the repo; `pnpm dev` and local tooling on the host.
+2. **Docker:** the checked-in Compose project ([compose.yml](compose.yml), [Dockerfile](Dockerfile), [docker/entrypoint.dev.sh](docker/entrypoint.dev.sh)).
+
+Do not invent a third mode, a cloud deploy, or ad hoc `docker run` for routine development. A successful native run is not Docker verification, and a successful Compose run is not native verification.
+
+Do **not** run native `pnpm dev` and the Compose `app` service at the same time. They both bind port `3000`. Native may use Compose **Postgres only** (`localhost:5433`); the app container still uses `db:5432`.
+
+## Ownership (do not regress)
+
+The repo is bind-mounted into the app container (`.:/app`). Generated and cache writes must not land on the host as root or `nobody`.
+
+- The Compose `app` service must run as the host user: `user: "${UID:-1000}:${GID:-1000}"`.
+- Do not bake a conflicting `USER` into the image.
+- Named volumes isolate container-only trees: `/app/.next` (`next_cache`), `/app/node_modules`, `/app/storage` (`uploads`). Postgres data stays in `pgdata`.
+- Named volumes are created as root. Compose `volume-init` chowns **only those volume paths** to the host uid before `app` starts. Do not chown the bind-mounted repo from a container.
+- `prisma generate` still writes [src/app/generated/prisma](src/app/generated/prisma) onto the bind mount; that is why the process uid must match the host user.
+- Do not `chown` the bind mount from the container (that requires root and recreates the clash).
+- Do not bind-mount `.next` or `node_modules` from the host into the container.
+
+If leftover `nobody` files already exist on the host, remove `.next` after stopping Compose `app`. Recreate the Compose `node_modules` volume only when non-root install fails, and only with explicit authorization. Never delete `pgdata` or `uploads` without authorization.
+
+## Docker and data
 
 - Inspect existing Docker/Compose config before changing or adding infrastructure.
 - Prefer reproducible Compose over ad hoc container commands.

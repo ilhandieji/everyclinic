@@ -8,6 +8,8 @@ import {
 } from "@/lib/actions/requests";
 import type { ActionState } from "@/lib/actions/profile";
 import { Button } from "@/components/ui/button";
+import { fieldControlTextareaClass, surfaceCardClass } from "@/lib/ui-classes";
+import { cn } from "@/lib/utils";
 
 const statusLabel = {
   pending: "در انتظار",
@@ -66,7 +68,7 @@ export function RequestPanel({
   }
 
   return (
-    <form action={action} className="flex flex-col gap-3">
+    <form action={action} className={cn(surfaceCardClass, "flex flex-col gap-3 p-4")}>
       <input type="hidden" name="serviceId" value={serviceId} />
       {request ? <p className="text-sm text-muted-foreground">{statusLabel[request.status]}</p> : null}
       <label className="flex flex-col gap-1 text-sm" htmlFor="request-note">
@@ -76,7 +78,7 @@ export function RequestPanel({
           name="note"
           rows={4}
           maxLength={2000}
-          className="rounded-md border border-input bg-transparent px-3 py-2"
+          className={fieldControlTextareaClass}
         />
       </label>
       {state?.ok === false ? (

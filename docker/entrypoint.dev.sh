@@ -2,6 +2,13 @@
 set -eu
 cd /app
 
+mkdir -p \
+  /tmp/app-home \
+  /tmp/app-home/.local/share/pnpm \
+  /tmp/.npm \
+  /tmp/.cache \
+  /app/.next
+
 if [ ! -d node_modules/next ]; then
   pnpm install --frozen-lockfile
 fi
