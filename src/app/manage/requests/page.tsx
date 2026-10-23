@@ -2,17 +2,10 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { RequestDecision } from "@/components/site/request-decision";
+import { StatusBadge } from "@/components/site/status-badge";
 import { currentPhysician } from "@/lib/access";
-import { surfaceCardClass } from "@/lib/ui-classes";
-import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
-
-const statusLabel = {
-  pending: "در انتظار",
-  accepted: "پذیرفته‌شده",
-  declined: "رد شده",
-  cancelled: "لغو شده",
-} as const;
 
 async function RequestList() {
   await connection();
@@ -35,7 +28,7 @@ async function RequestList() {
   });
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-10">
+    <div className="flex w-full flex-col gap-6 px-4 py-10 md:px-8">
       <header className="flex flex-col gap-1">
         <h1 className="text-lg font-semibold text-foreground">درخواست‌های رزرو</h1>
         <p className="text-sm text-muted-foreground">
@@ -44,24 +37,32 @@ async function RequestList() {
       </header>
 
       {requests.length === 0 ? (
-        <p className={cn(surfaceCardClass, "p-4 text-sm text-muted-foreground")}>
-          درخواستی نیست.
-        </p>
+        <Card>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">درخواستی نیست.</p>
+          </CardContent>
+        </Card>
       ) : (
-        <ul className="flex flex-col gap-4">
+        <ul className="grid gap-4 lg:grid-cols-2">
           {requests.map((request) => (
-            <li key={request.id} className={cn(surfaceCardClass, "flex flex-col gap-2 p-4")}>
-              <p className="text-sm font-semibold">{request.service.title}</p>
-              <p className="text-sm text-muted-foreground">
-                <span dir="ltr" lang="en" className="inline-block font-mono text-xs">
-                  {request.patient.user.email}
-                </span>
-              </p>
-              <p className="text-xs text-muted-foreground">{statusLabel[request.status]}</p>
-              {request.note ? (
-                <p className="whitespace-pre-wrap text-sm">{request.note}</p>
-              ) : null}
-              {request.status === "pending" ? <RequestDecision id={request.id} /> : null}
+            <li key={request.id}>
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle>{request.service.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-2">
+                  <p className="text-sm text-muted-foreground">
+                    <span dir="ltr" lang="en" className="inline-block font-mono text-xs">
+                      {request.patient.user.email}
+                    </span>
+                  </p>
+                  <StatusBadge status={request.status} />
+                  {request.note ? (
+                    <p className="whitespace-pre-wrap text-sm">{request.note}</p>
+                  ) : null}
+                  {request.status === "pending" ? <RequestDecision id={request.id} /> : null}
+                </CardContent>
+              </Card>
             </li>
           ))}
         </ul>

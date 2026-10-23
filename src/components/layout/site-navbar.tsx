@@ -1,9 +1,21 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
+import {
+  ClipboardList,
+  House,
+  Inbox,
+  LayoutDashboard,
+  LogIn,
+  Menu,
+  SquarePen,
+  Stethoscope,
+  UserPlus,
+  X,
+} from "lucide-react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { useAuthOverlay } from "@/components/auth/auth-overlay";
 import { useAppTheme } from "@/components/providers/theme-provider";
@@ -13,7 +25,7 @@ import { cn } from "@/lib/utils";
 
 function navLinkClass(active: boolean) {
   return cn(
-    "border-b-2 px-1.5 py-1 text-sm font-medium transition-colors outline-none focus-visible:ring-1 focus-visible:ring-ring/50",
+    "inline-flex items-center gap-1.5 border-b-2 px-1.5 py-1 text-sm font-medium transition-colors outline-none focus-visible:ring-1 focus-visible:ring-ring/50",
     active
       ? "border-accent text-foreground"
       : "border-transparent text-muted-foreground hover:text-foreground",
@@ -23,14 +35,21 @@ function navLinkClass(active: boolean) {
 function NavLink({
   href,
   active,
+  onNavigate,
   children,
 }: {
   href: string;
   active: boolean;
+  onNavigate?: () => void;
   children: ReactNode;
 }) {
   return (
-    <Link href={href} aria-current={active ? "page" : undefined} className={navLinkClass(active)}>
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={navLinkClass(active)}
+      onClick={onNavigate}
+    >
       {children}
     </Link>
   );
@@ -52,92 +71,143 @@ export function SiteNavbar({
   const { theme, toggleTheme } = useAppTheme();
   const { openAuth } = useAuthOverlay();
   const signedIn = Boolean(session?.user?.email) && !session?.error;
+  const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = () => setMenuOpen(false);
 
   const homeActive = pathname === "/";
+  const manageActive =
+    pathname === "/manage" ||
+    pathname.startsWith("/manage/profile") ||
+    pathname.startsWith("/manage/patients");
+
+  const links = (
+    <>
+      <NavLink href="/" active={homeActive} onNavigate={closeMenu}>
+        <House aria-hidden className="size-4" />
+        خانه
+      </NavLink>
+      {showServices ? (
+        <NavLink href="/services" active={pathname === "/services" || pathname.startsWith("/services/")} onNavigate={closeMenu}>
+          <Stethoscope aria-hidden className="size-4" />
+          خدمات
+        </NavLink>
+      ) : null}
+      {patient ? (
+        <NavLink href="/requests" active={pathname === "/requests" || pathname.startsWith("/requests/")} onNavigate={closeMenu}>
+          <ClipboardList aria-hidden className="size-4" />
+          درخواست‌های من
+        </NavLink>
+      ) : null}
+      {physician ? (
+        <>
+          <NavLink href="/manage" active={manageActive} onNavigate={closeMenu}>
+            <LayoutDashboard aria-hidden className="size-4" />
+            مدیریت
+          </NavLink>
+          <NavLink
+            href="/manage/services"
+            active={pathname === "/manage/services" || pathname.startsWith("/manage/services/")}
+            onNavigate={closeMenu}
+          >
+            <SquarePen aria-hidden className="size-4" />
+            ویرایش خدمات
+          </NavLink>
+          <NavLink
+            href="/manage/requests"
+            active={pathname === "/manage/requests" || pathname.startsWith("/manage/requests/")}
+            onNavigate={closeMenu}
+          >
+            <Inbox aria-hidden className="size-4" />
+            درخواست‌ها
+          </NavLink>
+        </>
+      ) : null}
+    </>
+  );
+
+  const account = (
+    <>
+      <SkyToggle
+        checked={theme === "dark"}
+        onCheckedChange={() => toggleTheme()}
+        label="تغییر حالت روشن و تاریک"
+      />
+      {status === "loading" ? (
+        <div className="h-7 min-w-28" aria-hidden />
+      ) : signedIn ? (
+        <div className="flex items-center gap-2">
+          <span
+            dir="ltr"
+            lang="en"
+            className="hidden max-w-40 truncate font-mono text-xs text-muted-foreground lg:inline"
+          >
+            {session?.user.email}
+          </span>
+          <SignOutButton />
+        </div>
+      ) : (
+        <div className="flex items-center gap-2">
+          <Button type="button" size="sm" variant="outline" onClick={() => openAuth("login")}>
+            <LogIn aria-hidden />
+            ورود
+          </Button>
+          <Button type="button" size="sm" onClick={() => openAuth("register")}>
+            <UserPlus aria-hidden />
+            ثبت‌نام
+          </Button>
+        </div>
+      )}
+    </>
+  );
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/85 backdrop-blur-md">
       <nav
-        className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3 px-4 py-2.5"
+        className="flex w-full items-center justify-between gap-3 px-4 py-2.5 md:px-8"
         aria-label="ناوبری اصلی"
       >
         <Link
           href="/"
           aria-label={brand || "خانه"}
           aria-current={homeActive ? "page" : undefined}
+          onClick={closeMenu}
           className={cn(
-            "min-w-0 max-w-[40%] truncate border-b-2 text-sm font-semibold outline-none focus-visible:ring-1 focus-visible:ring-ring/50",
+            "inline-flex min-w-0 max-w-[40%] items-center gap-1.5 border-b-2 text-sm font-semibold outline-none focus-visible:ring-1 focus-visible:ring-ring/50",
             homeActive
               ? "border-accent text-foreground"
               : "border-transparent text-foreground hover:text-foreground/85",
           )}
         >
-          {brand || "خانه"}
+          <House aria-hidden className="size-4 shrink-0" />
+          <span className="truncate">{brand || "خانه"}</span>
         </Link>
 
-        <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2 sm:gap-x-4">
-          {showServices ? (
-            <NavLink href="/services" active={pathname === "/services" || pathname.startsWith("/services/")}>
-              خدمات
-            </NavLink>
-          ) : null}
-          {patient ? (
-            <NavLink href="/requests" active={pathname === "/requests" || pathname.startsWith("/requests/")}>
-              درخواست‌های من
-            </NavLink>
-          ) : null}
-          {physician ? (
-            <>
-              <NavLink
-                href="/manage/services"
-                active={pathname === "/manage/services" || pathname.startsWith("/manage/services/")}
-              >
-                ویرایش خدمات
-              </NavLink>
-              <NavLink
-                href="/manage/requests"
-                active={pathname === "/manage/requests" || pathname.startsWith("/manage/requests/")}
-              >
-                درخواست‌ها
-              </NavLink>
-            </>
-          ) : null}
-          <SkyToggle
-            checked={theme === "dark"}
-            onCheckedChange={() => toggleTheme()}
-            label="تغییر حالت روشن و تاریک"
-          />
+        <div className="hidden min-w-0 flex-1 items-center gap-x-4 md:flex">{links}</div>
 
-          {status === "loading" ? (
-            <div className="h-7 min-w-28" aria-hidden />
-          ) : signedIn ? (
-            <div className="flex items-center gap-2">
-              <span
-                dir="ltr"
-                lang="en"
-                className="hidden max-w-40 truncate font-mono text-xs text-muted-foreground sm:inline"
-              >
-                {session?.user.email}
-              </span>
-              <SignOutButton />
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={() => openAuth("login")}
-              >
-                ورود
-              </Button>
-              <Button type="button" size="sm" onClick={() => openAuth("register")}>
-                ثبت‌نام
-              </Button>
-            </div>
-          )}
+        <div className="flex items-center gap-2">
+          {account}
+          <Button
+            type="button"
+            size="icon-sm"
+            variant="outline"
+            className="md:hidden"
+            aria-expanded={menuOpen}
+            aria-controls="site-nav-menu"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            {menuOpen ? <X aria-hidden /> : <Menu aria-hidden />}
+            <span className="sr-only">{menuOpen ? "بستن منو" : "باز کردن منو"}</span>
+          </Button>
         </div>
       </nav>
+      {menuOpen ? (
+        <div
+          id="site-nav-menu"
+          className="flex flex-col items-start gap-2 border-t border-border/70 px-4 py-3 md:hidden"
+        >
+          {links}
+        </div>
+      ) : null}
     </header>
   );
 }

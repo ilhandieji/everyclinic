@@ -2,8 +2,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { currentPhysician } from "@/lib/access";
-import { surfaceCardClass } from "@/lib/ui-classes";
-import { cn } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
 
 async function PatientList() {
@@ -28,7 +27,7 @@ async function PatientList() {
   });
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-10">
+    <div className="flex w-full flex-col gap-6 px-4 py-10 md:px-8">
       <header className="flex flex-col gap-1">
         <h1 className="text-lg font-semibold text-foreground">بیماران</h1>
         <p className="text-sm text-muted-foreground">
@@ -37,32 +36,36 @@ async function PatientList() {
       </header>
 
       {relationships.length === 0 ? (
-        <p className={cn(surfaceCardClass, "p-4 text-sm text-muted-foreground")}>
-          هنوز بیماری با رابطهٔ مراقبت ثبت نشده است. درخواست‌های پذیرفته‌شده اینجا
-          نمایش داده می‌شوند.
-        </p>
+        <Card>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              هنوز بیماری با رابطهٔ مراقبت ثبت نشده است. درخواست‌های پذیرفته‌شده اینجا
+              نمایش داده می‌شوند.
+            </p>
+          </CardContent>
+        </Card>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {relationships.map((row) => (
-            <li key={row.id} className={cn(surfaceCardClass, "flex flex-col gap-1 p-4")}>
-              <span
-                dir="ltr"
-                lang="en"
-                className="font-mono text-sm text-foreground"
-              >
-                {row.patient.user.email}
-              </span>
-              <time
-                dateTime={row.createdAt.toISOString()}
-                className="text-xs text-muted-foreground"
-              >
-                از{" "}
-                {row.createdAt.toLocaleDateString("fa-IR", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </time>
+            <li key={row.id}>
+              <Card className="h-full">
+                <CardContent className="flex flex-col gap-1">
+                  <span dir="ltr" lang="en" className="font-mono text-sm text-foreground">
+                    {row.patient.user.email}
+                  </span>
+                  <time
+                    dateTime={row.createdAt.toISOString()}
+                    className="text-xs text-muted-foreground"
+                  >
+                    از{" "}
+                    {row.createdAt.toLocaleDateString("fa-IR", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </time>
+                </CardContent>
+              </Card>
             </li>
           ))}
         </ul>

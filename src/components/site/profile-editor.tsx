@@ -5,11 +5,18 @@ import { useActionState, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { saveProfile, type ActionState } from "@/lib/actions/profile";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import {
-  fieldControlInputClass,
-  fieldControlTextareaClass,
-  surfaceCardClass,
-} from "@/lib/ui-classes";
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 const ACCEPT = "image/jpeg,image/png,image/webp";
@@ -43,6 +50,9 @@ export function ProfileEditor({
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+  const [genderValue, setGenderValue] = useState(
+    gender === "مرد" || gender === "زن" ? gender : "",
+  );
 
   async function onPhoto(file: File | undefined) {
     if (!file) {
@@ -77,7 +87,7 @@ export function ProfileEditor({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10">
+    <div className="flex w-full max-w-3xl flex-col gap-8 px-4 py-10 md:px-8">
       <header className="flex flex-col gap-1">
         <h1 className="text-lg font-semibold text-foreground">پروفایل عمومی</h1>
         <p className="text-sm text-muted-foreground">
@@ -125,8 +135,7 @@ export function ProfileEditor({
             onDropFile(file);
           }}
           className={cn(
-            surfaceCardClass,
-            "flex cursor-pointer flex-col items-center gap-4 p-6 text-center transition-colors",
+            "flex cursor-pointer flex-col items-center gap-4 rounded-lg p-6 text-center ring-1 ring-foreground/10 transition-colors",
             dragActive && "border-accent/60 bg-accent/5",
             uploading && "pointer-events-none opacity-70",
           )}
@@ -177,52 +186,54 @@ export function ProfileEditor({
         ) : null}
       </form>
 
-      <form action={action} className={cn(surfaceCardClass, "flex flex-col gap-4 p-5")}>
-        <label className="flex flex-col gap-1.5 text-sm" htmlFor="display-name">
-          نام
-          <input
-            id="display-name"
-            name="displayName"
-            defaultValue={displayName}
-            maxLength={80}
-            className={fieldControlInputClass}
-          />
-        </label>
-        <label className="flex flex-col gap-1.5 text-sm" htmlFor="gender">
-          جنسیت
-          <input
-            id="gender"
-            name="gender"
-            defaultValue={gender}
-            maxLength={40}
-            className={fieldControlInputClass}
-          />
-        </label>
-        <label className="flex flex-col gap-1.5 text-sm" htmlFor="bio">
-          معرفی
-          <textarea
-            id="bio"
-            name="bio"
-            defaultValue={bio}
-            maxLength={4000}
-            rows={6}
-            className={fieldControlTextareaClass}
-          />
-        </label>
-        {state?.ok === false ? (
-          <p role="alert" className="text-sm text-destructive">
-            {state.error}
-          </p>
-        ) : null}
-        {state?.ok ? (
-          <p role="status" className="text-sm text-accent">
-            ذخیره شد.
-          </p>
-        ) : null}
-        <Button type="submit" disabled={pending}>
-          {pending ? "در حال ذخیره" : "ذخیره"}
-        </Button>
-      </form>
+      <Card>
+        <CardContent>
+          <form action={action}>
+            <input type="hidden" name="gender" value={genderValue} />
+            <FieldGroup>
+              <Field className="max-w-sm">
+                <FieldLabel htmlFor="display-name">نام</FieldLabel>
+                <Input
+                  id="display-name"
+                  name="displayName"
+                  defaultValue={displayName}
+                  maxLength={80}
+                />
+              </Field>
+              <Field className="max-w-40">
+                <FieldLabel htmlFor="gender">جنسیت</FieldLabel>
+                <Select
+                  value={genderValue === "" ? undefined : genderValue}
+                  onValueChange={setGenderValue}
+                >
+                  <SelectTrigger id="gender" className="w-full">
+                    <SelectValue placeholder="انتخاب کنید" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="مرد">مرد</SelectItem>
+                      <SelectItem value="زن">زن</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="bio">معرفی</FieldLabel>
+                <Textarea id="bio" name="bio" defaultValue={bio} maxLength={4000} rows={6} />
+              </Field>
+              {state?.ok === false ? <FieldError>{state.error}</FieldError> : null}
+              {state?.ok ? (
+                <p role="status" className="text-sm text-accent">
+                  ذخیره شد.
+                </p>
+              ) : null}
+              <Button type="submit" disabled={pending} className="w-fit">
+                {pending ? "در حال ذخیره" : "ذخیره"}
+              </Button>
+            </FieldGroup>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

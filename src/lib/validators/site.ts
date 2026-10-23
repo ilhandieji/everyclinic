@@ -17,10 +17,23 @@ const optionalPrice = z
     ]),
   );
 
+export const currencyLabels = ["تومان", "ریال", "دلار"] as const;
+
+const currencyLabelSchema = z
+  .string()
+  .trim()
+  .transform((value) => (value === "" ? null : value))
+  .pipe(
+    z.union([
+      z.null(),
+      z.enum(currencyLabels, { error: "واحد پول را انتخاب کنید." }),
+    ]),
+  );
+
 export const profileFormSchema = z
   .object({
     displayName: z.string().trim().max(80, "نام طولانی است."),
-    gender: z.string().trim().max(40, "جنسیت طولانی است."),
+    gender: z.enum(["مرد", "زن"], { error: "جنسیت را انتخاب کنید." }),
     bio: z.string().trim().max(4000, "معرفی طولانی است."),
   })
   .strict();
@@ -38,7 +51,7 @@ export const serviceFormSchema = z
     description: z.string().trim().max(8000, "توضیح طولانی است."),
     priceMin: optionalPrice,
     priceMax: optionalPrice,
-    currencyLabel: z.string().trim().max(32, "واحد پول طولانی است."),
+    currencyLabel: currencyLabelSchema,
     published: z.boolean(),
     sortOrder: z.coerce.number().int().min(0).max(10000),
     sections: z.array(sectionSchema).max(20, "تعداد بخش‌ها زیاد است."),
@@ -63,6 +76,13 @@ export const serviceFormSchema = z
         code: "custom",
         message: "حداکثر قیمت نباید از حداقل کمتر باشد.",
         path: ["priceMax"],
+      });
+    }
+    if ((hasMin || hasMax) && value.currencyLabel === null) {
+      ctx.addIssue({
+        code: "custom",
+        message: "وقتی قیمت وارد می‌شود، واحد پول را انتخاب کنید.",
+        path: ["currencyLabel"],
       });
     }
     if (value.published && value.description.length === 0) {

@@ -7,16 +7,11 @@ import {
   createServiceRequest,
 } from "@/lib/actions/requests";
 import type { ActionState } from "@/lib/actions/profile";
+import { StatusBadge, type RequestStatus } from "@/components/site/status-badge";
 import { Button } from "@/components/ui/button";
-import { fieldControlTextareaClass, surfaceCardClass } from "@/lib/ui-classes";
-import { cn } from "@/lib/utils";
-
-const statusLabel = {
-  pending: "در انتظار",
-  accepted: "پذیرفته‌شده",
-  declined: "رد شده",
-  cancelled: "لغو شده",
-} as const;
+import { Card, CardContent } from "@/components/ui/card";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Textarea } from "@/components/ui/textarea";
 
 export function RequestPanel({
   serviceId,
@@ -25,7 +20,7 @@ export function RequestPanel({
 }: {
   serviceId: string;
   signedIn: boolean;
-  request: { id: string; status: keyof typeof statusLabel } | null;
+  request: { id: string; status: RequestStatus } | null;
 }) {
   const [state, action, pending] = useActionState(
     createServiceRequest,
@@ -48,15 +43,11 @@ export function RequestPanel({
 
   if (request?.status === "pending") {
     return (
-      <form action={cancelAction} className="flex flex-col gap-2">
+      <form action={cancelAction} className="flex max-w-md flex-col gap-2">
         <input type="hidden" name="id" value={request.id} />
-        <p className="text-sm">{statusLabel.pending}</p>
-        {cancelState?.ok === false ? (
-          <p role="alert" className="text-sm text-destructive">
-            {cancelState.error}
-          </p>
-        ) : null}
-        <Button type="submit" variant="outline" disabled={cancelling}>
+        <StatusBadge status="pending" />
+        {cancelState?.ok === false ? <FieldError>{cancelState.error}</FieldError> : null}
+        <Button type="submit" variant="outline" disabled={cancelling} className="w-fit">
           لغو درخواست
         </Button>
       </form>
@@ -64,36 +55,34 @@ export function RequestPanel({
   }
 
   if (request?.status === "accepted") {
-    return <p className="text-sm">{statusLabel.accepted}</p>;
+    return <StatusBadge status="accepted" />;
   }
 
   return (
-    <form action={action} className={cn(surfaceCardClass, "flex flex-col gap-3 p-4")}>
-      <input type="hidden" name="serviceId" value={serviceId} />
-      {request ? <p className="text-sm text-muted-foreground">{statusLabel[request.status]}</p> : null}
-      <label className="flex flex-col gap-1 text-sm" htmlFor="request-note">
-        توضیح برای پزشک
-        <textarea
-          id="request-note"
-          name="note"
-          rows={4}
-          maxLength={2000}
-          className={fieldControlTextareaClass}
-        />
-      </label>
-      {state?.ok === false ? (
-        <p role="alert" className="text-sm text-destructive">
-          {state.error}
-        </p>
-      ) : null}
-      {state?.ok ? (
-        <p role="status" className="text-sm">
-          درخواست ثبت شد.
-        </p>
-      ) : null}
-      <Button type="submit" disabled={pending}>
-        درخواست رزرو
-      </Button>
-    </form>
+    <Card className="max-w-xl">
+      <CardContent>
+        <form action={action}>
+          <input type="hidden" name="serviceId" value={serviceId} />
+          <FieldGroup>
+            {request ? (
+              <StatusBadge status={request.status} />
+            ) : null}
+            <Field>
+              <FieldLabel htmlFor="request-note">توضیح برای پزشک</FieldLabel>
+              <Textarea id="request-note" name="note" rows={4} maxLength={2000} />
+            </Field>
+            {state?.ok === false ? <FieldError>{state.error}</FieldError> : null}
+            {state?.ok ? (
+              <p role="status" className="text-sm">
+                درخواست ثبت شد.
+              </p>
+            ) : null}
+            <Button type="submit" disabled={pending} className="w-fit">
+              درخواست رزرو
+            </Button>
+          </FieldGroup>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

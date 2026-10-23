@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { PriceText } from "@/components/site/price-text";
-import { surfaceCardClass } from "@/lib/ui-classes";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
 
 async function ServiceList() {
@@ -24,20 +24,18 @@ async function ServiceList() {
 
   if (services.length === 0) {
     return (
-      <p className="mx-auto w-full max-w-5xl px-4 py-10 text-center text-sm text-muted-foreground">
+      <p className="mx-auto w-full px-4 py-10 md:px-8 text-center text-sm text-muted-foreground">
         فعلاً خدمتی برای نمایش نیست.
       </p>
     );
   }
 
   return (
-    <ul className="mx-auto grid w-full max-w-5xl gap-4 px-4 py-10 sm:grid-cols-2">
+    <ul className="mx-auto grid w-full gap-4 px-4 py-10 md:px-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {services.map((service) => (
-        <li key={service.id} className={surfaceCardClass}>
-          <Link
-            href={`/services/${service.id}`}
-            className="flex h-full flex-col gap-3 p-4 transition-colors hover:bg-card/90"
-          >
+        <li key={service.id}>
+          <Link href={`/services/${service.id}`} className="block h-full">
+            <Card className="h-full transition-colors hover:bg-card/80">
             {service.imageKey ? (
               <Image
                 src={`/media/${service.imageKey}`}
@@ -48,17 +46,22 @@ async function ServiceList() {
                 className="h-40 w-full object-cover"
               />
             ) : null}
-            <h2 className="text-base font-semibold">{service.title}</h2>
-            {service.description ? (
-              <p className="line-clamp-3 whitespace-pre-wrap text-sm text-muted-foreground">
-                {service.description}
-              </p>
-            ) : null}
-            <PriceText
-              min={service.priceMin}
-              max={service.priceMax}
-              label={service.currencyLabel}
-            />
+            <CardHeader>
+              <CardTitle>{service.title}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3">
+              {service.description ? (
+                <p className="line-clamp-3 whitespace-pre-wrap text-sm text-muted-foreground">
+                  {service.description}
+                </p>
+              ) : null}
+              <PriceText
+                min={service.priceMin}
+                max={service.priceMax}
+                label={service.currencyLabel}
+              />
+            </CardContent>
+            </Card>
           </Link>
         </li>
       ))}

@@ -22,7 +22,7 @@ async function EditService({ id }: { id: string }) {
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-10">
+    <div className="w-full px-4 py-10 md:px-8">
       <ServiceForm
         action={updateService}
         service={{

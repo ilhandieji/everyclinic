@@ -6,7 +6,7 @@ import { Prisma } from "@/app/generated/prisma/client";
 import { currentPhysician } from "@/lib/access";
 import prisma from "@/lib/prisma";
 import { removeImage } from "@/lib/storage";
-import { emptyToNull, serviceFormSchema } from "@/lib/validators/site";
+import { serviceFormSchema } from "@/lib/validators/site";
 import type { ActionState } from "@/lib/actions/profile";
 
 function revalidateServices(id?: string) {
@@ -81,7 +81,7 @@ export async function createService(
       description: parsed.data.description,
       priceMin: parsed.data.priceMin,
       priceMax: parsed.data.priceMax,
-      currencyLabel: emptyToNull(parsed.data.currencyLabel),
+      currencyLabel: parsed.data.currencyLabel,
       published: parsed.data.published,
       sortOrder: parsed.data.sortOrder,
       sections: {
@@ -125,7 +125,7 @@ export async function updateService(
         description: parsed.data.description,
         priceMin: parsed.data.priceMin,
         priceMax: parsed.data.priceMax,
-        currencyLabel: emptyToNull(parsed.data.currencyLabel),
+        currencyLabel: parsed.data.currencyLabel,
         published: parsed.data.published,
         sortOrder: parsed.data.sortOrder,
       },

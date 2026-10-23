@@ -6,12 +6,27 @@ import { useRouter } from "next/navigation";
 import { deleteService } from "@/lib/actions/services";
 import type { ActionState } from "@/lib/actions/profile";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
-  fieldControlInputClass,
-  fieldControlTextareaClass,
-  surfaceCardClass,
-} from "@/lib/ui-classes";
-import { cn } from "@/lib/utils";
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+  FieldLegend,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { currencyLabels } from "@/lib/validators/site";
 
 type SectionDraft = { title: string; body: string };
 
@@ -28,6 +43,10 @@ type ServiceDraft = {
   sections: SectionDraft[];
 };
 
+function knownCurrency(value: string | null | undefined) {
+  return currencyLabels.find((label) => label === value) ?? "";
+}
+
 export function ServiceForm({
   action,
   service,
@@ -42,6 +61,8 @@ export function ServiceForm({
     null as ActionState,
   );
   const [sections, setSections] = useState<SectionDraft[]>(service?.sections ?? []);
+  const [currency, setCurrency] = useState(knownCurrency(service?.currencyLabel));
+  const [published, setPublished] = useState(service?.published ?? false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -70,191 +91,197 @@ export function ServiceForm({
   }
 
   return (
-    <div className="flex flex-col gap-8">
-      <form action={formAction} className="flex flex-col gap-4">
+    <div className="flex max-w-3xl flex-col gap-8">
+      <form action={formAction}>
         {service ? <input type="hidden" name="id" value={service.id} /> : null}
         <input type="hidden" name="sections" value={JSON.stringify(sections)} />
-        <label className="flex flex-col gap-1 text-sm" htmlFor="service-title">
-          نام
-          <input
-            id="service-title"
-            name="title"
-            required
-            maxLength={120}
-            defaultValue={service?.title ?? ""}
-            className={fieldControlInputClass}
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-sm" htmlFor="service-description">
-          توضیحات
-          <textarea
-            id="service-description"
-            name="description"
-            rows={5}
-            maxLength={8000}
-            defaultValue={service?.description ?? ""}
-            className={fieldControlTextareaClass}
-          />
-        </label>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="flex flex-col gap-1 text-sm" htmlFor="price-min">
-            حداقل قیمت
-            <input
-              id="price-min"
-              name="priceMin"
-              inputMode="numeric"
-              dir="ltr"
-              lang="en"
-              defaultValue={service?.priceMin ?? ""}
-              className={cn(fieldControlInputClass, "text-start")}
+        <input type="hidden" name="currencyLabel" value={currency} />
+        <input type="hidden" name="published" value={published ? "on" : ""} />
+        <FieldGroup>
+          <Field className="max-w-md">
+            <FieldLabel htmlFor="service-title">نام</FieldLabel>
+            <Input
+              id="service-title"
+              name="title"
+              required
+              maxLength={120}
+              defaultValue={service?.title ?? ""}
             />
-          </label>
-          <label className="flex flex-col gap-1 text-sm" htmlFor="price-max">
-            حداکثر قیمت
-            <input
-              id="price-max"
-              name="priceMax"
-              inputMode="numeric"
-              dir="ltr"
-              lang="en"
-              defaultValue={service?.priceMax ?? ""}
-              className={cn(fieldControlInputClass, "text-start")}
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="service-description">توضیحات</FieldLabel>
+            <Textarea
+              id="service-description"
+              name="description"
+              rows={5}
+              maxLength={8000}
+              defaultValue={service?.description ?? ""}
             />
-          </label>
-        </div>
-        <label className="flex flex-col gap-1 text-sm" htmlFor="currency-label">
-          واحد پول
-          <input
-            id="currency-label"
-            name="currencyLabel"
-            maxLength={32}
-            defaultValue={service?.currencyLabel ?? ""}
-            className={fieldControlInputClass}
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-sm" htmlFor="sort-order">
-          ترتیب نمایش
-          <input
-            id="sort-order"
-            name="sortOrder"
-            type="number"
-            min={0}
-            max={10000}
-            dir="ltr"
-            defaultValue={service?.sortOrder ?? 0}
-            className={cn(fieldControlInputClass, "w-28")}
-          />
-        </label>
-        <label className="flex items-center gap-2 text-sm" htmlFor="published">
-          <input
-            id="published"
-            name="published"
-            type="checkbox"
-            defaultChecked={service?.published ?? false}
-          />
-          نمایش در صفحه خدمات
-        </label>
-
-        <fieldset className={cn(surfaceCardClass, "flex flex-col gap-3 p-4")}>
-          <legend className="px-1 text-sm">بخش‌های سفارشی</legend>
-          {sections.map((section, index) => (
-            <div key={index} className={cn(surfaceCardClass, "flex flex-col gap-2 p-3")}>
-              <label className="flex flex-col gap-1 text-sm" htmlFor={`section-title-${index}`}>
-                عنوان
-                <input
-                  id={`section-title-${index}`}
-                  value={section.title}
-                  maxLength={120}
-                  onChange={(event) => {
-                    const next = sections.slice();
-                    next[index] = { ...section, title: event.target.value };
-                    setSections(next);
-                  }}
-                  className={fieldControlInputClass}
-                />
-              </label>
-              <label className="flex flex-col gap-1 text-sm" htmlFor={`section-body-${index}`}>
-                توضیحات
-                <textarea
-                  id={`section-body-${index}`}
-                  value={section.body}
-                  maxLength={4000}
-                  rows={4}
-                  onChange={(event) => {
-                    const next = sections.slice();
-                    next[index] = { ...section, body: event.target.value };
-                    setSections(next);
-                  }}
-                  className={fieldControlTextareaClass}
-                />
-              </label>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setSections(sections.filter((_, item) => item !== index))}
+          </Field>
+          <FieldGroup className="sm:flex-row sm:items-end">
+            <Field className="sm:max-w-36">
+              <FieldLabel htmlFor="price-min">حداقل قیمت</FieldLabel>
+              <Input
+                id="price-min"
+                name="priceMin"
+                inputMode="numeric"
+                dir="ltr"
+                lang="en"
+                defaultValue={service?.priceMin ?? ""}
+              />
+            </Field>
+            <Field className="sm:max-w-36">
+              <FieldLabel htmlFor="price-max">حداکثر قیمت</FieldLabel>
+              <Input
+                id="price-max"
+                name="priceMax"
+                inputMode="numeric"
+                dir="ltr"
+                lang="en"
+                defaultValue={service?.priceMax ?? ""}
+              />
+            </Field>
+            <Field className="sm:max-w-32">
+              <FieldLabel htmlFor="currency-label">واحد پول</FieldLabel>
+              <Select
+                value={currency === "" ? undefined : currency}
+                onValueChange={setCurrency}
               >
-                حذف بخش
-              </Button>
-            </div>
-          ))}
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setSections([...sections, { title: "", body: "" }])}
-          >
-            افزودن بخش
-          </Button>
-        </fieldset>
+                <SelectTrigger id="currency-label" className="w-full">
+                  <SelectValue placeholder="انتخاب" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {currencyLabels.map((label) => (
+                      <SelectItem key={label} value={label}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field className="sm:max-w-24">
+              <FieldLabel htmlFor="sort-order">ترتیب نمایش</FieldLabel>
+              <Input
+                id="sort-order"
+                name="sortOrder"
+                type="number"
+                min={0}
+                max={10000}
+                dir="ltr"
+                defaultValue={service?.sortOrder ?? 0}
+              />
+            </Field>
+          </FieldGroup>
+          <Field orientation="horizontal" className="w-fit">
+            <Checkbox
+              id="published"
+              checked={published}
+              onCheckedChange={(checked) => setPublished(checked === true)}
+            />
+            <FieldLabel htmlFor="published">نمایش در صفحه خدمات</FieldLabel>
+          </Field>
 
-        {state?.ok === false ? (
-          <p role="alert" className="text-sm text-destructive">
-            {state.error}
-          </p>
-        ) : null}
-        {state?.ok ? (
-          <p role="status" className="text-sm text-accent">
-            ذخیره شد.
-          </p>
-        ) : null}
-        <Button type="submit" disabled={pending}>
-          {pending ? "در حال ذخیره" : "ذخیره"}
-        </Button>
+          <FieldSet>
+            <FieldLegend>بخش‌های سفارشی</FieldLegend>
+            {sections.map((section, index) => (
+              <Card key={index} size="sm">
+                <CardHeader>
+                  <CardTitle>بخش {index + 1}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <FieldGroup>
+                    <Field className="max-w-sm">
+                      <FieldLabel htmlFor={`section-title-${index}`}>عنوان</FieldLabel>
+                      <Input
+                        id={`section-title-${index}`}
+                        value={section.title}
+                        maxLength={120}
+                        onChange={(event) => {
+                          const next = sections.slice();
+                          next[index] = { ...section, title: event.target.value };
+                          setSections(next);
+                        }}
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel htmlFor={`section-body-${index}`}>توضیحات</FieldLabel>
+                      <Textarea
+                        id={`section-body-${index}`}
+                        value={section.body}
+                        maxLength={4000}
+                        rows={4}
+                        onChange={(event) => {
+                          const next = sections.slice();
+                          next[index] = { ...section, body: event.target.value };
+                          setSections(next);
+                        }}
+                      />
+                    </Field>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setSections(sections.filter((_, item) => item !== index))}
+                    >
+                      حذف بخش
+                    </Button>
+                  </FieldGroup>
+                </CardContent>
+              </Card>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setSections([...sections, { title: "", body: "" }])}
+            >
+              افزودن بخش
+            </Button>
+          </FieldSet>
+
+          {state?.ok === false ? <FieldError>{state.error}</FieldError> : null}
+          {state?.ok ? (
+            <p role="status" className="text-sm text-accent">
+              ذخیره شد.
+            </p>
+          ) : null}
+          <Button type="submit" disabled={pending}>
+            {pending ? "در حال ذخیره" : "ذخیره"}
+          </Button>
+        </FieldGroup>
       </form>
 
       {service ? (
-        <form className="flex flex-col gap-3 border-t border-border pt-6">
-          <label className="text-sm" htmlFor="service-image">
-            تصویر
-          </label>
-          {service.imageKey ? (
-            <Image
-              src={`/media/${service.imageKey}`}
-              alt={service.title}
-              width={640}
-              height={320}
-              unoptimized
-              className="h-40 w-full max-w-sm object-cover"
+        <Card size="sm" className="max-w-sm">
+          <CardHeader>
+            <CardTitle>تصویر</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3">
+            {service.imageKey ? (
+              <Image
+                src={`/media/${service.imageKey}`}
+                alt={service.title}
+                width={640}
+                height={320}
+                unoptimized
+                className="h-40 w-full rounded-lg object-cover"
+              />
+            ) : null}
+            <Input
+              id="service-image"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              disabled={uploading}
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                event.target.value = "";
+                void onImage(file);
+              }}
             />
-          ) : null}
-          <input
-            id="service-image"
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            disabled={uploading}
-            onChange={(event) => {
-              const file = event.target.files?.[0];
-              event.target.value = "";
-              void onImage(file);
-            }}
-            className="text-sm"
-          />
-          {uploading ? <p className="text-sm text-muted-foreground">در حال ذخیره تصویر</p> : null}
-          {uploadError ? (
-            <p role="alert" className="text-sm text-destructive">
-              {uploadError}
-            </p>
-          ) : null}
-        </form>
+            {uploading ? <p className="text-sm text-muted-foreground">در حال ذخیره تصویر</p> : null}
+            {uploadError ? <FieldError>{uploadError}</FieldError> : null}
+          </CardContent>
+        </Card>
       ) : null}
 
       {service ? (
@@ -268,12 +295,8 @@ export function ServiceForm({
           }}
         >
           <input type="hidden" name="id" value={service.id} />
-          {deleteState?.ok === false ? (
-            <p role="alert" className="text-sm text-destructive">
-              {deleteState.error}
-            </p>
-          ) : null}
-          <Button type="submit" variant="destructive" disabled={deleting}>
+          {deleteState?.ok === false ? <FieldError>{deleteState.error}</FieldError> : null}
+          <Button type="submit" variant="destructive" disabled={deleting} className="w-fit">
             حذف خدمت
           </Button>
         </form>

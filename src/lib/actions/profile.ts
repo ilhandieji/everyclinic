@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { currentPhysician } from "@/lib/access";
 import prisma from "@/lib/prisma";
 import { emptyToNull, profileFormSchema } from "@/lib/validators/site";
@@ -32,11 +33,12 @@ export async function saveProfile(
     where: { id: physician.id },
     data: {
       displayName: emptyToNull(parsed.data.displayName),
-      gender: emptyToNull(parsed.data.gender),
+      gender: parsed.data.gender,
       bio: emptyToNull(parsed.data.bio),
     },
   });
 
   revalidatePath("/", "layout");
-  return { ok: true };
+  revalidatePath("/manage");
+  redirect("/manage");
 }
