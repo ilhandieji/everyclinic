@@ -1,6 +1,5 @@
 import { z } from "zod";
-
-const PRICE_MAX = 1_000_000_000_000;
+import { PRICE_MAX } from "@/lib/money";
 
 const optionalPrice = z
   .string()

@@ -7,10 +7,12 @@ import { PriceText } from "@/components/site/price-text";
 import { RequestPanel } from "@/components/site/request-panel";
 import { currentPatient, currentPhysician, currentUser } from "@/lib/access";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { displayPrices } from "@/lib/money";
 import prisma from "@/lib/prisma";
 
-async function ServiceDetail({ id }: { id: string }) {
+async function ServiceDetail({ params }: { params: Promise<{ id: string }> }) {
   await connection();
+  const { id } = await params;
   const [service, user, physician, patient] = await Promise.all([
     prisma.medicalService.findUnique({
       where: { id },
@@ -39,6 +41,7 @@ async function ServiceDetail({ id }: { id: string }) {
         select: { id: true, status: true },
       })
     : null;
+  const prices = displayPrices(service);
 
   return (
     <SiteShell>
@@ -58,8 +61,8 @@ async function ServiceDetail({ id }: { id: string }) {
         <p className="whitespace-pre-wrap text-sm leading-relaxed">{service.description}</p>
       ) : null}
       <PriceText
-        min={service.priceMin}
-        max={service.priceMax}
+        min={prices.priceMin}
+        max={prices.priceMax}
         label={service.currencyLabel}
       />
       {service.sections.map((section) => (
@@ -84,15 +87,14 @@ async function ServiceDetail({ id }: { id: string }) {
   );
 }
 
-export default async function ServicePage({
+export default function ServicePage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
   return (
     <Suspense fallback={null}>
-      <ServiceDetail id={id} />
+      <ServiceDetail params={params} />
     </Suspense>
   );
 }

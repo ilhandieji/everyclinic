@@ -41,7 +41,7 @@ Public configuration is structured and validated: navigation, section visibility
 
 `User` has no role today. Authenticated is not physician, patient, or platform administrator. Open registration does not grant clinical access.
 
-The tenant (physician, clinic, or group practice) is unresolved. Stop and ask before adding the first tenant-scoped table. Do not create a global unscoped patient table, and do not silently choose solo physician or clinic.
+The tenant for this release is the singleton `PhysicianProfile` (`singleton = 1`). Do not add a clinic or group-practice table. Do not create a global unscoped patient table.
 
 Do not trust a browser-supplied `doctorId`, `patientId`, or `practiceId`. Authorize the referenced resource on the server.
 

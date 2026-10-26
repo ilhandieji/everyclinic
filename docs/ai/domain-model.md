@@ -8,35 +8,35 @@ Open decisions at the end are unresolved unless a row is marked decided. Do not 
 
 ## What exists today
 
-Static review only. Login, registration, migrations, and the browser were not executed for this document. There is no test script.
-
-Implemented in source, unverified at runtime:
+Implemented in source. `pnpm test` covers price bounds, request eligibility, callback URLs, and image keys. It does not boot the app or the database.
 
 - NextAuth v4 credentials in `src/lib/auth.ts` and `src/app/api/auth/[...nextauth]/route.ts`.
 - JWT sessions plus a Prisma `Session` row, expiry checks, and deletion on sign-out or invalid session.
-- Registration in `src/app/api/register/route.ts` with Zod and a scrypt password hash.
-- Login and register pages redirect an authenticated session home. `safeCallbackUrl` allows only relative paths.
-- Prisma 7 client in `src/lib/prisma.ts`. Schema models: `User`, `Account`, `Session`, `VerificationToken`.
+- Registration in `src/app/api/register/route.ts` creates a `User` and a `PatientProfile`. It does not create a physician.
+- `PhysicianProfile` is inserted outside the app client. `src/lib/prisma.ts` blocks `create`, `createMany`, and `upsert` on that model. SQL check `physician_profiles_singleton_is_one` requires `singleton = 1`.
+- `MedicalService`, `ServiceSection`, `ServiceRequest`, and `CareRelationship` are in the schema. Published services and the public profile are rendered from the singleton physician.
+- A patient may request a published service. SQL index `service_requests_one_pending` allows one `pending` row per patient and service. The server action also rejects a request for the physician’s own service and a second request after `accepted`. A new request after `declined` or `cancelled` stays allowed.
+- Accepting a request upserts `CareRelationship`. That is not an appointment.
+- Service prices are `BIGINT`, capped at `1000000000000` by Zod and by SQL check `medical_services_price_bounds`.
+- Login and register pages redirect an authenticated session home. `safeCallbackUrl` allows only a single-slash relative path.
 
-Gaps:
+Still true:
 
-- `User` has no role, physician, patient, or practice relation. A login proves email and password only.
-- Open registration creates a `User` and a `PatientProfile`. It does not create a physician and grants no clinical access. A physician exists only after a direct database insert into `physician_profiles`.
+- `User` has no role column. A login proves email and password only. Physician access is the presence of `PhysicianProfile`.
 - `Account` and `VerificationToken` are unused. `emailVerified` is never set.
 - Session claims are `id` and `email`. There is no route middleware.
-- `prisma/migrations/20261022132459_init/migration.sql` was rewritten in place from legacy `User`/`Post` to the current NextAuth tables. `20261022180000_nextauth_credentials` still drops `Post` and `User` and creates the same tables again. Fresh migrate is inconsistent. Repair is a future task. Do not rewrite those files unless the user asks.
-
-UI copy in `src/app/layout.tsx`, `src/app/page.tsx`, `src/components/layout/site-navbar.tsx`, and the register subtitle in `src/components/ui/auth-card.tsx` still says «فروشگاه». Leave it until a dedicated UI task.
+- Do not rewrite applied migrations. `prisma/migrations/20261022180000_nextauth_credentials/migration.sql` is `SELECT 1`. Do not drop `service_requests_one_pending` or `medical_services_price_bounds` to silence a Prisma diff.
+- Appointments, encounters, prescriptions, reminders, and payments are not built.
 
 The npm package name remains `store`. Renaming it is an open decision.
 
-Local Docker Compose is `compose.yml` (Postgres and the Next dev server, source mounted from the repo). No payment, timed appointment, or clinical code exists.
+Local Docker Compose is `compose.yml` (Postgres and the Next dev server, source mounted from the repo). Directory roles are in [docs/architecture.md](../architecture.md).
 
 ## Boundaries
 
 ### Identity
 
-`User` stays the login account. Physician, patient, and platform administrator are future authorization facts. Staff is optional and is not part of the first role set.
+`User` stays the login account. `PatientProfile` and `PhysicianProfile` already exist. A role column and a platform administrator do not. Staff is optional and is not part of the first role set.
 
 Do not store clinical fields on `User`. Do not replace NextAuth.
 
@@ -93,15 +93,17 @@ A client success message is not proof of payment. Do not choose a gateway, inter
 
 Do these in order. Each one is a separate approved task.
 
+Public profile, services, service requests, and the care relationship created by accepting a request are already implemented. Do not rebuild them.
+
 1. Owner decisions below that block the next milestone.
-2. Repair migration history before new models.
-3. Authorization profiles on the existing NextAuth implementation.
-4. Care relationship, physician-created appointments, and overlap prevention.
-5. Public profile, services, and limited section or navigation settings. This does not require clinical records.
+2. New models go in a new migration. Do not rewrite applied SQL, and do not drop the pending-request index or the price check.
+3. Authorization profiles on the existing NextAuth implementation. Physician and patient profiles already exist. `User` still has no role column.
+4. Physician-created appointments and overlap prevention. The care relationship already exists. An accepted request is not an appointment.
+5. Further public-site settings beyond the current profile, service cards, and service sections. Navigation settings are not a separate model yet.
 6. Encounters, prescriptions, and medication history, after care relationships exist.
 7. Reminder records, after appointment and follow-up concepts exist. Delivery waits on a channel decision.
 8. Obligations and installments, after a written payment policy. Provider integration is its own approved milestone.
-9. Optional later work: notification provider, payment gateway, staff accounts, patient self-booking, clinical file uploads, Persian font, calendar library, Docker Compose, automated tests.
+9. Optional later work: notification provider, payment gateway, staff accounts, patient self-booking, clinical file uploads, Persian font, calendar library, and end-to-end tests.
 
 ## Open decisions
 

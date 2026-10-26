@@ -1,10 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { useActionState, useState } from "react";
-import { useRouter } from "next/navigation";
-import { deleteService } from "@/lib/actions/services";
-import type { ActionState } from "@/lib/actions/profile";
+import type { ActionState } from "@/lib/actions/state";
+import { DeleteServiceButton } from "@/components/site/delete-service-button";
+import { ServiceImageField } from "@/components/site/service-image-field";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -54,41 +53,10 @@ export function ServiceForm({
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
   service?: ServiceDraft;
 }) {
-  const router = useRouter();
   const [state, formAction, pending] = useActionState(action, null as ActionState);
-  const [deleteState, deleteAction, deleting] = useActionState(
-    deleteService,
-    null as ActionState,
-  );
   const [sections, setSections] = useState<SectionDraft[]>(service?.sections ?? []);
   const [currency, setCurrency] = useState(knownCurrency(service?.currencyLabel));
   const [published, setPublished] = useState(service?.published ?? false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
-
-  async function onImage(file: File | undefined) {
-    if (!file || !service) {
-      return;
-    }
-    setUploadError(null);
-    setUploading(true);
-    try {
-      const body = new FormData();
-      body.set("file", file);
-      body.set("serviceId", service.id);
-      const response = await fetch("/api/uploads/service", { method: "POST", body });
-      const data = (await response.json()) as { error?: string };
-      if (!response.ok) {
-        setUploadError(data.error ?? "تصویر ذخیره نشد.");
-        return;
-      }
-      router.refresh();
-    } catch {
-      setUploadError("تصویر ذخیره نشد.");
-    } finally {
-      setUploading(false);
-    }
-  }
 
   return (
     <div className="flex w-full flex-col gap-8">
@@ -256,55 +224,14 @@ export function ServiceForm({
       </form>
 
       {service ? (
-        <Card size="sm">
-          <CardHeader>
-            <CardTitle>تصویر</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-3">
-            {service.imageKey ? (
-              <Image
-                src={`/media/${service.imageKey}`}
-                alt={service.title}
-                width={640}
-                height={320}
-                unoptimized
-                className="h-40 w-full rounded-lg object-cover"
-              />
-            ) : null}
-            <Input
-              id="service-image"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              disabled={uploading}
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                event.target.value = "";
-                void onImage(file);
-              }}
-            />
-            {uploading ? <p className="text-sm text-muted-foreground">در حال ذخیره تصویر</p> : null}
-            {uploadError ? <FieldError>{uploadError}</FieldError> : null}
-          </CardContent>
-        </Card>
+        <ServiceImageField
+          serviceId={service.id}
+          title={service.title}
+          imageKey={service.imageKey}
+        />
       ) : null}
 
-      {service ? (
-        <form
-          action={deleteAction}
-          className="flex flex-col gap-2"
-          onSubmit={(event) => {
-            if (!window.confirm("این خدمت حذف شود؟")) {
-              event.preventDefault();
-            }
-          }}
-        >
-          <input type="hidden" name="id" value={service.id} />
-          {deleteState?.ok === false ? <FieldError>{deleteState.error}</FieldError> : null}
-          <Button type="submit" variant="destructive" disabled={deleting} className="w-fit">
-            حذف خدمت
-          </Button>
-        </form>
-      ) : null}
+      {service ? <DeleteServiceButton id={service.id} /> : null}
     </div>
   );
 }

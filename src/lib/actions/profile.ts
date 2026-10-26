@@ -4,9 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { currentPhysician } from "@/lib/access";
 import prisma from "@/lib/prisma";
+import type { ActionState } from "@/lib/actions/state";
 import { emptyToNull, profileFormSchema } from "@/lib/validators/site";
-
-export type ActionState = { ok: true } | { ok: false; error: string } | null;
 
 export async function saveProfile(
   _prev: ActionState,

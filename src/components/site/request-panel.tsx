@@ -2,11 +2,9 @@
 
 import { useActionState } from "react";
 import { useAuthOverlay } from "@/components/auth/auth-overlay";
-import {
-  cancelServiceRequest,
-  createServiceRequest,
-} from "@/lib/actions/requests";
-import type { ActionState } from "@/lib/actions/profile";
+import { createServiceRequest } from "@/lib/actions/requests";
+import { CancelRequestForm } from "@/components/site/cancel-request-form";
+import type { ActionState } from "@/lib/actions/state";
 import { StatusBadge, type RequestStatus } from "@/components/site/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,10 +24,6 @@ export function RequestPanel({
     createServiceRequest,
     null as ActionState,
   );
-  const [cancelState, cancelAction, cancelling] = useActionState(
-    cancelServiceRequest,
-    null as ActionState,
-  );
 
   const { openAuth } = useAuthOverlay();
 
@@ -43,14 +37,10 @@ export function RequestPanel({
 
   if (request?.status === "pending") {
     return (
-      <form action={cancelAction} className="flex max-w-md flex-col gap-2">
-        <input type="hidden" name="id" value={request.id} />
+      <div className="flex max-w-md flex-col gap-2">
         <StatusBadge status="pending" />
-        {cancelState?.ok === false ? <FieldError>{cancelState.error}</FieldError> : null}
-        <Button type="submit" variant="outline" disabled={cancelling} className="w-fit">
-          لغو درخواست
-        </Button>
-      </form>
+        <CancelRequestForm id={request.id} />
+      </div>
     );
   }
 

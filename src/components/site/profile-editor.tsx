@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { useActionState, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { saveProfile, type ActionState } from "@/lib/actions/profile";
+import { saveProfile } from "@/lib/actions/profile";
+import type { ActionState } from "@/lib/actions/state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";

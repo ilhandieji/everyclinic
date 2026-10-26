@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { connection } from "next/server";
 import { SiteShell } from "@/components/layout/site-shell";
 import { ServiceCard } from "@/components/site/service-card";
+import { displayPrices } from "@/lib/money";
 import prisma from "@/lib/prisma";
 
 async function ServiceList() {
@@ -37,8 +38,7 @@ async function ServiceList() {
               id={service.id}
               title={service.title}
               description={service.description}
-              priceMin={service.priceMin}
-              priceMax={service.priceMax}
+              {...displayPrices(service)}
               currencyLabel={service.currencyLabel}
               imageKey={service.imageKey}
             />

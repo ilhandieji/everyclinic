@@ -64,7 +64,7 @@ export function ServiceCard({
         ) : null}
         <PriceText min={priceMin} max={priceMax} label={currencyLabel} />
         <Button asChild size="lg" className="mt-auto h-10 w-full text-sm">
-          <Link href={`/services/${id}`}>رزرو نوبت</Link>
+          <Link href={`/services/${id}`}>درخواست رزرو</Link>
         </Button>
       </CardContent>
     </Card>

@@ -4,8 +4,16 @@ import { revalidatePath } from "next/cache";
 import { Prisma } from "@/app/generated/prisma/client";
 import { currentPatient, currentPhysician } from "@/lib/access";
 import prisma from "@/lib/prisma";
+import { requestEligibility } from "@/lib/request-eligibility";
 import { requestFormSchema } from "@/lib/validators/site";
-import type { ActionState } from "@/lib/actions/profile";
+import type { ActionState } from "@/lib/actions/state";
+
+class RequestRejected extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "RequestRejected";
+  }
+}
 
 function revalidateRequest(serviceId: string) {
   revalidatePath("/manage/requests");
@@ -39,10 +47,28 @@ export async function createServiceRequest(
     await prisma.$transaction(async (tx) => {
       const service = await tx.medicalService.findFirst({
         where: { id: parsed.data.serviceId, published: true },
-        select: { id: true },
+        select: {
+          id: true,
+          physician: { select: { userId: true } },
+        },
       });
       if (!service) {
         throw new Error("unpublished");
+      }
+      const accepted = await tx.serviceRequest.findFirst({
+        where: {
+          patientProfileId: patient.id,
+          serviceId: service.id,
+          status: "accepted",
+        },
+        select: { id: true },
+      });
+      const gate = requestEligibility({
+        ownsService: service.physician.userId === patient.userId,
+        hasAccepted: accepted !== null,
+      });
+      if (!gate.ok) {
+        throw new RequestRejected(gate.error);
       }
       await tx.serviceRequest.create({
         data: {
@@ -54,6 +80,9 @@ export async function createServiceRequest(
       });
     });
   } catch (error) {
+    if (error instanceof RequestRejected) {
+      return { ok: false, error: error.message };
+    }
     if (error instanceof Error && error.message === "unpublished") {
       return { ok: false, error: "این خدمت برای درخواست باز نیست." };
     }

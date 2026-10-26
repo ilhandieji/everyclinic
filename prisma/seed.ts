@@ -159,13 +159,23 @@ async function main() {
       },
     });
 
-    const existingPhysician = await prisma.physicianProfile.findFirst({
-      select: { id: true, userId: true },
+    const ownPhysician = await prisma.physicianProfile.findUnique({
+      where: { userId: physicianUser.id },
+      select: { id: true },
     });
+    const otherPhysician = await prisma.physicianProfile.findFirst({
+      where: { userId: { not: physicianUser.id } },
+      select: { id: true },
+    });
+    if (otherPhysician) {
+      throw new Error(
+        "یک پروفایل پزشک برای حساب دیگری وجود دارد. دادهٔ نمونه آن را تغییر نمی‌دهد.",
+      );
+    }
 
-    const physician = existingPhysician
+    const physician = ownPhysician
       ? await prisma.physicianProfile.update({
-          where: { id: existingPhysician.id },
+          where: { id: ownPhysician.id },
           data: {
             displayName: "دکتر سارا کیانی",
             gender: "زن",

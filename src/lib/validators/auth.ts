@@ -49,7 +49,21 @@ export function safeCallbackUrl(url: string | null | undefined): string {
   if (!url || typeof url !== "string") {
     return "/";
   }
-  if (!url.startsWith("/") || url.startsWith("//")) {
+  if (!url.startsWith("/") || url.startsWith("//") || url.includes("\\")) {
+    return "/";
+  }
+  let decoded = url;
+  try {
+    decoded = decodeURIComponent(url);
+  } catch {
+    return "/";
+  }
+  if (
+    !decoded.startsWith("/") ||
+    /^\/{2,}/.test(decoded) ||
+    decoded.includes("\\") ||
+    decoded.includes("://")
+  ) {
     return "/";
   }
   return url;

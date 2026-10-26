@@ -66,6 +66,7 @@ model PatientProfile {
 
 /// Inserted only by a direct database statement. Application code must not create this row.
 /// `singleton` is always 1 so the public site has one physician.
+/// SQL check `physician_profiles_singleton_is_one` enforces that value.
 model PhysicianProfile {
   id                String             @id @default(cuid())
   userId            String             @unique @map("user_id")
@@ -83,13 +84,15 @@ model PhysicianProfile {
   @@map("physician_profiles")
 }
 
+/// Price pairs are enforced by SQL check `medical_services_price_bounds`
+/// (both null, or both set, with 0 <= min <= max <= 1000000000000).
 model MedicalService {
   id                 String           @id @default(cuid())
   physicianProfileId String           @map("physician_profile_id")
   title              String
   description        String           @db.Text
-  priceMin           Int?             @map("price_min")
-  priceMax           Int?             @map("price_max")
+  priceMin           BigInt?          @map("price_min")
+  priceMax           BigInt?          @map("price_max")
   currencyLabel      String?          @map("currency_label")
   imageKey           String?          @map("image_key")
   published          Boolean          @default(false)
@@ -125,6 +128,8 @@ enum ServiceRequestStatus {
   @@map("service_request_status")
 }
 
+/// One pending request per patient and service is enforced by SQL index
+/// `service_requests_one_pending`. Do not drop it from a schema diff.
 model ServiceRequest {
   id               String               @id @default(cuid())
   patientProfileId String               @map("patient_profile_id")

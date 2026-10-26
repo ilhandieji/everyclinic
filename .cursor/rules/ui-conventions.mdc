@@ -27,7 +27,7 @@ No unmotivated gradients, glow, glassmorphism, decorative backgrounds, excessive
 
 [src/components/ui/auth-card.tsx](src/components/ui/auth-card.tsx) uses gradient and motion. Leave it until a dedicated UI task. Do not copy that treatment onto clinical, financial, or physician-site screens.
 
-The home page in [src/app/page.tsx](src/app/page.tsx) still uses store wording. Do not treat that copy as the product direction. Follow shadcn tokens and existing `Button` patterns.
+Home and service pages use physician-site copy. Do not reintroduce store wording. A service card links to the service with «درخواست رزرو»; a request is not a confirmed appointment. Follow shadcn tokens and existing `Button` patterns.
 
 ## Persian RTL
 

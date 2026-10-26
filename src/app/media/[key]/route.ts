@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connection } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions, isAuthenticatedSession } from "@/lib/auth";
+import { findPublicPhysician } from "@/lib/physician-site";
 import prisma from "@/lib/prisma";
 import { contentTypeForKey, isImageKey, readImage } from "@/lib/storage";
 
@@ -15,8 +16,10 @@ export async function GET(
     return new NextResponse(null, { status: 404 });
   }
 
-  const physician = await prisma.physicianProfile.findFirst({
-    select: { id: true, userId: true, photoKey: true },
+  const physician = await findPublicPhysician({
+    id: true,
+    userId: true,
+    photoKey: true,
   });
 
   let allowed = physician?.photoKey === key;

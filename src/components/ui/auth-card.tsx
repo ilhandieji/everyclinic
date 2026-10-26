@@ -183,7 +183,7 @@ export function AuthCard({
                 </motion.p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+              <form method="post" onSubmit={handleSubmit} className="space-y-4" noValidate>
                 {error ? (
                   <p
                     role="alert"
@@ -390,7 +390,12 @@ export function AuthCard({
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  type="submit"
+                  type="button"
+                  onClick={() => {
+                    void handleSubmit({
+                      preventDefault() {},
+                    } as React.FormEvent);
+                  }}
                   disabled={isLoading}
                   className="w-full relative group/button mt-2"
                 >

@@ -7,7 +7,7 @@ import { currentPhysician } from "@/lib/access";
 import prisma from "@/lib/prisma";
 import { removeImage } from "@/lib/storage";
 import { serviceFormSchema } from "@/lib/validators/site";
-import type { ActionState } from "@/lib/actions/profile";
+import type { ActionState } from "@/lib/actions/state";
 
 function revalidateServices(id?: string) {
   revalidatePath("/", "layout");
@@ -74,26 +74,32 @@ export async function createService(
     };
   }
 
-  const created = await prisma.medicalService.create({
-    data: {
-      physicianProfileId: physician.id,
-      title: parsed.data.title,
-      description: parsed.data.description,
-      priceMin: parsed.data.priceMin,
-      priceMax: parsed.data.priceMax,
-      currencyLabel: parsed.data.currencyLabel,
-      published: parsed.data.published,
-      sortOrder: parsed.data.sortOrder,
-      sections: {
-        create: parsed.data.sections.map((section, index) => ({
-          title: section.title,
-          body: section.body,
-          sortOrder: index,
-        })),
+  let created: { id: string };
+  try {
+    created = await prisma.medicalService.create({
+      data: {
+        physicianProfileId: physician.id,
+        title: parsed.data.title,
+        description: parsed.data.description,
+        priceMin: parsed.data.priceMin,
+        priceMax: parsed.data.priceMax,
+        currencyLabel: parsed.data.currencyLabel,
+        published: parsed.data.published,
+        sortOrder: parsed.data.sortOrder,
+        sections: {
+          create: parsed.data.sections.map((section, index) => ({
+            title: section.title,
+            body: section.body,
+            sortOrder: index,
+          })),
+        },
       },
-    },
-    select: { id: true },
-  });
+      select: { id: true },
+    });
+  } catch {
+    console.error("service save failed");
+    return { ok: false, error: "ذخیره خدمت انجام نشد." };
+  }
 
   revalidateServices(created.id);
   redirect(`/manage/services/${created.id}`);
@@ -117,33 +123,38 @@ export async function updateService(
     };
   }
 
-  await prisma.$transaction(async (tx) => {
-    await tx.medicalService.update({
-      where: { id: owned.service.id },
-      data: {
-        title: parsed.data.title,
-        description: parsed.data.description,
-        priceMin: parsed.data.priceMin,
-        priceMax: parsed.data.priceMax,
-        currencyLabel: parsed.data.currencyLabel,
-        published: parsed.data.published,
-        sortOrder: parsed.data.sortOrder,
-      },
-    });
-    await tx.serviceSection.deleteMany({
-      where: { serviceId: owned.service.id },
-    });
-    if (parsed.data.sections.length > 0) {
-      await tx.serviceSection.createMany({
-        data: parsed.data.sections.map((section, index) => ({
-          serviceId: owned.service.id,
-          title: section.title,
-          body: section.body,
-          sortOrder: index,
-        })),
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.medicalService.update({
+        where: { id: owned.service.id },
+        data: {
+          title: parsed.data.title,
+          description: parsed.data.description,
+          priceMin: parsed.data.priceMin,
+          priceMax: parsed.data.priceMax,
+          currencyLabel: parsed.data.currencyLabel,
+          published: parsed.data.published,
+          sortOrder: parsed.data.sortOrder,
+        },
       });
-    }
-  });
+      await tx.serviceSection.deleteMany({
+        where: { serviceId: owned.service.id },
+      });
+      if (parsed.data.sections.length > 0) {
+        await tx.serviceSection.createMany({
+          data: parsed.data.sections.map((section, index) => ({
+            serviceId: owned.service.id,
+            title: section.title,
+            body: section.body,
+            sortOrder: index,
+          })),
+        });
+      }
+    });
+  } catch {
+    console.error("service save failed");
+    return { ok: false, error: "ذخیره خدمت انجام نشد." };
+  }
 
   revalidateServices(owned.service.id);
   return { ok: true };

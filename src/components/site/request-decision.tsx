@@ -5,7 +5,7 @@ import {
   acceptServiceRequest,
   declineServiceRequest,
 } from "@/lib/actions/requests";
-import type { ActionState } from "@/lib/actions/profile";
+import type { ActionState } from "@/lib/actions/state";
 import { Button } from "@/components/ui/button";
 
 export function RequestDecision({ id }: { id: string }) {

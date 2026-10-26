@@ -5,10 +5,12 @@ import { SiteShell } from "@/components/layout/site-shell";
 import { ServiceForm } from "@/components/site/service-form";
 import { updateService } from "@/lib/actions/services";
 import { currentPhysician } from "@/lib/access";
+import { displayPrices } from "@/lib/money";
 import prisma from "@/lib/prisma";
 
-async function EditService({ id }: { id: string }) {
+async function EditService({ params }: { params: Promise<{ id: string }> }) {
   await connection();
+  const { id } = await params;
   const physician = await currentPhysician();
   if (!physician) {
     redirect("/");
@@ -30,8 +32,7 @@ async function EditService({ id }: { id: string }) {
           id: service.id,
           title: service.title,
           description: service.description,
-          priceMin: service.priceMin,
-          priceMax: service.priceMax,
+          ...displayPrices(service),
           currencyLabel: service.currencyLabel,
           published: service.published,
           sortOrder: service.sortOrder,
@@ -46,15 +47,14 @@ async function EditService({ id }: { id: string }) {
   );
 }
 
-export default async function EditServicePage({
+export default function EditServicePage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
   return (
     <Suspense fallback={null}>
-      <EditService id={id} />
+      <EditService params={params} />
     </Suspense>
   );
 }

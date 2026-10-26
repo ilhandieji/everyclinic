@@ -29,6 +29,7 @@ Updating these instructions does not migrate the application. Auth is implemente
 | [stack.mdc](../../.cursor/rules/stack.mdc) | Verified versions (Next 16, Prisma 7, next-auth v4, Zod 4, and related libraries) | `**/*.{ts,tsx,css,prisma}` |
 | [backend-security.mdc](../../.cursor/rules/backend-security.mdc) | Auth versus authorization, Zod, sensitive data, migration hazard, uploads | `src/**`, `prisma/**` |
 | [ui-conventions.mdc](../../.cursor/rules/ui-conventions.mdc) | shadcn/Radix, accessibility, states, restrained design | `src/**/*.tsx`, `src/**/*.css` |
+| [architecture.mdc](../../.cursor/rules/architecture.mdc) | Directory roles, import direction, and where new code belongs | `src/**`, `prisma/**` |
 
 `product-and-environments.mdc` has been removed. Docker rules now live in `local-environments.mdc`.
 
@@ -71,12 +72,12 @@ Do not call these for a trivial copy or style edit.
 ## Known repo facts (for agents)
 
 - Branch `main`. Do not create branches unless the user asks. Do not change Git identity.
-- Auth route and credentials flow exist in source. `User` has no role. Runtime auth has not been verified by tests in this repo.
-- Migration history is inconsistent. See `backend-security` and `domain-model.md`. Do not run destructive Prisma commands unless the user asks.
+- Auth route and credentials flow exist in source. `User` has no role column. Physician access is a `PhysicianProfile` row. `pnpm test` does not exercise login.
+- Do not rewrite applied migrations. `20261022180000_nextauth_credentials` is a no-op. Keep `service_requests_one_pending`, `medical_services_price_bounds`, and `physician_profiles_singleton_is_one`.
 - Prisma config file: `prisma7.config.ts`.
 - Local Compose is `compose.yml`. Native `pnpm dev` is not Docker verification.
 - [README.md](../../README.md) introduces the platform and still links to Next.js learning docs. It does not list unimplemented features as available.
-- Store wording remains in the layout, home page, navbar, and auth card until a later UI task.
+- [docs/architecture.md](../architecture.md) is the directory map. Do not reintroduce store wording on physician-site pages.
 
 ## Optional, not mandatory
 

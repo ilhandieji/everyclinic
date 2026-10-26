@@ -1,0 +1,62 @@
+---
+description: Directory roles, import direction, and where new physician-site code belongs
+globs: "{src/**/*.{ts,tsx},prisma/**/*.{prisma,sql}}"
+alwaysApply: false
+---
+
+# Architecture
+
+The map is [docs/architecture.md](docs/architecture.md). Product rules stay in [docs/ai/domain-model.md](docs/ai/domain-model.md). Do not copy those rules here.
+
+## Where code goes
+
+- `src/app/`: routes, layouts, and route handlers. A page may read Prisma and pass plain data to components.
+- `src/components/ui/`: shared primitives. No actions, Prisma, or `next-auth`.
+- `src/components/layout/`: shell, header, navigation.
+- `src/components/auth/`: session UI.
+- `src/components/site/`: physician-site feature UI. It may import server actions and Zod. It must not import Prisma.
+- `src/components/providers/`: app-wide providers.
+- `src/lib/actions/`: server actions. `ActionState` lives in `state.ts`.
+- `src/lib/validators/`: Zod schemas. No Prisma and no React.
+- `src/lib/access.ts`: current user, physician, and patient.
+- `src/lib/auth.ts`: NextAuth options. Server only.
+- `src/lib/prisma.ts`: Prisma client and the physician insert guard. Server only.
+- `src/lib/physician-site.ts`: the singleton public physician read.
+- `src/lib/money.ts`: the price bound and bigint-to-number conversion.
+- `src/lib/storage.ts` and `src/lib/uploads.ts`: local images. Server only.
+- `prisma/`: schema, new migrations, and the local seed.
+
+Use kebab-case file names. Do not add a barrel `index.ts` for every folder. Do not rename `components/site`.
+
+## Components
+
+A component owns one workflow. Extract a sibling when a second workflow appears, as `ServiceImageField` and `DeleteServiceButton` sit beside `ServiceForm`. Do not extract a component that is used once and has no separate responsibility. Do not split the primitives in `components/ui`.
+
+Keep functions and React components as functions. Do not add classes, repositories, or a dependency-injection container.
+
+## Imports
+
+- Client components must not import `src/lib/prisma.ts`, `src/lib/auth.ts`, `src/lib/storage.ts`, or `src/lib/physician-site.ts`.
+- Validators and `src/lib/money.ts` must not import Prisma or React.
+- Actions may use access, validators, Prisma, and storage.
+- While `cacheComponents` is enabled, a server read of cookies, headers, or the database calls `connection()` from `next/server`.
+
+## Behavior
+
+Business rules for requests, prices, and ownership live in server actions and Zod. Client checks are only immediate feedback.
+
+Authorize with `currentPhysician` or `currentPatient`, then scope the query by that id. Do not trust a posted profile id.
+
+Prices cross into client components as `number`, through `displayPrices`. The cap is `1000000000000`.
+
+Public physician reads use `findPublicPhysician` (`singleton: 1`).
+
+Unexpected database errors return a generic Persian message and log a static event name, not the request body.
+
+Before a bugfix, name the caller, the input, and the observable result. Preserve that result unless a reviewed defect says it is wrong.
+
+## Schema and tests
+
+Schema changes are new migrations. Do not edit applied SQL. Do not drop `service_requests_one_pending`, `medical_services_price_bounds`, or `physician_profiles_singleton_is_one`.
+
+Tests for pure rules live in `tests/` and run with `pnpm test`. Do not place a `*.test.ts` file beside application modules. That script does not migrate or seed.

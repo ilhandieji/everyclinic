@@ -17,7 +17,6 @@ alwaysApply: false
 | Prisma / `@prisma/client` / `@prisma/adapter-pg` | 7.10.1 |
 | next-auth | 4.24.15 (v4, not Auth.js v5) |
 | Zod | 4.6.7 |
-| TanStack React Table | 9.3.1 |
 | Axios | 1.20.0 |
 | pg | 8.23.1 |
 | shadcn CLI | 4.22.1 |
@@ -31,7 +30,7 @@ Package manager: **pnpm@12.11.2** only (`pnpm` scripts).
 - **Database:** PostgreSQL via adapter; no second ORM. Raw SQL only with documented justification.
 - **Auth:** Extend existing NextAuth v4 + Prisma persistence; do not swap libraries or upgrade to Auth.js v5 without approval.
 - **Validation:** Zod 4 on server trust boundaries (mutations, API inputs).
-- **Tables:** TanStack Table v9 for real admin data tables only; run Intent table skill (`pnpm exec intent load …`) before Table work. Not for simple static lists.
+- **Tables:** Do not add TanStack Table unless the user approves that dependency. Simple lists stay as semantic lists.
 - **HTTP:** Axios for appropriate **client** HTTP; avoid extra server round trips where server code can call Prisma or internal modules directly.
 - **UI:** shadcn + Radix primitives; tokens in [src/app/globals.css](src/app/globals.css). No separate `tailwind.config` — CSS-first Tailwind 4.
 - **Runtime:** Default Node.js on Next.js; do not add `export const runtime = 'edge'` without a specific reason.

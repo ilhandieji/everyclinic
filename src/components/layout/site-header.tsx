@@ -1,6 +1,7 @@
 import { connection } from "next/server";
 import { SiteNavbar } from "@/components/layout/site-navbar";
 import { currentPatient, currentPhysician } from "@/lib/access";
+import { findPublicPhysician } from "@/lib/physician-site";
 import prisma from "@/lib/prisma";
 
 export async function SiteHeader() {
@@ -11,9 +12,7 @@ export async function SiteHeader() {
   let showServices = false;
   try {
     const [profile, published, sessionPhysician, sessionPatient] = await Promise.all([
-      prisma.physicianProfile.findFirst({
-        select: { displayName: true },
-      }),
+      findPublicPhysician({ displayName: true }),
       prisma.medicalService.count({ where: { published: true } }),
       currentPhysician(),
       currentPatient(),

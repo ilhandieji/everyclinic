@@ -60,7 +60,7 @@ FROM users
 WHERE email = 'physician@example.com';
 ```
 
-Replace the email with the registered account. A second physician row is rejected.
+Replace the email with the registered account. `physician_profiles_singleton_is_one` rejects any row whose `singleton` is not `1`, so a second physician row cannot be inserted.
 
 ## Learn More
 

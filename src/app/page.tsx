@@ -7,18 +7,18 @@ import { HeroMark } from "@/components/site/hero-mark";
 import { ServiceCard } from "@/components/site/service-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { displayPrices } from "@/lib/money";
+import { findPublicPhysician } from "@/lib/physician-site";
 import prisma from "@/lib/prisma";
 
 async function Landing() {
   await connection();
   const [profile, services] = await Promise.all([
-    prisma.physicianProfile.findFirst({
-      select: {
-        displayName: true,
-        gender: true,
-        bio: true,
-        photoKey: true,
-      },
+    findPublicPhysician({
+      displayName: true,
+      gender: true,
+      bio: true,
+      photoKey: true,
     }),
     prisma.medicalService.findMany({
       where: { published: true },
@@ -93,8 +93,7 @@ async function Landing() {
                   id={service.id}
                   title={service.title}
                   description={service.description}
-                  priceMin={service.priceMin}
-                  priceMax={service.priceMax}
+                  {...displayPrices(service)}
                   currencyLabel={service.currencyLabel}
                   imageKey={service.imageKey}
                 />

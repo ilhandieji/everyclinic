@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
+import { CancelRequestForm } from "@/components/site/cancel-request-form";
 import { StatusBadge } from "@/components/site/status-badge";
 import { currentPatient } from "@/lib/access";
 import { Card, CardContent } from "@/components/ui/card";
@@ -22,7 +23,7 @@ async function MyRequests() {
       note: true,
       status: true,
       createdAt: true,
-      service: { select: { id: true, title: true } },
+      service: { select: { id: true, title: true, published: true } },
     },
   });
 
@@ -50,13 +51,18 @@ async function MyRequests() {
             <li key={request.id}>
               <Card className="h-full">
                 <CardContent className="flex flex-col gap-2">
-                  <Link
-                    href={`/services/${request.service.id}`}
-                    className="text-sm font-semibold text-foreground hover:underline"
-                  >
-                    {request.service.title}
-                  </Link>
+                  {request.service.published ? (
+                    <Link
+                      href={`/services/${request.service.id}`}
+                      className="text-sm font-semibold text-foreground hover:underline"
+                    >
+                      {request.service.title}
+                    </Link>
+                  ) : (
+                    <p className="text-sm font-semibold text-foreground">{request.service.title}</p>
+                  )}
                   <StatusBadge status={request.status} />
+                  {request.status === "pending" ? <CancelRequestForm id={request.id} /> : null}
                   {request.note ? (
                     <p className="whitespace-pre-wrap text-sm text-foreground">{request.note}</p>
                   ) : null}

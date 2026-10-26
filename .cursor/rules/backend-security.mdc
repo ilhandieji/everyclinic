@@ -14,7 +14,7 @@ alwaysApply: false
 - `User` has no role. Authenticated is not physician, patient, or platform administrator. Open registration creates a role-less user and does not grant clinical access.
 - Session claims today are `id` and `email`. Re-check authorization on the server for every restricted query and mutation. UI hiding is not access control.
 - Do not trust a browser-supplied `doctorId`, `patientId`, `practiceId`, or similar id. Load the resource and confirm the caller may access it.
-- Once a tenant exists, every tenant-scoped query and mutation must filter by that tenant on the server. The tenant model is unresolved; see [docs/ai/domain-model.md](docs/ai/domain-model.md). Stop and ask before adding the first tenant-scoped table.
+- The tenant is the singleton physician profile. Scope physician mutations by `currentPhysician().id`. Do not add a second tenant table. See [docs/ai/domain-model.md](docs/ai/domain-model.md).
 - Separate public physician content from clinical records in queries. Do not return unpublished configuration or private records to public clients.
 - Do not expose internal errors, SQL, stack traces, or secrets to clients.
 
@@ -36,7 +36,7 @@ alwaysApply: false
 
 ## Schema and migrations
 
-- [prisma/schema.prisma](prisma/schema.prisma) matches the **current** text of [prisma/migrations/20261022132459_init/migration.sql](prisma/migrations/20261022132459_init/migration.sql) (NextAuth tables). That init file was rewritten in place. [prisma/migrations/20261022180000_nextauth_credentials/migration.sql](prisma/migrations/20261022180000_nextauth_credentials/migration.sql) still drops legacy `Post` and `User` and creates the same tables again. Fresh migrate of both files is inconsistent, and a database that applied the original init can have a checksum mismatch. Read both files before any migration work. Do not rewrite applied migrations unless the user explicitly asks for a repair plan.
+- Do not rewrite applied migrations. [prisma/migrations/20261022180000_nextauth_credentials/migration.sql](prisma/migrations/20261022180000_nextauth_credentials/migration.sql) is `SELECT 1`. Keep SQL that Prisma does not model: partial unique index `service_requests_one_pending`, check `medical_services_price_bounds`, and check `physician_profiles_singleton_is_one`. Do not drop them to silence a schema diff. Price columns are `BIGINT`.
 - Do not run `migrate`, `db push`, `migrate reset`, or other destructive DB commands unless the user explicitly asks.
 - Do not rename existing auth tables or fields as part of an unrelated change.
 
