@@ -29,3 +29,66 @@ export async function currentPatient() {
     where: { userId: user.id },
   });
 }
+
+const physicianPatientSelect = {
+  id: true,
+  userId: true,
+  user: { select: { email: true, name: true, username: true } },
+} as const;
+
+async function physicianPatientViaCare(
+  physicianProfileId: string,
+  patientProfileId: string,
+) {
+  const relationship = await prisma.careRelationship.findUnique({
+    where: {
+      physicianProfileId_patientProfileId: {
+        physicianProfileId,
+        patientProfileId,
+      },
+    },
+    select: {
+      patient: { select: physicianPatientSelect },
+    },
+  });
+  return relationship?.patient ?? null;
+}
+
+/** Active care relationship — required for clinical writes. */
+export async function requirePhysicianPatient(patientProfileId: string) {
+  const physician = await currentPhysician();
+  if (!physician) {
+    return null;
+  }
+  const patient = await physicianPatientViaCare(physician.id, patientProfileId);
+  if (!patient) {
+    return null;
+  }
+  return { physician, patient };
+}
+
+/** Care relationship or a service request to this physician — enough to open the profile. */
+export async function requirePhysicianPatientView(patientProfileId: string) {
+  const physician = await currentPhysician();
+  if (!physician) {
+    return null;
+  }
+  const viaCare = await physicianPatientViaCare(physician.id, patientProfileId);
+  if (viaCare) {
+    return { physician, patient: viaCare, hasCareRelationship: true as const };
+  }
+
+  const patient = await prisma.patientProfile.findFirst({
+    where: {
+      id: patientProfileId,
+      serviceRequests: {
+        some: { service: { physicianProfileId: physician.id } },
+      },
+    },
+    select: physicianPatientSelect,
+  });
+  if (!patient) {
+    return null;
+  }
+  return { physician, patient, hasCareRelationship: false as const };
+}

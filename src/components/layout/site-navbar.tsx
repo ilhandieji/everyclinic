@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useCallback, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
+  Bell,
   ClipboardList,
+  FolderOpen,
   House,
   Inbox,
   LayoutDashboard,
@@ -18,10 +20,16 @@ import {
 } from "lucide-react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { useAuthOverlay } from "@/components/auth/auth-overlay";
+import { CountBadge, UnreadHint } from "@/components/layout/count-badge";
+import { NotificationLive } from "@/components/layout/notification-live";
 import { useAppTheme } from "@/components/providers/theme-provider";
 import { Button } from "@/components/ui/button";
 import SkyToggle from "@/components/ui/sky-toggle";
 import { siteShellClass } from "@/components/layout/site-shell";
+import {
+  emptyNotificationSummary,
+  type NotificationSummary,
+} from "@/lib/notification-types";
 import { cn } from "@/lib/utils";
 
 function navLinkClass(active: boolean) {
@@ -73,6 +81,10 @@ export function SiteNavbar({
   const { openAuth } = useAuthOverlay();
   const signedIn = Boolean(session?.user?.email) && !session?.error;
   const [menuOpen, setMenuOpen] = useState(false);
+  const [summary, setSummary] = useState<NotificationSummary>(emptyNotificationSummary);
+  const onSummary = useCallback((next: NotificationSummary) => {
+    setSummary(next);
+  }, []);
   const closeMenu = () => setMenuOpen(false);
 
   const homeActive = pathname === "/";
@@ -94,10 +106,18 @@ export function SiteNavbar({
         </NavLink>
       ) : null}
       {patient ? (
-        <NavLink href="/requests" active={pathname === "/requests" || pathname.startsWith("/requests/")} onNavigate={closeMenu}>
-          <ClipboardList aria-hidden className="size-4" />
-          درخواست‌های من
-        </NavLink>
+        <>
+          <NavLink href="/requests" active={pathname === "/requests" || pathname.startsWith("/requests/")} onNavigate={closeMenu}>
+            <ClipboardList aria-hidden className="size-4" />
+            درخواست‌های من
+            <UnreadHint count={summary.unreadServiceRequest} label="اعلان خوانده‌نشدهٔ درخواست" />
+          </NavLink>
+          <NavLink href="/care" active={pathname === "/care" || pathname.startsWith("/care")} onNavigate={closeMenu}>
+            <FolderOpen aria-hidden className="size-4" />
+            پرونده
+            <UnreadHint count={summary.unreadCare} label="اعلان خوانده‌نشدهٔ پرونده" />
+          </NavLink>
+        </>
       ) : null}
       {physician ? (
         <>
@@ -120,6 +140,7 @@ export function SiteNavbar({
           >
             <Inbox aria-hidden className="size-4" />
             درخواست‌ها
+            <UnreadHint count={summary.unreadServiceRequest} label="اعلان خوانده‌نشدهٔ درخواست" />
           </NavLink>
         </>
       ) : null}
@@ -163,6 +184,7 @@ export function SiteNavbar({
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/85 backdrop-blur-md">
+      <NotificationLive onSummary={onSummary} />
       <nav
         className={cn(siteShellClass, "flex items-center justify-between gap-3 py-2.5")}
         aria-label="ناوبری اصلی"
@@ -186,6 +208,26 @@ export function SiteNavbar({
         <div className="hidden min-w-0 flex-1 items-center gap-x-4 md:flex">{links}</div>
 
         <div className="flex items-center gap-2">
+          {signedIn ? (
+            <Link
+              href="/notifications"
+              onClick={closeMenu}
+              className={cn(
+                "inline-flex items-center rounded-lg px-1.5 py-1 outline-none focus-visible:ring-1 focus-visible:ring-ring/50",
+                pathname === "/notifications"
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+              aria-label={
+                summary.unreadTotal > 0
+                  ? `اعلان‌ها، ${summary.unreadTotal} خوانده‌نشده`
+                  : "اعلان‌ها"
+              }
+            >
+              <Bell aria-hidden className="size-4" />
+              <CountBadge count={summary.unreadTotal} />
+            </Link>
+          ) : null}
           {account}
           <Button
             type="button"

@@ -24,6 +24,7 @@ export function ServiceCard({
   priceMax,
   currencyLabel,
   imageKey,
+  physicianView = false,
 }: {
   id: string;
   title: string;
@@ -32,6 +33,8 @@ export function ServiceCard({
   priceMax: number | null;
   currencyLabel: string | null;
   imageKey?: string | null;
+  /** When true, link to manage edit — no patient booking CTA. */
+  physicianView?: boolean;
 }) {
   const { tile, Icon } = markFor(id);
 
@@ -63,9 +66,15 @@ export function ServiceCard({
           </p>
         ) : null}
         <PriceText min={priceMin} max={priceMax} label={currencyLabel} />
-        <Button asChild size="lg" className="mt-auto h-10 w-full text-sm">
-          <Link href={`/services/${id}`}>درخواست رزرو</Link>
-        </Button>
+        {physicianView ? (
+          <Button asChild size="lg" variant="outline" className="mt-auto h-10 w-full text-sm">
+            <Link href={`/manage/services/${id}`}>ویرایش خدمت</Link>
+          </Button>
+        ) : (
+          <Button asChild size="lg" className="mt-auto h-10 w-full text-sm">
+            <Link href={`/services/${id}`}>درخواست رزرو</Link>
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

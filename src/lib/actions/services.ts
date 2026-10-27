@@ -160,6 +160,37 @@ export async function updateService(
   return { ok: true };
 }
 
+export async function removeServiceImage(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const serviceId = String(formData.get("id") ?? "");
+  const owned = await ownedService(serviceId);
+  if (!owned) {
+    return { ok: false, error: "اجازه این کار را ندارید." };
+  }
+  const key = owned.service.imageKey;
+  if (!key) {
+    return { ok: true };
+  }
+
+  await prisma.medicalService.update({
+    where: { id: owned.service.id },
+    data: { imageKey: null },
+  });
+
+  const [services, photos] = await Promise.all([
+    prisma.medicalService.count({ where: { imageKey: key } }),
+    prisma.physicianProfile.count({ where: { photoKey: key } }),
+  ]);
+  if (services + photos === 0) {
+    await removeImage(key);
+  }
+
+  revalidateServices(owned.service.id);
+  return { ok: true };
+}
+
 export async function deleteService(
   _prev: ActionState,
   formData: FormData,

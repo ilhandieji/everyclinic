@@ -24,8 +24,15 @@ export const emailSchema = z
   .toLowerCase()
   .pipe(z.email({ message: "ایمیل معتبر وارد کنید." }));
 
+export const fullNameSchema = z
+  .string()
+  .trim()
+  .min(1, "نام و نام خانوادگی کامل را وارد کنید.")
+  .max(120, "نام و نام خانوادگی نباید بیش از ۱۲۰ نویسه باشد.");
+
 export const registerBodySchema = z
   .strictObject({
+    fullName: fullNameSchema,
     email: emailSchema,
     password: passwordSchema,
     confirmPassword: z.string(),

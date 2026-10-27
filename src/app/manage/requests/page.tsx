@@ -4,8 +4,11 @@ import { connection } from "next/server";
 import { RequestDecision } from "@/components/site/request-decision";
 import { StatusBadge } from "@/components/site/status-badge";
 import { currentPhysician } from "@/lib/access";
+import { PatientNameLink } from "@/components/site/patient-name-link";
+import { SiteShell, sitePanelClass, siteProseClass } from "@/components/layout/site-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
+import { formatFaDateTime } from "@/lib/tehran";
 
 async function RequestList() {
   await connection();
@@ -23,13 +26,18 @@ async function RequestList() {
       status: true,
       createdAt: true,
       service: { select: { title: true } },
-      patient: { select: { user: { select: { email: true } } } },
+      patient: {
+        select: {
+          id: true,
+          user: { select: { name: true } },
+        },
+      },
     },
   });
 
   return (
-    <div className="flex w-full flex-col gap-6 px-4 py-10 md:px-8">
-      <header className="flex flex-col gap-1">
+    <SiteShell className="flex flex-col gap-6">
+      <header className={`${siteProseClass} flex flex-col gap-1`}>
         <h1 className="text-lg font-semibold text-foreground">درخواست‌های رزرو</h1>
         <p className="text-sm text-muted-foreground">
           درخواست‌های بیماران برای خدمات شما.
@@ -37,8 +45,8 @@ async function RequestList() {
       </header>
 
       {requests.length === 0 ? (
-        <Card>
-          <CardContent>
+        <Card className={sitePanelClass}>
+          <CardContent className="text-center">
             <p className="text-sm text-muted-foreground">درخواستی نیست.</p>
           </CardContent>
         </Card>
@@ -51,12 +59,17 @@ async function RequestList() {
                   <CardTitle>{request.service.title}</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-2">
-                  <p className="text-sm text-muted-foreground">
-                    <span dir="ltr" lang="en" className="inline-block font-mono text-xs">
-                      {request.patient.user.email}
-                    </span>
-                  </p>
+                  <PatientNameLink
+                    href={`/manage/patients/${request.patient.id}`}
+                    name={request.patient.user.name}
+                  />
                   <StatusBadge status={request.status} />
+                  <time
+                    dateTime={request.createdAt.toISOString()}
+                    className="text-xs text-muted-foreground"
+                  >
+                    ارسال: {formatFaDateTime(request.createdAt)}
+                  </time>
                   {request.note ? (
                     <p className="whitespace-pre-wrap text-sm">{request.note}</p>
                   ) : null}
@@ -67,7 +80,7 @@ async function RequestList() {
           ))}
         </ul>
       )}
-    </div>
+    </SiteShell>
   );
 }
 

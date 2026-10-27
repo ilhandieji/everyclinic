@@ -49,7 +49,7 @@ function getThemeSnapshot(): AppTheme {
 }
 
 function getServerThemeSnapshot(): AppTheme {
-  return "dark";
+  return "light";
 }
 
 export function AppThemeProvider({ children }: { children: ReactNode }) {

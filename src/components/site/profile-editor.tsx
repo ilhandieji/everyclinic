@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { SiteShell } from "@/components/layout/site-shell";
 import { cn } from "@/lib/utils";
 
 const ACCEPT = "image/jpeg,image/png,image/webp";
@@ -88,7 +89,8 @@ export function ProfileEditor({
   }
 
   return (
-    <div className="flex w-full max-w-3xl flex-col gap-8 px-4 py-10 md:px-8">
+    <SiteShell>
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
       <header className="flex flex-col gap-1">
         <h1 className="text-lg font-semibold text-foreground">پروفایل عمومی</h1>
         <p className="text-sm text-muted-foreground">
@@ -235,6 +237,7 @@ export function ProfileEditor({
           </form>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </SiteShell>
   );
 }

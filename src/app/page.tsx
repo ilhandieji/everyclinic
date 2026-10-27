@@ -8,11 +8,13 @@ import { ServiceCard } from "@/components/site/service-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { displayPrices } from "@/lib/money";
+import { currentPhysician } from "@/lib/access";
 import { findPublicPhysician } from "@/lib/physician-site";
 import prisma from "@/lib/prisma";
 
 async function Landing() {
   await connection();
+  const physician = await currentPhysician();
   const [profile, services] = await Promise.all([
     findPublicPhysician({
       displayName: true,
@@ -66,7 +68,9 @@ async function Landing() {
             <p className="text-sm text-muted-foreground">پروفایل عمومی هنوز تکمیل نشده است.</p>
           ) : null}
           <Button asChild size="lg" className="h-10 px-4 text-sm">
-            <Link href="/services">مشاهده خدمات</Link>
+            <Link href={physician ? "/manage/services" : "/services"}>
+              {physician ? "مدیریت خدمات" : "مشاهده خدمات"}
+            </Link>
           </Button>
         </div>
         <HeroMark />
@@ -76,7 +80,9 @@ async function Landing() {
         <div className="flex flex-col gap-1">
           <h2 className="text-xl font-semibold">خدمات</h2>
           <p className="max-w-[65ch] text-sm text-muted-foreground">
-            نوع ویزیت را ببینید و برای هماهنگی، درخواست ثبت کنید.
+            {physician
+              ? "فهرست خدمات منتشرشده در سایت عمومی."
+              : "نوع ویزیت را ببینید و برای هماهنگی، درخواست ثبت کنید."}
           </p>
         </div>
         {services.length === 0 ? (
@@ -96,6 +102,7 @@ async function Landing() {
                   {...displayPrices(service)}
                   currencyLabel={service.currencyLabel}
                   imageKey={service.imageKey}
+                  physicianView={Boolean(physician)}
                 />
               </li>
             ))}
@@ -103,22 +110,24 @@ async function Landing() {
         )}
       </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>چطور درخواست بدهم</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="mb-3 max-w-[65ch] text-sm text-muted-foreground">
-            نوبت را پزشک هماهنگ می‌کند. ثبت درخواست به‌معنای وقت قطعی نیست.
-          </p>
-          <ol className="flex list-decimal flex-col gap-2 ps-5 text-sm leading-relaxed">
-            <li>خدمت مورد نظر را باز کنید.</li>
-            <li>اگر وارد حساب نشده‌اید، وارد شوید.</li>
-            <li>توضیح کوتاهی برای پزشک بنویسید و درخواست را ثبت کنید.</li>
-            <li>وضعیت درخواست را در «درخواست‌های من» ببینید تا پزشک آن را بپذیرد یا رد کند.</li>
-          </ol>
-        </CardContent>
-      </Card>
+      {physician ? null : (
+        <Card>
+          <CardHeader>
+            <CardTitle>چطور درخواست بدهم</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-3 max-w-[65ch] text-sm text-muted-foreground">
+              نوبت را پزشک هماهنگ می‌کند. ثبت درخواست به‌معنای وقت قطعی نیست.
+            </p>
+            <ol className="flex list-decimal flex-col gap-2 ps-5 text-sm leading-relaxed">
+              <li>خدمت مورد نظر را باز کنید.</li>
+              <li>اگر وارد حساب نشده‌اید، وارد شوید.</li>
+              <li>توضیح کوتاهی برای پزشک بنویسید و درخواست را ثبت کنید.</li>
+              <li>وضعیت درخواست را در «درخواست‌های من» ببینید تا پزشک آن را بپذیرد یا رد کند.</li>
+            </ol>
+          </CardContent>
+        </Card>
+      )}
     </SiteShell>
   );
 }

@@ -38,16 +38,21 @@ model Session {
 }
 
 model User {
-  id               String            @id @default(cuid())
-  name             String?
-  email            String            @unique
-  emailVerified    DateTime?         @map("email_verified")
-  image            String?
-  passwordHash     String            @map("password_hash")
-  accounts         Account[]
-  sessions         Session[]
-  patientProfile   PatientProfile?
-  physicianProfile PhysicianProfile?
+  id                      String                   @id @default(cuid())
+  name                    String?
+  username                String?                  @unique
+  email                   String                   @unique
+  emailVerified           DateTime?                @map("email_verified")
+  image                   String?
+  passwordHash            String                   @map("password_hash")
+  accounts                Account[]
+  sessions                Session[]
+  patientProfile          PatientProfile?
+  physicianProfile        PhysicianProfile?
+  notifications           Notification[]
+  authoredPrescriptions   Prescription[]           @relation("PrescriptionAuthor")
+  medicationStatusEvents  MedicationStatusEvent[]
+  createdReminders        FollowUpReminder[]
 
   @@map("users")
 }
@@ -60,6 +65,8 @@ model PatientProfile {
   user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   requests          ServiceRequest[]
   careRelationships CareRelationship[]
+  prescriptions     Prescription[]
+  reminders         FollowUpReminder[]
 
   @@map("patient_profiles")
 }
@@ -80,6 +87,8 @@ model PhysicianProfile {
   user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   services          MedicalService[]
   careRelationships CareRelationship[]
+  prescriptions     Prescription[]
+  reminders         FollowUpReminder[]
 
   @@map("physician_profiles")
 }
@@ -165,4 +174,129 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verification_tokens")
+}
+
+enum NotificationCategory {
+  service_request
+  reminder
+  medication
+
+  @@map("notification_category")
+}
+
+model Notification {
+  id              String               @id @default(cuid())
+  recipientUserId String               @map("recipient_user_id")
+  category        NotificationCategory
+  title           String
+  body            String               @db.Text
+  href            String
+  readAt          DateTime?            @map("read_at")
+  createdAt       DateTime             @default(now()) @map("created_at")
+  dedupeKey       String               @unique @map("dedupe_key")
+  recipient       User                 @relation(fields: [recipientUserId], references: [id], onDelete: Cascade)
+
+  @@index([recipientUserId, createdAt])
+  @@map("notifications")
+}
+
+model Prescription {
+  id                 String                   @id @default(cuid())
+  patientProfileId   String                   @map("patient_profile_id")
+  physicianProfileId String                   @map("physician_profile_id")
+  authoredByUserId   String                   @map("authored_by_user_id")
+  medicationName     String                   @map("medication_name")
+  dosage             String
+  frequency          String
+  notes              String?                  @db.Text
+  prescribedAt       DateTime                 @map("prescribed_at")
+  startDate          DateTime                 @map("start_date")
+  renewsId           String?                  @unique @map("renews_id")
+  createdAt          DateTime                 @default(now()) @map("created_at")
+  patient            PatientProfile           @relation(fields: [patientProfileId], references: [id], onDelete: Cascade)
+  physician          PhysicianProfile         @relation(fields: [physicianProfileId], references: [id], onDelete: Restrict)
+  author             User                     @relation("PrescriptionAuthor", fields: [authoredByUserId], references: [id], onDelete: Restrict)
+  renews             Prescription?            @relation("PrescriptionRenewal", fields: [renewsId], references: [id], onDelete: Restrict)
+  renewedBy          Prescription?            @relation("PrescriptionRenewal")
+  statusEvents       MedicationStatusEvent[]
+
+  @@index([patientProfileId, prescribedAt])
+  @@map("prescriptions")
+}
+
+enum MedicationStatus {
+  active
+  completed
+  discontinued
+
+  @@map("medication_status")
+}
+
+model MedicationStatusEvent {
+  id               String           @id @default(cuid())
+  prescriptionId   String           @map("prescription_id")
+  status           MedicationStatus
+  authoredByUserId String           @map("authored_by_user_id")
+  occurredAt       DateTime         @default(now()) @map("occurred_at")
+  endDate          DateTime?        @map("end_date")
+  note             String?          @db.Text
+  prescription     Prescription     @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  author           User             @relation(fields: [authoredByUserId], references: [id], onDelete: Restrict)
+
+  @@index([prescriptionId, occurredAt])
+  @@map("medication_status_events")
+}
+
+enum FollowUpReminderStatus {
+  pending
+  completed
+  cancelled
+
+  @@map("follow_up_reminder_status")
+}
+
+model FollowUpReminder {
+  id                 String                 @id @default(cuid())
+  patientProfileId   String                 @map("patient_profile_id")
+  physicianProfileId String                 @map("physician_profile_id")
+  createdByUserId    String                 @map("created_by_user_id")
+  title              String
+  message            String                 @db.Text
+  dueAt              DateTime               @map("due_at")
+  status             FollowUpReminderStatus @default(pending)
+  createdAt          DateTime               @default(now()) @map("created_at")
+  updatedAt          DateTime               @updatedAt @map("updated_at")
+  patient            PatientProfile         @relation(fields: [patientProfileId], references: [id], onDelete: Cascade)
+  physician          PhysicianProfile       @relation(fields: [physicianProfileId], references: [id], onDelete: Restrict)
+  creator            User                   @relation(fields: [createdByUserId], references: [id], onDelete: Restrict)
+  deliveries         ReminderDelivery[]
+
+  @@index([patientProfileId, dueAt])
+  @@index([status, dueAt])
+  @@map("follow_up_reminders")
+}
+
+enum ReminderDeliveryKind {
+  created
+  due
+
+  @@map("reminder_delivery_kind")
+}
+
+enum ReminderDeliveryChannel {
+  in_app
+
+  @@map("reminder_delivery_channel")
+}
+
+model ReminderDelivery {
+  id             String                   @id @default(cuid())
+  reminderId     String                   @map("reminder_id")
+  kind           ReminderDeliveryKind
+  channel        ReminderDeliveryChannel  @default(in_app)
+  idempotencyKey String                   @unique @map("idempotency_key")
+  createdAt      DateTime                 @default(now()) @map("created_at")
+  reminder       FollowUpReminder         @relation(fields: [reminderId], references: [id], onDelete: Cascade)
+
+  @@map("reminder_deliveries")
 }

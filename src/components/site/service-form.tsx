@@ -87,8 +87,8 @@ export function ServiceForm({
               className="min-h-32"
             />
           </Field>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Field>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <Field className="min-w-0">
               <FieldLabel htmlFor="price-min">حداقل قیمت</FieldLabel>
               <Input
                 id="price-min"
@@ -99,7 +99,7 @@ export function ServiceForm({
                 defaultValue={service?.priceMin ?? ""}
               />
             </Field>
-            <Field>
+            <Field className="min-w-0">
               <FieldLabel htmlFor="price-max">حداکثر قیمت</FieldLabel>
               <Input
                 id="price-max"
@@ -110,7 +110,7 @@ export function ServiceForm({
                 defaultValue={service?.priceMax ?? ""}
               />
             </Field>
-            <Field>
+            <Field className="min-w-0">
               <FieldLabel htmlFor="currency-label">واحد پول</FieldLabel>
               <Select
                 value={currency === "" ? undefined : currency}
@@ -130,7 +130,7 @@ export function ServiceForm({
                 </SelectContent>
               </Select>
             </Field>
-            <Field>
+            <Field className="min-w-0">
               <FieldLabel htmlFor="sort-order">ترتیب نمایش</FieldLabel>
               <Input
                 id="sort-order"
@@ -143,15 +143,6 @@ export function ServiceForm({
               />
             </Field>
           </div>
-          <Field orientation="horizontal" className="w-fit">
-            <Checkbox
-              id="published"
-              checked={published}
-              onCheckedChange={(checked) => setPublished(checked === true)}
-            />
-            <FieldLabel htmlFor="published">نمایش در صفحه خدمات</FieldLabel>
-          </Field>
-
           <FieldSet>
             <FieldLegend>بخش‌های سفارشی</FieldLegend>
             {sections.map((section, index) => (
@@ -201,14 +192,6 @@ export function ServiceForm({
                 </CardContent>
               </Card>
             ))}
-            <Button
-              type="button"
-              variant="outline"
-              className="w-fit"
-              onClick={() => setSections([...sections, { title: "", body: "" }])}
-            >
-              افزودن بخش
-            </Button>
           </FieldSet>
 
           {state?.ok === false ? <FieldError>{state.error}</FieldError> : null}
@@ -217,9 +200,32 @@ export function ServiceForm({
               ذخیره شد.
             </p>
           ) : null}
-          <Button type="submit" size="lg" className="h-10 w-fit px-4 text-sm" disabled={pending}>
-            {pending ? "در حال ذخیره" : "ذخیره"}
-          </Button>
+          <div className="flex w-full flex-wrap items-center gap-3">
+            <Field orientation="horizontal" className="w-fit shrink-0">
+              <Checkbox
+                id="published"
+                checked={published}
+                onCheckedChange={(checked) => setPublished(checked === true)}
+              />
+              <FieldLabel htmlFor="published">نمایش در صفحه خدمات</FieldLabel>
+            </Field>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-fit shrink-0"
+              onClick={() => setSections([...sections, { title: "", body: "" }])}
+            >
+              افزودن بخش
+            </Button>
+            <Button
+              type="submit"
+              size="lg"
+              className="h-10 w-fit shrink-0 px-4 text-sm"
+              disabled={pending}
+            >
+              {pending ? "در حال ذخیره" : "ذخیره"}
+            </Button>
+          </div>
         </FieldGroup>
       </form>
 

@@ -1,5 +1,7 @@
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
+import { currentPhysician } from "@/lib/access";
 import { SiteShell } from "@/components/layout/site-shell";
 import { ServiceCard } from "@/components/site/service-card";
 import { displayPrices } from "@/lib/money";
@@ -7,6 +9,9 @@ import prisma from "@/lib/prisma";
 
 async function ServiceList() {
   await connection();
+  if (await currentPhysician()) {
+    redirect("/manage/services");
+  }
   const services = await prisma.medicalService.findMany({
     where: { published: true },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],

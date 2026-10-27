@@ -33,4 +33,4 @@ A patient cancels only their own pending request. The cancel control is on the s
 
 ## What not to add
 
-Do not add a repository layer, a class hierarchy, or a new top-level `features/` tree. Do not add appointments, clinical records, or payments until that milestone is requested.
+Do not add a repository layer, a class hierarchy, or a new top-level `features/` tree. Do not add appointments, payments, SMS, email, or web push until that milestone is requested.

@@ -64,7 +64,9 @@
   --palette-blue-harbor: #163044;
   --palette-blue-mist: #9ec9de;
 
-  --background: #f4fbf7;
+
+  
+  --background: #eeeeee;
   --foreground: #17332c;
   --card: #ffffff;
   --card-foreground: #17332c;
@@ -79,8 +81,10 @@
   --accent: #ddf5ea;
   --accent-foreground: #164e45;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #d5e6de;
-  --input: #d5e6de;
+  /* Light mode: soft edges tuned to canvas + ink (not flat gray-green hex) */
+  --border: color-mix(in oklch, var(--muted-foreground) 24%, var(--background));
+  --input: color-mix(in oklch, var(--muted-foreground) 34%, var(--background));
+  --field-background: #ffffff;
   --ring: #0f9a8e;
   --chart-1: var(--palette-green);
   --chart-2: var(--palette-bright-fern);
@@ -118,6 +122,7 @@ html.dark,
   --destructive: oklch(0.704 0.191 22.216);
   --border: color-mix(in oklch, #ffffff 14%, transparent);
   --input: color-mix(in oklch, #ffffff 8%, transparent);
+  --field-background: #272727;
   --ring: var(--palette-sky-aqua);
   --chart-1: var(--palette-green);
   --chart-2: var(--palette-bright-fern);
@@ -157,6 +162,37 @@ html.dark .radix-themes {
   .focus-ring:focus-visible {
     outline: 2px solid var(--ring) !important;
     outline-offset: 2px !important;
+  }
+
+  /* Solid field surface on page/muted fills (shadcn controls default to bg-transparent). */
+  [data-slot="input"],
+  [data-slot="textarea"],
+  [data-slot="select-trigger"],
+  [data-slot="checkbox"]:not([data-state="checked"]) {
+    background-color: var(--field-background) !important;
+  }
+
+  [data-slot="input"]:disabled,
+  [data-slot="textarea"]:disabled,
+  [data-slot="select-trigger"]:disabled,
+  [data-slot="checkbox"]:disabled:not([data-state="checked"]) {
+    background-color: color-mix(in oklch, var(--field-background) 70%, var(--muted)) !important;
+  }
+
+  html:not(.dark) [data-slot="card"] {
+    border-width: 3px;
+    border-color: var(--border);
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--background) 55%, var(--border)),
+      0 2px 6px color-mix(in oklch, var(--foreground) 6%, transparent);
+  }
+
+  html:not(.dark) [data-slot="input"],
+  html:not(.dark) [data-slot="textarea"],
+  html:not(.dark) [data-slot="select-trigger"],
+  html:not(.dark) [data-slot="checkbox"]:not([data-state="checked"]) {
+    border-width: 3px;
+    border-color: var(--input);
   }
 }
 

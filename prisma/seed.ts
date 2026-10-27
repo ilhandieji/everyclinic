@@ -3,7 +3,10 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/app/generated/prisma/client";
 import { hashPassword } from "../src/lib/password";
 
-const PHYSICIAN_EMAIL = "demo.physician@example.test";
+const PHYSICIAN_EMAIL = "ilhan.dieji@gmail.com";
+const PHYSICIAN_USERNAME = "ilhan-dieji";
+const PHYSICIAN_NAME = "ایلحان دیه جی";
+const PHYSICIAN_DISPLAY_NAME = "دکتر ایلحان دیه جی";
 const DEFAULT_PASSWORD = "local-demo";
 const PROFILE_BIO =
   "روانپزشک و متخصص مغز و اعصاب. ویزیت بزرگسال برای مرور خواب، خلق، تمرکز و نشانه‌های عصبی. این معرفی نمونهٔ محلی است و به پزشک واقعی اشاره ندارد.";
@@ -82,6 +85,7 @@ const services = [
 const patients = [
   {
     email: "demo.patient.one@example.test",
+    username: "kian-maradi",
     name: "کیان مرادی",
     requests: [
       {
@@ -98,6 +102,7 @@ const patients = [
   },
   {
     email: "demo.patient.two@example.test",
+    username: "neda-ahmadi",
     name: "ندا احمدی",
     requests: [
       {
@@ -109,6 +114,7 @@ const patients = [
   },
   {
     email: "demo.patient.three@example.test",
+    username: "parsa-nemati",
     name: "پارسا نعمتی",
     requests: [
       {
@@ -120,6 +126,7 @@ const patients = [
   },
   {
     email: "demo.patient.four@example.test",
+    username: "hasti-rad",
     name: "هستی راد",
     requests: [
       {
@@ -149,44 +156,43 @@ async function main() {
   try {
     const passwordHash = await hashPassword(password);
 
-    const physicianUser = await prisma.user.upsert({
+    const existingPhysicianUser = await prisma.user.findUnique({
       where: { email: PHYSICIAN_EMAIL },
-      update: { passwordHash, name: "سارا کیانی" },
-      create: {
-        email: PHYSICIAN_EMAIL,
-        name: "سارا کیانی",
-        passwordHash,
-      },
-    });
-
-    const ownPhysician = await prisma.physicianProfile.findUnique({
-      where: { userId: physicianUser.id },
       select: { id: true },
     });
-    const otherPhysician = await prisma.physicianProfile.findFirst({
-      where: { userId: { not: physicianUser.id } },
-      select: { id: true },
-    });
-    if (otherPhysician) {
-      throw new Error(
-        "یک پروفایل پزشک برای حساب دیگری وجود دارد. دادهٔ نمونه آن را تغییر نمی‌دهد.",
-      );
-    }
-
-    const physician = ownPhysician
-      ? await prisma.physicianProfile.update({
-          where: { id: ownPhysician.id },
+    const physicianUser = existingPhysicianUser
+      ? await prisma.user.update({
+          where: { email: PHYSICIAN_EMAIL },
+          data: { name: PHYSICIAN_NAME, username: PHYSICIAN_USERNAME },
+        })
+      : await prisma.user.create({
           data: {
-            displayName: "دکتر سارا کیانی",
-            gender: "زن",
+            email: PHYSICIAN_EMAIL,
+            username: PHYSICIAN_USERNAME,
+            name: PHYSICIAN_NAME,
+            passwordHash,
+          },
+        });
+
+    const singletonProfile = await prisma.physicianProfile.findFirst({
+      select: { id: true, userId: true },
+    });
+
+    const physician = singletonProfile
+      ? await prisma.physicianProfile.update({
+          where: { id: singletonProfile.id },
+          data: {
+            userId: physicianUser.id,
+            displayName: PHYSICIAN_DISPLAY_NAME,
+            gender: "مرد",
             bio: PROFILE_BIO,
           },
         })
       : await prisma.physicianProfile.create({
           data: {
             userId: physicianUser.id,
-            displayName: "دکتر سارا کیانی",
-            gender: "زن",
+            displayName: PHYSICIAN_DISPLAY_NAME,
+            gender: "مرد",
             bio: PROFILE_BIO,
           },
         });
@@ -243,9 +249,10 @@ async function main() {
     for (const patient of patients) {
       const user = await prisma.user.upsert({
         where: { email: patient.email },
-        update: { passwordHash, name: patient.name },
+        update: { passwordHash, name: patient.name, username: patient.username },
         create: {
           email: patient.email,
+          username: patient.username,
           name: patient.name,
           passwordHash,
         },

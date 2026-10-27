@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { currentPhysician } from "@/lib/access";
+import { SiteShell, siteProseClass } from "@/components/layout/site-shell";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const links = [
@@ -36,8 +37,8 @@ async function ManageHub() {
   }
 
   return (
-    <div className="flex w-full flex-col gap-6 px-4 py-10 md:px-8">
-      <header className="flex flex-col gap-1">
+    <SiteShell className="flex flex-col gap-6">
+      <header className={`${siteProseClass} flex flex-col gap-1`}>
         <h1 className="text-lg font-semibold text-foreground">مدیریت مطب</h1>
         <p className="text-sm text-muted-foreground">
           از اینجا بخش‌های مختلف پنل پزشک را باز کنید.
@@ -57,7 +58,7 @@ async function ManageHub() {
           </li>
         ))}
       </ul>
-    </div>
+    </SiteShell>
   );
 }
 

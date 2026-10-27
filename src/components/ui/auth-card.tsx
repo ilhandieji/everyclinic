@@ -16,6 +16,7 @@ import {
   Eye,
   EyeClosed,
   ArrowLeft,
+  UserRound,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { safeCallbackUrl } from "@/lib/validators/auth";
@@ -36,7 +37,7 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   );
 }
 
-type FocusField = "email" | "password" | "confirmPassword" | null;
+type FocusField = "fullName" | "email" | "password" | "confirmPassword" | null;
 
 export type AuthCardMode = "login" | "register";
 
@@ -55,6 +56,7 @@ export function AuthCard({
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -84,6 +86,10 @@ export function AuthCard({
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
+    if (!isLogin && fullName.trim().length === 0) {
+      setError("نام و نام خانوادگی کامل را وارد کنید.");
+      return;
+    }
     setIsLoading(true);
 
     try {
@@ -91,7 +97,12 @@ export function AuthCard({
         const res = await fetch("/api/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password, confirmPassword }),
+          body: JSON.stringify({
+            fullName: fullName.trim(),
+            email,
+            password,
+            confirmPassword,
+          }),
         });
         const data = (await res.json()) as { error?: string };
         if (!res.ok) {
@@ -194,6 +205,48 @@ export function AuthCard({
                 ) : null}
 
                 <div className="space-y-3">
+                  {!isLogin ? (
+                    <div
+                      className={cn(
+                        "relative",
+                        focusedInput === "fullName" && "z-10",
+                      )}
+                    >
+                      <label
+                        htmlFor="auth-full-name"
+                        className="mb-1 block text-start text-xs text-muted-foreground"
+                      >
+                        نام و نام خانوادگی کامل
+                      </label>
+                      <div className="relative flex items-center rounded-lg">
+                        <UserRound
+                          className={cn(
+                            "absolute start-3 w-4 h-4 transition-all duration-300",
+                            focusedInput === "fullName"
+                              ? "text-foreground"
+                              : "text-muted-foreground",
+                          )}
+                          aria-hidden
+                        />
+                        <Input
+                          id="auth-full-name"
+                          name="fullName"
+                          type="text"
+                          autoComplete="name"
+                          required
+                          dir="rtl"
+                          lang="fa-IR"
+                          maxLength={120}
+                          placeholder="مثلاً علی رضایی"
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          onFocus={() => setFocusedInput("fullName")}
+                          onBlur={() => setFocusedInput(null)}
+                          className="w-full border-input bg-background/40 text-foreground placeholder:text-muted-foreground h-10 transition-all duration-300 ps-10 pe-3 focus:bg-background/70 text-start"
+                        />
+                      </div>
+                    </div>
+                  ) : null}
                   <div
                     className={cn(
                       "relative",
@@ -240,7 +293,7 @@ export function AuthCard({
                     <label htmlFor="auth-password" className="sr-only">
                       رمز عبور
                     </label>
-                    <div dir="ltr" className="relative flex items-center rounded-lg">
+                    <div className="relative flex items-center rounded-lg">
                       <Lock
                         className={cn(
                           "absolute start-3 w-4 h-4 transition-all duration-300",
@@ -258,7 +311,8 @@ export function AuthCard({
                           isLogin ? "current-password" : "new-password"
                         }
                         required
-                        dir="ltr"
+                        dir="rtl"
+                        lang="fa-IR"
                         placeholder="رمز عبور"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -293,7 +347,7 @@ export function AuthCard({
                       <label htmlFor="auth-confirm-password" className="sr-only">
                         تکرار رمز عبور
                       </label>
-                      <div dir="ltr" className="relative flex items-center rounded-lg">
+                      <div className="relative flex items-center rounded-lg">
                         <Lock
                           className={cn(
                             "absolute start-3 w-4 h-4 transition-all duration-300",
@@ -309,7 +363,8 @@ export function AuthCard({
                           type={showConfirmPassword ? "text" : "password"}
                           autoComplete="new-password"
                           required
-                          dir="ltr"
+                          dir="rtl"
+                          lang="fa-IR"
                           placeholder="تکرار رمز عبور"
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
@@ -390,12 +445,7 @@ export function AuthCard({
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  type="button"
-                  onClick={() => {
-                    void handleSubmit({
-                      preventDefault() {},
-                    } as React.FormEvent);
-                  }}
+                  type="submit"
                   disabled={isLoading}
                   className="w-full relative group/button mt-2"
                 >

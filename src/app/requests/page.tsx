@@ -4,12 +4,17 @@ import { Suspense } from "react";
 import { connection } from "next/server";
 import { CancelRequestForm } from "@/components/site/cancel-request-form";
 import { StatusBadge } from "@/components/site/status-badge";
-import { currentPatient } from "@/lib/access";
+import { currentPatient, currentPhysician } from "@/lib/access";
+import { SiteShell, sitePanelClass, siteProseClass } from "@/components/layout/site-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
 
 async function MyRequests() {
   await connection();
+  const physician = await currentPhysician();
+  if (physician) {
+    redirect("/manage/requests");
+  }
   const patient = await currentPatient();
   if (!patient) {
     redirect("/");
@@ -28,8 +33,8 @@ async function MyRequests() {
   });
 
   return (
-    <div className="flex w-full flex-col gap-6 px-4 py-10 md:px-8">
-      <header className="flex flex-col gap-1">
+    <SiteShell className="flex flex-col gap-6">
+      <header className={`${siteProseClass} flex flex-col gap-1`}>
         <h1 className="text-lg font-semibold text-foreground">درخواست‌های من</h1>
         <p className="text-sm text-muted-foreground">
           وضعیت درخواست‌های رزرو خدمت را اینجا ببینید.
@@ -37,8 +42,8 @@ async function MyRequests() {
       </header>
 
       {requests.length === 0 ? (
-        <Card className="max-w-xl">
-          <CardContent className="flex flex-col gap-3">
+        <Card className={sitePanelClass}>
+          <CardContent className="flex flex-col items-center gap-3 text-center">
             <p className="text-sm text-muted-foreground">هنوز درخواستی ثبت نکرده‌اید.</p>
             <Link href="/services" className="text-sm font-medium text-foreground underline-offset-4 hover:underline">
               مشاهدهٔ خدمات
@@ -82,7 +87,7 @@ async function MyRequests() {
           ))}
         </ul>
       )}
-    </div>
+    </SiteShell>
   );
 }
 

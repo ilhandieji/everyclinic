@@ -29,7 +29,7 @@ export function RequestDecision({ id }: { id: string }) {
       </form>
       <form action={declineAction}>
         <input type="hidden" name="id" value={id} />
-        <Button type="submit" size="sm" variant="outline" disabled={accepting || declining}>
+        <Button type="submit" size="sm" variant="destructive" disabled={accepting || declining}>
           رد کردن
         </Button>
       </form>

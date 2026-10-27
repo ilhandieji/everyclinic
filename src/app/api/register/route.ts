@@ -24,13 +24,14 @@ export async function POST(request: Request) {
     );
   }
 
-  const { email, password } = parsed.data;
+  const { email, password, fullName } = parsed.data;
 
   try {
     const passwordHash = await hashPassword(password);
     await prisma.user.create({
       data: {
         email,
+        name: fullName,
         passwordHash,
         patientProfile: { create: {} },
       },

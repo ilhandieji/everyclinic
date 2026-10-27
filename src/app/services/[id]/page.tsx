@@ -29,6 +29,10 @@ async function ServiceDetail({ params }: { params: Promise<{ id: string }> }) {
     notFound();
   }
 
+  if (physician) {
+    redirect(`/manage/services/${service.id}`);
+  }
+
   const owns = physician?.id === service.physicianProfileId;
   if (!service.published && !owns) {
     notFound();
@@ -75,10 +79,10 @@ async function ServiceDetail({ params }: { params: Promise<{ id: string }> }) {
           </CardContent>
         </Card>
       ))}
-      {owns ? null : (
+      {owns || physician ? null : (
         <RequestPanel
           serviceId={service.id}
-          signedIn={Boolean(user && patient)}
+          signedIn={Boolean(user && patient && !physician)}
           request={mine}
         />
       )}

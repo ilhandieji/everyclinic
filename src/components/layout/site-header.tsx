@@ -19,8 +19,8 @@ export async function SiteHeader() {
     ]);
     brand = profile?.displayName?.trim() ?? "";
     physician = Boolean(sessionPhysician);
-    patient = Boolean(sessionPatient);
-    showServices = physician || published > 0;
+    patient = Boolean(sessionPatient) && !physician;
+    showServices = !physician && published > 0;
   } catch {
     brand = "";
   }

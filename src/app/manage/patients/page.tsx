@@ -2,7 +2,9 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { currentPhysician } from "@/lib/access";
+import { SiteShell, sitePanelClass, siteProseClass } from "@/components/layout/site-shell";
 import { Card, CardContent } from "@/components/ui/card";
+import { PatientNameLink } from "@/components/site/patient-name-link";
 import prisma from "@/lib/prisma";
 
 async function PatientList() {
@@ -20,15 +22,16 @@ async function PatientList() {
       createdAt: true,
       patient: {
         select: {
-          user: { select: { email: true } },
+          id: true,
+          user: { select: { email: true, name: true } },
         },
       },
     },
   });
 
   return (
-    <div className="flex w-full flex-col gap-6 px-4 py-10 md:px-8">
-      <header className="flex flex-col gap-1">
+    <SiteShell className="flex flex-col gap-6">
+      <header className={`${siteProseClass} flex flex-col gap-1`}>
         <h1 className="text-lg font-semibold text-foreground">بیماران</h1>
         <p className="text-sm text-muted-foreground">
           پس از پذیرش درخواست رزرو، بیمار در این فهرست ظاهر می‌شود.
@@ -36,8 +39,8 @@ async function PatientList() {
       </header>
 
       {relationships.length === 0 ? (
-        <Card>
-          <CardContent>
+        <Card className={sitePanelClass}>
+          <CardContent className="text-center">
             <p className="text-sm text-muted-foreground">
               هنوز بیماری با رابطهٔ مراقبت ثبت نشده است. درخواست‌های پذیرفته‌شده اینجا
               نمایش داده می‌شوند.
@@ -50,7 +53,11 @@ async function PatientList() {
             <li key={row.id}>
               <Card className="h-full">
                 <CardContent className="flex flex-col gap-1">
-                  <span dir="ltr" lang="en" className="font-mono text-sm text-foreground">
+                  <PatientNameLink
+                    href={`/manage/patients/${row.patient.id}`}
+                    name={row.patient.user.name}
+                  />
+                  <span dir="ltr" lang="en" className="font-mono text-sm text-muted-foreground">
                     {row.patient.user.email}
                   </span>
                   <time
@@ -70,13 +77,19 @@ async function PatientList() {
           ))}
         </ul>
       )}
-    </div>
+    </SiteShell>
   );
 }
 
 export default function ManagePatientsPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense
+      fallback={
+        <SiteShell>
+          <p className="text-sm text-muted-foreground">در حال بارگذاری…</p>
+        </SiteShell>
+      }
+    >
       <PatientList />
     </Suspense>
   );

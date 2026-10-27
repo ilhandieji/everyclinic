@@ -12,7 +12,7 @@ Implemented in source. `pnpm test` covers price bounds, request eligibility, cal
 
 - NextAuth v4 credentials in `src/lib/auth.ts` and `src/app/api/auth/[...nextauth]/route.ts`.
 - JWT sessions plus a Prisma `Session` row, expiry checks, and deletion on sign-out or invalid session.
-- Registration in `src/app/api/register/route.ts` creates a `User` and a `PatientProfile`. It does not create a physician.
+- Registration in `src/app/api/register/route.ts` creates a `User` and a `PatientProfile`. It requires `User.name` (Persian full name) for new accounts. Existing `User.name` values may stay null. It does not create a physician.
 - `PhysicianProfile` is inserted outside the app client. `src/lib/prisma.ts` blocks `create`, `createMany`, and `upsert` on that model. SQL check `physician_profiles_singleton_is_one` requires `singleton = 1`.
 - `MedicalService`, `ServiceSection`, `ServiceRequest`, and `CareRelationship` are in the schema. Published services and the public profile are rendered from the singleton physician.
 - A patient may request a published service. SQL index `service_requests_one_pending` allows one `pending` row per patient and service. The server action also rejects a request for the physician’s own service and a second request after `accepted`. A new request after `declined` or `cancelled` stays allowed.
@@ -26,7 +26,10 @@ Still true:
 - `Account` and `VerificationToken` are unused. `emailVerified` is never set.
 - Session claims are `id` and `email`. There is no route middleware.
 - Do not rewrite applied migrations. `prisma/migrations/20261022180000_nextauth_credentials/migration.sql` is `SELECT 1`. Do not drop `service_requests_one_pending` or `medical_services_price_bounds` to silence a Prisma diff.
-- Appointments, encounters, prescriptions, reminders, and payments are not built.
+- Appointments, encounters, and payments are not built. A service request is not an appointment or a completed visit.
+- In-app `Notification` rows, follow-up `FollowUpReminder` rows, immutable `Prescription` rows, and append-only `MedicationStatusEvent` rows are in the schema. Browser Notification API is opt-in while a tab is open. There is no service worker, web push, SMS, or email delivery.
+- `deliverDueReminders()` can write one due in-app notification per reminder. Nothing in Compose or the app process runs it on a clock. A reminder row is not proof of delivery.
+- Reminder civil times are stored as UTC from `Asia/Tehran` offset `+03:30` (no DST since 2022). That is not a general clinic timezone setting.
 
 The npm package name remains `store`. Renaming it is an open decision.
 
@@ -114,9 +117,9 @@ Public profile, services, service requests, and the care relationship created by
 | A physician row is created only by a direct database insert. The app rejects `PhysicianProfile` create, createMany, and upsert. Public registration creates a patient | Decided |
 | A patient profile before a login is not built. `PatientProfile.userId` is required | Decided for this release |
 | Confirmation, cancellation, no-show, and whether a service is required on an appointment | Appointment status transitions |
-| Timezone, display calendar, and toman versus rial | Appointment or money UI. No calendar or i18n library without approval. `Asia/Tehran` is not an implemented default |
+| Timezone, display calendar, and toman versus rial | Appointment or money UI. Reminder due times use `Asia/Tehran` (`+03:30`) only. No calendar or i18n library without approval |
 | Who sets follow-up intervals, and whether templates exist | Follow-up configuration. Medication reminders stay out of scope |
-| Notification channel and provider | Any delivery implementation |
+| Notification channel and provider | SMS, email, or web push. In-app rows plus optional on-tab browser notices are implemented |
 | When money is due, who may create an installment plan, which terms are allowed, and which gateway | Payment code |
 | How long clinical records are kept, and which reads are audited | Audit implementation. Until confirmed: attribute clinical writes with author and time; record access to clinical detail without copying note bodies into logs; do not audit ordinary public page views |
 | Staff accounts or patient document uploads in the first clinical release | Those features. Until decided, build neither |

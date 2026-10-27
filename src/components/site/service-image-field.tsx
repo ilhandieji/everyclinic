@@ -1,8 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { removeServiceImage } from "@/lib/actions/services";
+import type { ActionState } from "@/lib/actions/state";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -19,6 +22,16 @@ export function ServiceImageField({
   const router = useRouter();
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [removeState, removeAction, removing] = useActionState(
+    removeServiceImage,
+    null as ActionState,
+  );
+
+  useEffect(() => {
+    if (removeState?.ok) {
+      router.refresh();
+    }
+  }, [removeState, router]);
 
   async function onImage(file: File | undefined) {
     if (!file) {
@@ -64,13 +77,36 @@ export function ServiceImageField({
           id="service-image"
           type="file"
           accept="image/jpeg,image/png,image/webp"
-          disabled={uploading}
+          disabled={uploading || removing}
           onChange={(event) => {
             const file = event.target.files?.[0];
             event.target.value = "";
             void onImage(file);
           }}
         />
+        {imageKey ? (
+          <form
+            action={removeAction}
+            className="flex flex-col gap-2"
+            onSubmit={(event) => {
+              if (!window.confirm("تصویر این خدمت حذف شود؟")) {
+                event.preventDefault();
+              }
+            }}
+          >
+            <input type="hidden" name="id" value={serviceId} />
+            {removeState?.ok === false ? <FieldError>{removeState.error}</FieldError> : null}
+            <Button
+              type="submit"
+              variant="destructive"
+              size="sm"
+              className="w-fit"
+              disabled={uploading || removing}
+            >
+              {removing ? "در حال حذف" : "حذف تصویر"}
+            </Button>
+          </form>
+        ) : null}
         {uploading ? <p className="text-sm text-muted-foreground">در حال ذخیره تصویر</p> : null}
         {uploadError ? <FieldError>{uploadError}</FieldError> : null}
       </CardContent>

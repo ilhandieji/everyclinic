@@ -8,20 +8,21 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { AuthSessionProvider } from "@/components/providers/session-provider";
 import { StyledComponentsRegistry } from "@/components/providers/styled-components-registry";
 import { AppThemeProvider } from "@/components/providers/theme-provider";
+import { ToastProvider } from "@/components/providers/toast-provider";
 
 export const metadata: Metadata = {
   title: " ",
   description: "",
 };
 
-const themeInitScript = `(function(){try{var m=document.cookie.match(/(?:^|; )theme=([^;]*)/);var t=m?decodeURIComponent(m[1]):"dark";if(t==="light"){document.documentElement.classList.remove("dark");}else{document.documentElement.classList.add("dark");}}catch(e){document.documentElement.classList.add("dark");}})();`;
+const themeInitScript = `(function(){try{var m=document.cookie.match(/(?:^|; )theme=([^;]*)/);var t=m?decodeURIComponent(m[1]):"light";if(t==="dark"){document.documentElement.classList.add("dark");}else{document.documentElement.classList.remove("dark");}}catch(e){document.documentElement.classList.remove("dark");}})();`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="fa-IR"
       dir="rtl"
-      className={cn("h-full dark antialiased font-sans")}
+      className={cn("h-full antialiased font-sans")}
       suppressHydrationWarning
     >
       <head>
@@ -31,16 +32,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <StyledComponentsRegistry>
           <AuthSessionProvider>
             <AppThemeProvider>
-              <AuthOverlayProvider>
-                <Suspense
-                  fallback={
-                    <header className="h-12 border-b border-border bg-background" />
-                  }
-                >
-                  <SiteHeader />
-                </Suspense>
-                <main className="flex min-h-0 flex-1 flex-col">{children}</main>
-              </AuthOverlayProvider>
+              <ToastProvider>
+                <AuthOverlayProvider>
+                  <Suspense
+                    fallback={
+                      <header className="h-12 border-b border-border bg-background" />
+                    }
+                  >
+                    <SiteHeader />
+                  </Suspense>
+                  <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+                </AuthOverlayProvider>
+              </ToastProvider>
             </AppThemeProvider>
           </AuthSessionProvider>
         </StyledComponentsRegistry>
