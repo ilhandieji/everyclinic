@@ -47,5 +47,5 @@ next-env.d.ts
 # all agents folder
 .claude
 .windsurf
-.agents
 .impeccable
+.agents/
