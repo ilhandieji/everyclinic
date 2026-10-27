@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { SiteShell } from "@/components/layout/site-shell";
@@ -7,6 +7,7 @@ import { PriceText } from "@/components/site/price-text";
 import { RequestPanel } from "@/components/site/request-panel";
 import { currentPatient, currentPhysician, currentUser } from "@/lib/access";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { loadOpenAvailability } from "@/lib/booking-availability";
 import { displayPrices } from "@/lib/money";
 import prisma from "@/lib/prisma";
 
@@ -29,11 +30,11 @@ async function ServiceDetail({ params }: { params: Promise<{ id: string }> }) {
     notFound();
   }
 
+  const owns = physician?.id === service.physicianProfileId;
   if (physician) {
     redirect(`/manage/services/${service.id}`);
   }
 
-  const owns = physician?.id === service.physicianProfileId;
   if (!service.published && !owns) {
     notFound();
   }
@@ -46,6 +47,7 @@ async function ServiceDetail({ params }: { params: Promise<{ id: string }> }) {
       })
     : null;
   const prices = displayPrices(service);
+  const days = owns || physician ? [] : await loadOpenAvailability();
 
   return (
     <SiteShell>
@@ -84,6 +86,7 @@ async function ServiceDetail({ params }: { params: Promise<{ id: string }> }) {
           serviceId={service.id}
           signedIn={Boolean(user && patient && !physician)}
           request={mine}
+          days={days}
         />
       )}
     </article>

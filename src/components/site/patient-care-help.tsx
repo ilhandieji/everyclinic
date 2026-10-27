@@ -221,13 +221,6 @@ export function NotificationsGuide() {
 
 export function NotificationsEmptyInbox() {
   return (
-    <div className="mx-auto flex max-w-prose flex-col gap-2 text-center">
-      <p className="text-sm font-medium text-foreground">فعلاً اعلانی ندارید.</p>
-      <p className="text-sm text-muted-foreground">
-        وقتی درخواست رزروتان پذیرفته یا رد شود، یا پزشک یادآوری و نسخه ثبت کند،
-        اولین اعلان اینجا ظاهر می‌شود. تا آن زمان می‌توانید راهنمای بالا را
-        بخوانید.
-      </p>
-    </div>
+    <p className="text-center text-sm text-muted-foreground">فعلاً اعلانی ندارید.</p>
   );
 }

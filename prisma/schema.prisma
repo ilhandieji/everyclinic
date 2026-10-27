@@ -89,6 +89,7 @@ model PhysicianProfile {
   careRelationships CareRelationship[]
   prescriptions     Prescription[]
   reminders         FollowUpReminder[]
+  bookingDays       BookingDay[]
 
   @@map("physician_profiles")
 }
@@ -145,14 +146,48 @@ model ServiceRequest {
   serviceId        String               @map("service_id")
   note             String?              @db.Text
   status           ServiceRequestStatus @default(pending)
+  bookingWindowId  String?              @unique @map("booking_window_id")
+  exactVisitAt     DateTime?            @map("exact_visit_at")
   createdAt        DateTime             @default(now()) @map("created_at")
   updatedAt        DateTime             @updatedAt @map("updated_at")
   patient          PatientProfile       @relation(fields: [patientProfileId], references: [id], onDelete: Cascade)
   service          MedicalService       @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  bookingWindow    BookingWindow?       @relation(fields: [bookingWindowId], references: [id], onDelete: Restrict)
 
   @@index([patientProfileId, status])
   @@index([serviceId, status])
   @@map("service_requests")
+}
+
+/// One civil day of clinic availability for the singleton physician.
+model BookingDay {
+  id                 String           @id @default(cuid())
+  physicianProfileId String           @map("physician_profile_id")
+  date               DateTime         @db.Date
+  closed             Boolean          @default(false)
+  createdAt          DateTime         @default(now()) @map("created_at")
+  updatedAt          DateTime         @updatedAt @map("updated_at")
+  physician          PhysicianProfile @relation(fields: [physicianProfileId], references: [id], onDelete: Cascade)
+  windows            BookingWindow[]
+
+  @@unique([physicianProfileId, date])
+  @@index([physicianProfileId, date])
+  @@map("booking_days")
+}
+
+/// A bookable time range on a booking day (Tehran civil HH:mm).
+model BookingWindow {
+  id           String          @id @default(cuid())
+  bookingDayId String          @map("booking_day_id")
+  startTime    String          @map("start_time")
+  endTime      String          @map("end_time")
+  createdAt    DateTime        @default(now()) @map("created_at")
+  day          BookingDay      @relation(fields: [bookingDayId], references: [id], onDelete: Cascade)
+  request      ServiceRequest?
+
+  @@unique([bookingDayId, startTime, endTime])
+  @@index([bookingDayId])
+  @@map("booking_windows")
 }
 
 model CareRelationship {

@@ -81,7 +81,7 @@ export async function requirePhysicianPatientView(patientProfileId: string) {
   const patient = await prisma.patientProfile.findFirst({
     where: {
       id: patientProfileId,
-      serviceRequests: {
+      requests: {
         some: { service: { physicianProfileId: physician.id } },
       },
     },

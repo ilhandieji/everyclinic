@@ -7,8 +7,9 @@ import { currentPhysician } from "@/lib/access";
 import { PatientNameLink } from "@/components/site/patient-name-link";
 import { SiteShell, sitePanelClass, siteProseClass } from "@/components/layout/site-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ExactVisitForm } from "@/components/site/exact-visit-form";
 import prisma from "@/lib/prisma";
-import { formatFaDateTime } from "@/lib/tehran";
+import { formatFaClock, formatFaDate, formatFaDateTime, parseTehranDateTime, utcDateToCivil } from "@/lib/tehran";
 
 async function RequestList() {
   await connection();
@@ -25,6 +26,14 @@ async function RequestList() {
       note: true,
       status: true,
       createdAt: true,
+      exactVisitAt: true,
+      bookingWindow: {
+        select: {
+          startTime: true,
+          endTime: true,
+          day: { select: { date: true } },
+        },
+      },
       service: { select: { title: true } },
       patient: {
         select: {
@@ -73,7 +82,34 @@ async function RequestList() {
                   {request.note ? (
                     <p className="whitespace-pre-wrap text-sm">{request.note}</p>
                   ) : null}
+                  {request.bookingWindow ? (
+                    <p className="text-sm text-muted-foreground">
+                      بازه:{" "}
+                      {formatFaDate(
+                        parseTehranDateTime(
+                          utcDateToCivil(request.bookingWindow.day.date),
+                          "00:00",
+                        ) ?? request.bookingWindow.day.date,
+                      )}
+                      {"، "}
+                      <span dir="ltr" lang="en">
+                        {formatFaClock(request.bookingWindow.startTime)} تا{" "}
+                        {formatFaClock(request.bookingWindow.endTime)}
+                      </span>
+                    </p>
+                  ) : null}
+                  {request.exactVisitAt ? (
+                    <p className="text-sm">
+                      ساعت ویزیت: {formatFaDateTime(request.exactVisitAt)}
+                    </p>
+                  ) : null}
                   {request.status === "pending" ? <RequestDecision id={request.id} /> : null}
+                  {request.status === "accepted" && request.bookingWindow ? (
+                    <ExactVisitForm
+                      id={request.id}
+                      windowLabel={`${formatFaClock(request.bookingWindow.startTime)} تا ${formatFaClock(request.bookingWindow.endTime)}`}
+                    />
+                  ) : null}
                 </CardContent>
               </Card>
             </li>

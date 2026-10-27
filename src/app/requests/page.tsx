@@ -8,6 +8,7 @@ import { currentPatient, currentPhysician } from "@/lib/access";
 import { SiteShell, sitePanelClass, siteProseClass } from "@/components/layout/site-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
+import { formatFaClock, formatFaDate, formatFaDateTime, parseTehranDateTime, utcDateToCivil } from "@/lib/tehran";
 
 async function MyRequests() {
   await connection();
@@ -28,6 +29,14 @@ async function MyRequests() {
       note: true,
       status: true,
       createdAt: true,
+      exactVisitAt: true,
+      bookingWindow: {
+        select: {
+          startTime: true,
+          endTime: true,
+          day: { select: { date: true } },
+        },
+      },
       service: { select: { id: true, title: true, published: true } },
     },
   });
@@ -70,6 +79,27 @@ async function MyRequests() {
                   {request.status === "pending" ? <CancelRequestForm id={request.id} /> : null}
                   {request.note ? (
                     <p className="whitespace-pre-wrap text-sm text-foreground">{request.note}</p>
+                  ) : null}
+                  {request.bookingWindow ? (
+                    <p className="text-sm text-muted-foreground">
+                      بازه:{" "}
+                      {formatFaDate(
+                        parseTehranDateTime(
+                          utcDateToCivil(request.bookingWindow.day.date),
+                          "00:00",
+                        ) ?? request.bookingWindow.day.date,
+                      )}
+                      {"، "}
+                      <span dir="ltr" lang="en">
+                        {formatFaClock(request.bookingWindow.startTime)} تا{" "}
+                        {formatFaClock(request.bookingWindow.endTime)}
+                      </span>
+                    </p>
+                  ) : null}
+                  {request.exactVisitAt ? (
+                    <p className="text-sm">
+                      ساعت ویزیت: {formatFaDateTime(request.exactVisitAt)}
+                    </p>
                   ) : null}
                   <time
                     dateTime={request.createdAt.toISOString()}

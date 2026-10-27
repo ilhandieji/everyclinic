@@ -8,6 +8,8 @@ import type { ActionState } from "@/lib/actions/state";
 import { StatusBadge, type RequestStatus } from "@/components/site/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { BookingWindowPicker } from "@/components/site/booking-window-picker";
+import type { PublicBookingDay } from "@/lib/booking-availability";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -15,10 +17,12 @@ export function RequestPanel({
   serviceId,
   signedIn,
   request,
+  days,
 }: {
   serviceId: string;
   signedIn: boolean;
   request: { id: string; status: RequestStatus } | null;
+  days: PublicBookingDay[];
 }) {
   const [state, action, pending] = useActionState(
     createServiceRequest,
@@ -57,6 +61,7 @@ export function RequestPanel({
             {request ? (
               <StatusBadge status={request.status} />
             ) : null}
+            <BookingWindowPicker days={days} />
             <Field>
               <FieldLabel htmlFor="request-note">توضیح برای پزشک</FieldLabel>
               <Textarea id="request-note" name="note" rows={4} maxLength={2000} />
@@ -67,7 +72,7 @@ export function RequestPanel({
                 درخواست ثبت شد.
               </p>
             ) : null}
-            <Button type="submit" disabled={pending} className="w-fit">
+            <Button type="submit" disabled={pending || days.length === 0} className="w-fit">
               درخواست رزرو
             </Button>
           </FieldGroup>

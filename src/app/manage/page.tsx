@@ -18,6 +18,11 @@ const links = [
     description: "افزودن، ویرایش و نمایش خدمات پزشکی",
   },
   {
+    href: "/manage/schedule",
+    title: "زمان‌بندی",
+    description: "روزها و بازه‌های ساعت برای رزرو بیمار",
+  },
+  {
     href: "/manage/requests",
     title: "درخواست‌های رزرو",
     description: "بررسی و پذیرش یا رد درخواست بیماران",
@@ -44,7 +49,7 @@ async function ManageHub() {
           از اینجا بخش‌های مختلف پنل پزشک را باز کنید.
         </p>
       </header>
-      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {links.map((item) => (
           <li key={item.href}>
             <Link href={item.href} className="block h-full">

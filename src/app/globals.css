@@ -221,7 +221,7 @@ html.dark .radix-themes {
   border-radius: 46% 54% 42% 58% / 48% 38% 62% 52%;
   background: linear-gradient(
     155deg,
-    color-mix(in oklch, var(--palette-tropical-mint) 55%, var(--card)),
+    color-mix(in oklch, var(--palette-radioactive-grass) 55%, var(--card)),
     color-mix(in oklch, var(--secondary) 78%, var(--card)),
     color-mix(in oklch, var(--palette-blue-mist) 42%, var(--card))
   );

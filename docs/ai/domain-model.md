@@ -26,7 +26,7 @@ Still true:
 - `Account` and `VerificationToken` are unused. `emailVerified` is never set.
 - Session claims are `id` and `email`. There is no route middleware.
 - Do not rewrite applied migrations. `prisma/migrations/20261022180000_nextauth_credentials/migration.sql` is `SELECT 1`. Do not drop `service_requests_one_pending` or `medical_services_price_bounds` to silence a Prisma diff.
-- Appointments, encounters, and payments are not built. A service request is not an appointment or a completed visit.
+- Appointments as a separate entity, encounters, and payments are not built. A service request may reserve a physician time window; it is still not a completed visit.
 - In-app `Notification` rows, follow-up `FollowUpReminder` rows, immutable `Prescription` rows, and append-only `MedicationStatusEvent` rows are in the schema. Browser Notification API is opt-in while a tab is open. There is no service worker, web push, SMS, or email delivery.
 - `deliverDueReminders()` can write one due in-app notification per reminder. Nothing in Compose or the app process runs it on a clock. A reminder row is not proof of delivery.
 - Reminder civil times are stored as UTC from `Asia/Tehran` offset `+03:30` (no DST since 2022). That is not a general clinic timezone setting.
@@ -53,9 +53,9 @@ A medical service has a name, description, price, image, visibility, and order. 
 
 A care relationship is the authorization edge between a physician or practice and a patient. An appointment belongs to that relationship.
 
-Confirmed requirement: physicians schedule patients. Patient self-booking is not a current requirement.
+Decided for this release: the singleton physician publishes clinic-wide availability (`BookingDay` + `BookingWindow`). A patient self-books a **whole window** when creating a `ServiceRequest`. The physician later sets `exactVisitAt` on an accepted request. Minute-level slots inside a window, per-service calendars, and a separate `Appointment` table are not this slice.
 
-An appointment has date, time, duration, an optional link to a service, and its own status. Payment status is a different fact.
+A full appointment record (duration, no-show, independent status machine) remains later work. Payment status stays a different fact.
 
 ### Clinical record
 
@@ -101,12 +101,12 @@ Public profile, services, service requests, and the care relationship created by
 1. Owner decisions below that block the next milestone.
 2. New models go in a new migration. Do not rewrite applied SQL, and do not drop the pending-request index or the price check.
 3. Authorization profiles on the existing NextAuth implementation. Physician and patient profiles already exist. `User` still has no role column.
-4. Physician-created appointments and overlap prevention. The care relationship already exists. An accepted request is not an appointment.
+4. Physician-created appointments and overlap prevention beyond window uniqueness. Window booking on `ServiceRequest` exists; a dedicated appointment entity does not.
 5. Further public-site settings beyond the current profile, service cards, and service sections. Navigation settings are not a separate model yet.
 6. Encounters, prescriptions, and medication history, after care relationships exist.
 7. Reminder records, after appointment and follow-up concepts exist. Delivery waits on a channel decision.
 8. Obligations and installments, after a written payment policy. Provider integration is its own approved milestone.
-9. Optional later work: notification provider, payment gateway, staff accounts, patient self-booking, clinical file uploads, Persian font, calendar library, and end-to-end tests.
+9. Optional later work: notification provider, payment gateway, staff accounts, per-service calendars, clinical file uploads, Persian font, calendar library, and end-to-end tests.
 
 ## Open decisions
 
@@ -116,6 +116,7 @@ Public profile, services, service requests, and the care relationship created by
 | One login may hold both `PatientProfile` and `PhysicianProfile`. Neither row removes the other | Decided |
 | A physician row is created only by a direct database insert. The app rejects `PhysicianProfile` create, createMany, and upsert. Public registration creates a patient | Decided |
 | A patient profile before a login is not built. `PatientProfile.userId` is required | Decided for this release |
+| Patient self-booking is a whole clinic window on a service request; physician sets exact visit time after accept | Decided for this release |
 | Confirmation, cancellation, no-show, and whether a service is required on an appointment | Appointment status transitions |
 | Timezone, display calendar, and toman versus rial | Appointment or money UI. Reminder due times use `Asia/Tehran` (`+03:30`) only. No calendar or i18n library without approval |
 | Who sets follow-up intervals, and whether templates exist | Follow-up configuration. Medication reminders stay out of scope |

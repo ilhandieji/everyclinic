@@ -8,11 +8,12 @@ import {
   BROWSER_NOTIFICATION_TITLE,
   emptyNotificationSummary,
   INBOX_TOAST_MESSAGE,
+  NOTIFICATIONS_CLEARED_EVENT,
+  NOTIFICATION_UNREAD_TOTAL_STORAGE_KEY,
   type NotificationSummary,
 } from "@/lib/notification-types";
 
 const STORAGE_PERMISSION = "clinic-browser-notifications";
-const STORAGE_TOTAL = "clinic-unread-total";
 
 export function NotificationLive({
   onSummary,
@@ -23,6 +24,16 @@ export function NotificationLive({
   const { toast } = useToast();
   const signedIn = Boolean(session?.user?.email) && !session?.error;
   const previousTotal = useRef<number | null>(null);
+
+  useEffect(() => {
+    const onCleared = () => {
+      previousTotal.current = 0;
+      onSummary(emptyNotificationSummary);
+      window.sessionStorage.setItem(NOTIFICATION_UNREAD_TOTAL_STORAGE_KEY, "0");
+    };
+    window.addEventListener(NOTIFICATIONS_CLEARED_EVENT, onCleared);
+    return () => window.removeEventListener(NOTIFICATIONS_CLEARED_EVENT, onCleared);
+  }, [onSummary]);
 
   useEffect(() => {
     if (status === "loading" || !signedIn) {
@@ -46,7 +57,9 @@ export function NotificationLive({
           return;
         }
         onSummary(summary);
-        const lastStored = Number(window.sessionStorage.getItem(STORAGE_TOTAL) ?? "0");
+        const lastStored = Number(
+          window.sessionStorage.getItem(NOTIFICATION_UNREAD_TOTAL_STORAGE_KEY) ?? "0",
+        );
         const previous = previousTotal.current ?? lastStored;
         if (announce && summary.unreadTotal > previous) {
           toast(INBOX_TOAST_MESSAGE);
@@ -61,7 +74,10 @@ export function NotificationLive({
           }
         }
         previousTotal.current = summary.unreadTotal;
-        window.sessionStorage.setItem(STORAGE_TOTAL, String(summary.unreadTotal));
+        window.sessionStorage.setItem(
+          NOTIFICATION_UNREAD_TOTAL_STORAGE_KEY,
+          String(summary.unreadTotal),
+        );
       } catch {
         // Polling is best-effort; the inbox page remains the source of truth.
       }

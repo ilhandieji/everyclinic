@@ -23,7 +23,7 @@ This is the directory map for the current physician site. Product decisions stay
 
 ## Request example
 
-`src/app/services/[id]/page.tsx` loads the service on the server and renders `RequestPanel`. The panel posts to `createServiceRequest` in `src/lib/actions/requests.ts`. That action checks the patient session, then in one transaction requires a published service, rejects the owning physician, rejects an existing accepted request, and inserts `pending`. A second pending row is rejected by the SQL index `service_requests_one_pending`. After `declined` or `cancelled`, a new pending request is allowed.
+`src/app/services/[id]/page.tsx` loads the service on the server and renders `RequestPanel`. The panel posts to `createServiceRequest` in `src/lib/actions/requests.ts`. That action checks the patient session, then in one transaction requires a published service, an open `BookingWindow`, rejects the owning physician, rejects an existing accepted request, and inserts `pending` linked to that window. A second pending row is rejected by the SQL index `service_requests_one_pending`. Unique `booking_window_id` blocks a second reservation of the same window. After `declined` or `cancelled`, the window is released and a new pending request is allowed.
 
 A patient cancels only their own pending request. The cancel control is on the service page and on `/requests`, including when the service is no longer published. An unpublished service is not linked and is not public.
 

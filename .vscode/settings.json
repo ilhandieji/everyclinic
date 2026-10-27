@@ -1,7 +1,0 @@
-{
-  "npm-visual-manager.ignoredPackages": [
-    {
-      "name": "typescript"
-    }
-  ]
-}

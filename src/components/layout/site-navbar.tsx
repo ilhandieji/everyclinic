@@ -5,9 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
-  Bell,
   ClipboardList,
   FolderOpen,
+  CalendarDays,
   House,
   Inbox,
   LayoutDashboard,
@@ -20,7 +20,8 @@ import {
 } from "lucide-react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { useAuthOverlay } from "@/components/auth/auth-overlay";
-import { CountBadge, UnreadHint } from "@/components/layout/count-badge";
+import { UnreadHint } from "@/components/layout/count-badge";
+import { NotificationCenter } from "@/components/layout/notification-center";
 import { NotificationLive } from "@/components/layout/notification-live";
 import { useAppTheme } from "@/components/providers/theme-provider";
 import { Button } from "@/components/ui/button";
@@ -134,6 +135,14 @@ export function SiteNavbar({
             ویرایش خدمات
           </NavLink>
           <NavLink
+            href="/manage/schedule"
+            active={pathname === "/manage/schedule" || pathname.startsWith("/manage/schedule/")}
+            onNavigate={closeMenu}
+          >
+            <CalendarDays aria-hidden className="size-4" />
+            زمان‌بندی
+          </NavLink>
+          <NavLink
             href="/manage/requests"
             active={pathname === "/manage/requests" || pathname.startsWith("/manage/requests/")}
             onNavigate={closeMenu}
@@ -209,24 +218,7 @@ export function SiteNavbar({
 
         <div className="flex items-center gap-2">
           {signedIn ? (
-            <Link
-              href="/notifications"
-              onClick={closeMenu}
-              className={cn(
-                "inline-flex items-center rounded-lg px-1.5 py-1 outline-none focus-visible:ring-1 focus-visible:ring-ring/50",
-                pathname === "/notifications"
-                  ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-              aria-label={
-                summary.unreadTotal > 0
-                  ? `اعلان‌ها، ${summary.unreadTotal} خوانده‌نشده`
-                  : "اعلان‌ها"
-              }
-            >
-              <Bell aria-hidden className="size-4" />
-              <CountBadge count={summary.unreadTotal} />
-            </Link>
+            <NotificationCenter summary={summary} onSummary={onSummary} />
           ) : null}
           {account}
           <Button
