@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import "@radix-ui/themes/styles.css";
@@ -9,18 +8,6 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { AuthSessionProvider } from "@/components/providers/session-provider";
 import { StyledComponentsRegistry } from "@/components/providers/styled-components-registry";
 import { AppThemeProvider } from "@/components/providers/theme-provider";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: " ",
@@ -34,14 +21,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="fa-IR"
       dir="rtl"
-      className={cn(
-        "h-full dark",
-        "antialiased",
-        geistSans.variable,
-        geistMono.variable,
-        "font-sans",
-        inter.variable,
-      )}
+      className={cn("h-full dark antialiased font-sans")}
       suppressHydrationWarning
     >
       <head>
