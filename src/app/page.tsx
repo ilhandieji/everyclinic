@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { SiteShell } from "@/components/layout/site-shell";
+import { EmptyState } from "@/components/layout/empty-state";
+import { SiteLoading, SiteShell } from "@/components/layout/site-shell";
 import { HeroMark } from "@/components/site/hero-mark";
 import { ServiceCard } from "@/components/site/service-card";
 import { Button } from "@/components/ui/button";
@@ -67,7 +68,7 @@ async function Landing() {
           ) : !hasProfile ? (
             <p className="text-sm text-muted-foreground">پروفایل عمومی هنوز تکمیل نشده است.</p>
           ) : null}
-          <Button asChild size="lg" className="h-10 px-4 text-sm">
+          <Button asChild className="h-11 px-4">
             <Link href={physician ? "/manage/services" : "/services"}>
               {physician ? "مدیریت خدمات" : "مشاهده خدمات"}
             </Link>
@@ -86,11 +87,7 @@ async function Landing() {
           </p>
         </div>
         {services.length === 0 ? (
-          <Card>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">فعلاً خدمتی برای نمایش نیست.</p>
-            </CardContent>
-          </Card>
+          <EmptyState>فعلاً خدمتی برای نمایش نیست.</EmptyState>
         ) : (
           <ul className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 lg:grid-cols-3">
             {services.map((service) => (
@@ -134,7 +131,7 @@ async function Landing() {
 
 export default function Home() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<SiteLoading label="در حال بارگذاری…" />}>
       <Landing />
     </Suspense>
   );

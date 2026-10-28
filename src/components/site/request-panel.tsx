@@ -33,7 +33,7 @@ export function RequestPanel({
 
   if (!signedIn) {
     return (
-      <Button type="button" onClick={() => openAuth("login")}>
+      <Button type="button" className="h-11" onClick={() => openAuth("login")}>
         برای درخواست رزرو وارد شوید
       </Button>
     );
@@ -72,7 +72,7 @@ export function RequestPanel({
                 درخواست ثبت شد.
               </p>
             ) : null}
-            <Button type="submit" disabled={pending || days.length === 0} className="w-fit">
+            <Button type="submit" disabled={pending || days.length === 0} className="h-11 w-fit">
               درخواست رزرو
             </Button>
           </FieldGroup>

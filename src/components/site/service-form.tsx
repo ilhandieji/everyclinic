@@ -183,7 +183,7 @@ export function ServiceForm({
                     <Button
                       type="button"
                       variant="destructive"
-                      className="w-fit"
+                      className="h-11 w-fit"
                       onClick={() => setSections(sections.filter((_, item) => item !== index))}
                     >
                       حذف بخش
@@ -212,20 +212,15 @@ export function ServiceForm({
             <Button
               type="button"
               variant="outline"
-              className="w-fit shrink-0"
+              className="h-11 w-fit shrink-0"
               onClick={() => setSections([...sections, { title: "", body: "" }])}
             >
               افزودن بخش
             </Button>
-            <Button
-              type="submit"
-              size="lg"
-              className="h-10 w-fit shrink-0 px-4 text-sm"
-              disabled={pending}
-            >
-              {pending ? "در حال ذخیره" : "ذخیره"}
-            </Button>
           </div>
+          <Button type="submit" className="h-11 w-fit" disabled={pending}>
+            {pending ? "در حال ذخیره" : "ذخیره"}
+          </Button>
         </FieldGroup>
       </form>
 

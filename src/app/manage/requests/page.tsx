@@ -1,11 +1,15 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
+import { EmptyState } from "@/components/layout/empty-state";
+import { PageHeader } from "@/components/layout/page-header";
+import { SiteLoading, SiteShell } from "@/components/layout/site-shell";
 import { RequestDecision } from "@/components/site/request-decision";
 import { StatusBadge } from "@/components/site/status-badge";
 import { currentPhysician } from "@/lib/access";
 import { PatientNameLink } from "@/components/site/patient-name-link";
-import { SiteShell, sitePanelClass, siteProseClass } from "@/components/layout/site-shell";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ExactVisitForm } from "@/components/site/exact-visit-form";
 import prisma from "@/lib/prisma";
@@ -46,19 +50,21 @@ async function RequestList() {
 
   return (
     <SiteShell className="flex flex-col gap-6">
-      <header className={`${siteProseClass} flex flex-col gap-1`}>
-        <h1 className="text-lg font-semibold text-foreground">درخواست‌های رزرو</h1>
-        <p className="text-sm text-muted-foreground">
-          درخواست‌های بیماران برای خدمات شما.
-        </p>
-      </header>
+      <PageHeader
+        title="درخواست‌های رزرو"
+        lede="درخواست‌های بیماران برای خدمات شما."
+      />
 
       {requests.length === 0 ? (
-        <Card className={sitePanelClass}>
-          <CardContent className="text-center">
-            <p className="text-sm text-muted-foreground">درخواستی نیست.</p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          action={
+            <Button asChild variant="outline" className="h-11">
+              <Link href="/manage/schedule">زمان‌بندی پذیرش</Link>
+            </Button>
+          }
+        >
+          درخواستی نیست. اگر هنوز ساعتی نگذاشته‌اید، اول بازهٔ پذیرش را مشخص کنید.
+        </EmptyState>
       ) : (
         <ul className="grid gap-4 lg:grid-cols-2">
           {requests.map((request) => (
@@ -66,13 +72,13 @@ async function RequestList() {
               <Card className="h-full">
                 <CardHeader>
                   <CardTitle>{request.service.title}</CardTitle>
+                  <StatusBadge status={request.status} />
                 </CardHeader>
-                <CardContent className="flex flex-col gap-2">
+                <CardContent className="flex flex-col gap-3">
                   <PatientNameLink
                     href={`/manage/patients/${request.patient.id}`}
                     name={request.patient.user.name}
                   />
-                  <StatusBadge status={request.status} />
                   <time
                     dateTime={request.createdAt.toISOString()}
                     className="text-xs text-muted-foreground"
@@ -124,7 +130,7 @@ async function RequestList() {
 
 export default function RequestsPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<SiteLoading label="در حال بارگذاری درخواست‌ها…" />}>
       <RequestList />
     </Suspense>
   );

@@ -12,7 +12,7 @@ import { AppThemeProvider } from "@/components/providers/theme-provider";
 import { ToastProvider } from "@/components/providers/toast-provider";
 
 export const metadata: Metadata = {
-  title: " ",
+  title: "مطب",
   description: "",
 };
 

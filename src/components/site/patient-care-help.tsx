@@ -1,8 +1,6 @@
 import Link from "next/link";
-import { sitePanelClass, siteProseClass } from "@/components/layout/site-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 function HelpList({ items }: { items: string[] }) {
   return (
@@ -16,19 +14,14 @@ function HelpList({ items }: { items: string[] }) {
 
 export function CareFirstVisitWelcome() {
   return (
-    <div
-      className={cn(
-        sitePanelClass,
-        "flex flex-col gap-3 rounded-lg border border-border bg-card p-4 text-center shadow-sm",
-      )}
-    >
+    <div className="flex flex-col items-start gap-3 rounded-lg border border-border bg-card p-4 text-start shadow-sm">
       <p className="text-sm font-medium text-foreground">پرونده هنوز خالی است؛ این طبیعی است.</p>
       <p className="text-sm text-muted-foreground">
         سوابق، یادآوری پیگیری و نسخه وقتی ظاهر می‌شوند که درخواست رزرو بدهید یا
         پزشک چیزی در پرونده ثبت کند. برای شروع، خدمات مطب را ببینید.
       </p>
-      <div className="flex flex-row flex-wrap items-center justify-center gap-3">
-        <Button asChild>
+      <div className="flex flex-row flex-wrap items-center gap-3">
+        <Button asChild className="h-11">
           <Link href="/services">مشاهدهٔ خدمات و درخواست رزرو</Link>
         </Button>
         <Link
@@ -45,10 +38,7 @@ export function CareFirstVisitWelcome() {
 export function CareRecordGuide() {
   return (
     <details
-      className={cn(
-        sitePanelClass,
-        "group rounded-lg border border-border bg-card px-4 py-3 text-sm shadow-sm",
-      )}
+      className="group rounded-lg border border-border bg-card px-4 py-3 text-sm shadow-sm"
     >
       <summary className="cursor-pointer font-medium text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring">
         راهنمای پرونده پزشکی
@@ -97,7 +87,7 @@ export function CareRecordGuide() {
 
 export function TimelineSectionIntro() {
   return (
-    <p className={cn(siteProseClass, "text-sm text-muted-foreground")}>
+    <p className="max-w-[65ch] text-sm text-muted-foreground">
       رویدادها به‌ترتیب زمان. درخواست رزرو به‌معنای ویزیت انجام‌شده نیست.
     </p>
   );
@@ -109,7 +99,7 @@ export function TimelineEmptyHelp({
   showServicesLink?: boolean;
 }) {
   return (
-    <div className="mx-auto flex max-w-prose flex-col gap-1.5">
+    <div className="flex max-w-[65ch] flex-col gap-1.5">
       <p className="text-sm font-medium text-foreground">هنوز سابقه‌ای در پرونده ثبت نشده است.</p>
       <p className="text-sm text-muted-foreground">
         درخواست رزرو، نسخه و یادآوری پیگیری پزشک اینجا می‌آیند.
@@ -117,7 +107,7 @@ export function TimelineEmptyHelp({
       {showServicesLink ? (
         <Link
           href="/services"
-          className="mx-auto w-fit text-sm font-medium text-foreground underline-offset-4 hover:underline"
+          className="w-fit text-sm font-medium text-foreground underline-offset-4 hover:underline"
         >
           مشاهدهٔ خدمات
         </Link>
@@ -134,7 +124,7 @@ export function TimelinePhysicianEmpty() {
 
 export function RemindersSectionIntro() {
   return (
-    <p className={cn(siteProseClass, "text-sm text-muted-foreground")}>
+    <p className="max-w-[65ch] text-sm text-muted-foreground">
       یادآوری پیگیری را پزشک برای کار بعدی شما ثبت می‌کند.
     </p>
   );
@@ -142,7 +132,7 @@ export function RemindersSectionIntro() {
 
 export function RemindersEmptyHelp() {
   return (
-    <div className="mx-auto flex max-w-prose flex-col gap-1.5">
+    <div className="flex max-w-[65ch] flex-col gap-1.5">
       <p className="text-sm font-medium text-foreground">
         یادآوری پیگیری‌ای برای شما ثبت نشده است.
       </p>
@@ -155,7 +145,7 @@ export function RemindersEmptyHelp() {
 
 export function MedicationsSectionIntro() {
   return (
-    <p className={cn(siteProseClass, "text-sm text-muted-foreground")}>
+    <p className="max-w-[65ch] text-sm text-muted-foreground">
       نسخه تجویز پزشک است، نه گزارش مصرف روزانه.
     </p>
   );
@@ -163,7 +153,7 @@ export function MedicationsSectionIntro() {
 
 export function MedicationsEmptyHelp() {
   return (
-    <div className="mx-auto flex max-w-prose flex-col gap-1.5">
+    <div className="flex max-w-[65ch] flex-col gap-1.5">
       <p className="text-sm font-medium text-foreground">
         نسخه یا سابقه دارویی ثبت‌شده‌ای وجود ندارد.
       </p>
@@ -176,7 +166,7 @@ export function MedicationsEmptyHelp() {
 
 export function NotificationsGuide() {
   return (
-    <Card className={cn(sitePanelClass, "bg-muted/20")}>
+    <Card className="bg-muted/20">
       <CardHeader className="pb-2">
         <CardTitle className="text-base font-medium text-foreground">
           اعلان‌ها چیست و چطور کار می‌کند؟

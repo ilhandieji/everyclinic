@@ -1,19 +1,20 @@
 "use client";
 
-import { useCallback, useState, type ReactNode } from "react";
+import { useCallback, useState, useSyncExternalStore, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { Popover } from "radix-ui";
 import {
+  CalendarDays,
+  CircleUser,
   ClipboardList,
   FolderOpen,
-  CalendarDays,
   House,
   Inbox,
   LayoutDashboard,
   LogIn,
   Menu,
-  SquarePen,
   Stethoscope,
   UserPlus,
   X,
@@ -33,12 +34,46 @@ import {
 } from "@/lib/notification-types";
 import { cn } from "@/lib/utils";
 
+function useClientReady() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
+
 function navLinkClass(active: boolean) {
   return cn(
-    "inline-flex items-center gap-1.5 border-b-2 px-1.5 py-1 text-sm font-medium transition-colors outline-none focus-visible:ring-1 focus-visible:ring-ring/50",
+    "inline-flex min-h-11 items-center gap-1.5 border-b-2 px-1.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
     active
       ? "border-primary text-foreground"
       : "border-transparent text-muted-foreground hover:text-foreground",
+  );
+}
+
+function AccountMenu({ email }: { email: string }) {
+  return (
+    <Popover.Root>
+      <Popover.Trigger asChild>
+        <Button type="button" variant="outline" className="size-11" aria-label="حساب کاربری">
+          <CircleUser aria-hidden />
+        </Button>
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Content
+          side="bottom"
+          align="end"
+          sideOffset={8}
+          collisionPadding={12}
+          className="z-[60] flex w-64 flex-col gap-3 rounded-lg border border-border bg-popover p-3 text-popover-foreground shadow-md outline-none"
+        >
+          <p dir="ltr" lang="en" className="truncate font-mono text-xs text-muted-foreground">
+            {email}
+          </p>
+          <SignOutButton />
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
 
@@ -78,9 +113,10 @@ export function SiteNavbar({
 }) {
   const pathname = usePathname();
   const { data: session, status } = useSession();
+  const clientReady = useClientReady();
   const { theme, toggleTheme } = useAppTheme();
   const { openAuth } = useAuthOverlay();
-  const signedIn = Boolean(session?.user?.email) && !session?.error;
+  const signedIn = clientReady && Boolean(session?.user?.email) && !session?.error;
   const [menuOpen, setMenuOpen] = useState(false);
   const [summary, setSummary] = useState<NotificationSummary>(emptyNotificationSummary);
   const onSummary = useCallback((next: NotificationSummary) => {
@@ -92,7 +128,8 @@ export function SiteNavbar({
   const manageActive =
     pathname === "/manage" ||
     pathname.startsWith("/manage/profile") ||
-    pathname.startsWith("/manage/patients");
+    pathname.startsWith("/manage/patients") ||
+    pathname.startsWith("/manage/services");
 
   const links = (
     <>
@@ -127,14 +164,6 @@ export function SiteNavbar({
             مدیریت
           </NavLink>
           <NavLink
-            href="/manage/services"
-            active={pathname === "/manage/services" || pathname.startsWith("/manage/services/")}
-            onNavigate={closeMenu}
-          >
-            <SquarePen aria-hidden className="size-4" />
-            ویرایش خدمات
-          </NavLink>
-          <NavLink
             href="/manage/schedule"
             active={pathname === "/manage/schedule" || pathname.startsWith("/manage/schedule/")}
             onNavigate={closeMenu}
@@ -163,26 +192,17 @@ export function SiteNavbar({
         onCheckedChange={() => toggleTheme()}
         label="تغییر حالت روشن و تاریک"
       />
-      {status === "loading" ? (
-        <div className="h-7 min-w-28" aria-hidden />
+      {!clientReady || status === "loading" ? (
+        <div className="size-11" aria-hidden />
       ) : signedIn ? (
-        <div className="flex items-center gap-2">
-          <span
-            dir="ltr"
-            lang="en"
-            className="hidden max-w-40 truncate font-mono text-xs text-muted-foreground lg:inline"
-          >
-            {session?.user.email}
-          </span>
-          <SignOutButton />
-        </div>
+        <AccountMenu email={session?.user.email ?? ""} />
       ) : (
         <div className="flex items-center gap-2">
-          <Button type="button" size="sm" variant="outline" onClick={() => openAuth("login")}>
+          <Button type="button" variant="outline" className="h-11" onClick={() => openAuth("login")}>
             <LogIn aria-hidden />
             ورود
           </Button>
-          <Button type="button" size="sm" onClick={() => openAuth("register")}>
+          <Button type="button" className="h-11" onClick={() => openAuth("register")}>
             <UserPlus aria-hidden />
             ثبت‌نام
           </Button>
@@ -204,7 +224,7 @@ export function SiteNavbar({
           aria-current={homeActive ? "page" : undefined}
           onClick={closeMenu}
           className={cn(
-            "inline-flex min-w-0 max-w-[40%] items-center gap-1.5 border-b-2 text-sm font-semibold outline-none focus-visible:ring-1 focus-visible:ring-ring/50",
+            "inline-flex min-h-11 min-w-0 max-w-[40%] items-center gap-1.5 border-b-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-ring",
             homeActive
               ? "border-primary text-foreground"
               : "border-transparent text-foreground hover:text-foreground/85",

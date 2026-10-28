@@ -47,7 +47,7 @@ export function ExactVisitForm({
           />
         </Field>
         {state?.ok === false ? <FieldError>{state.error}</FieldError> : null}
-        <Button type="submit" size="sm" disabled={pending} className="w-fit">
+        <Button type="submit" disabled={pending} className="h-11 w-fit">
           ثبت ساعت ویزیت
         </Button>
       </FieldGroup>

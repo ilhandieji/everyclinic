@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { currentPhysician } from "@/lib/access";
-import { SiteShell, siteProseClass } from "@/components/layout/site-shell";
+import { PageHeader } from "@/components/layout/page-header";
+import { SiteLoading, SiteShell } from "@/components/layout/site-shell";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const links = [
@@ -43,12 +44,10 @@ async function ManageHub() {
 
   return (
     <SiteShell className="flex flex-col gap-6">
-      <header className={`${siteProseClass} flex flex-col gap-1`}>
-        <h1 className="text-lg font-semibold text-foreground">مدیریت مطب</h1>
-        <p className="text-sm text-muted-foreground">
-          از اینجا بخش‌های مختلف پنل پزشک را باز کنید.
-        </p>
-      </header>
+      <PageHeader
+        title="مدیریت مطب"
+        lede="از اینجا بخش‌های مختلف پنل پزشک را باز کنید."
+      />
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {links.map((item) => (
           <li key={item.href}>
@@ -69,7 +68,7 @@ async function ManageHub() {
 
 export default function ManagePage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<SiteLoading label="در حال بارگذاری مدیریت…" />}>
       <ManageHub />
     </Suspense>
   );

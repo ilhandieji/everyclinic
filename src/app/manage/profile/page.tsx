@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
+import { SiteLoading } from "@/components/layout/site-shell";
 import { ProfileEditor } from "@/components/site/profile-editor";
 import { currentPhysician } from "@/lib/access";
 import prisma from "@/lib/prisma";
@@ -38,7 +39,7 @@ async function ManageProfile() {
 
 export default function ManageProfilePage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<SiteLoading label="در حال بارگذاری پروفایل…" />}>
       <ManageProfile />
     </Suspense>
   );

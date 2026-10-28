@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { CountBadge } from "@/components/layout/count-badge";
-import { SiteShell, siteProseClass } from "@/components/layout/site-shell";
+import { PageHeader } from "@/components/layout/page-header";
+import { SiteLoading, SiteShell } from "@/components/layout/site-shell";
 import { CareTimeline } from "@/components/site/care-timeline";
 import { MedicationList } from "@/components/site/medication-list";
 import {
@@ -40,27 +41,25 @@ async function MyCare() {
 
   return (
     <SiteShell className="flex flex-col gap-8">
-      <header className={`${siteProseClass} flex flex-col gap-1`}>
-        <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-xl font-semibold text-foreground">پروندهٔ من</h1>
-          {summary.unreadCare > 0 ? (
+      <PageHeader
+        title="پروندهٔ من"
+        lede="فقط سوابق خودتان را می‌بینید. درخواست رزرو به‌معنای ویزیت انجام‌شده نیست."
+        actions={
+          summary.unreadCare > 0 ? (
             <Link
               href="/notifications"
-              className="inline-flex items-center rounded-lg border border-border bg-card px-2 py-1 text-xs font-medium text-foreground hover:bg-muted"
+              className="inline-flex h-11 items-center gap-1 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground hover:bg-muted"
             >
               اعلان خوانده‌نشده
               <CountBadge count={summary.unreadCare} />
             </Link>
-          ) : null}
-        </div>
-        <p className="text-sm text-muted-foreground">
-          فقط سوابق خودتان را می‌بینید. درخواست رزرو به‌معنای ویزیت انجام‌شده نیست.
-        </p>
-      </header>
+          ) : null
+        }
+      />
       {isFirstVisit ? <CareFirstVisitWelcome /> : null}
       <CareRecordGuide />
       <section className="flex flex-col gap-2">
-        <h2 className="text-base font-medium text-foreground">زمان‌بندی سوابق</h2>
+        <h2 className="text-lg font-semibold text-foreground">زمان‌بندی سوابق</h2>
         <TimelineSectionIntro />
         <CareTimeline
           entries={care.timeline}
@@ -69,12 +68,12 @@ async function MyCare() {
         />
       </section>
       <section className="flex flex-col gap-2">
-        <h2 className="text-base font-medium text-foreground">یادآوری‌های پیگیری</h2>
+        <h2 className="text-lg font-semibold text-foreground">یادآوری‌های پیگیری</h2>
         <RemindersSectionIntro />
         <ReminderList reminders={care.reminders} canManage={false} asOf={new Date()} />
       </section>
       <section className="flex flex-col gap-2">
-        <h2 className="text-base font-medium text-foreground">داروها و نسخه‌ها</h2>
+        <h2 className="text-lg font-semibold text-foreground">داروها و نسخه‌ها</h2>
         <MedicationsSectionIntro />
         <MedicationList
           patientProfileId={patient.id}
@@ -89,11 +88,7 @@ async function MyCare() {
 export default function CarePage() {
   return (
     <Suspense
-      fallback={
-        <SiteShell>
-          <p className="text-sm text-muted-foreground">در حال بارگذاری پرونده…</p>
-        </SiteShell>
-      }
+      fallback={<SiteLoading label="در حال بارگذاری پرونده…" />}
     >
       <MyCare />
     </Suspense>

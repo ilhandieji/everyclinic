@@ -23,7 +23,7 @@ export function ReminderForm({ patientProfileId }: { patientProfileId: string })
   }, [state, toast]);
 
   return (
-    <form action={action} className="flex max-w-xl flex-col gap-3">
+    <form action={action} className="flex flex-col gap-3">
       <input type="hidden" name="patientProfileId" value={patientProfileId} />
       <FieldGroup>
         <Field>
@@ -43,7 +43,7 @@ export function ReminderForm({ patientProfileId }: { patientProfileId: string })
           <Input id="reminder-time" name="dueTime" type="time" required dir="ltr" lang="en" />
         </Field>
         {state?.ok === false ? <FieldError>{state.error}</FieldError> : null}
-        <Button type="submit" disabled={pending} aria-busy={pending} className="w-fit">
+        <Button type="submit" disabled={pending} aria-busy={pending} className="h-11 w-fit">
           {pending ? "در حال ثبت" : "ثبت یادآوری"}
         </Button>
       </FieldGroup>

@@ -11,7 +11,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { sitePanelClass } from "@/components/layout/site-shell";
 import { MedicationsEmptyHelp } from "@/components/site/patient-care-help";
 import { cn } from "@/lib/utils";
 import { formatFaDate, formatFaDateTime } from "@/lib/tehran";
@@ -23,9 +22,14 @@ const statusLabel = {
 } as const;
 
 const statusClass = {
-  active: "border-transparent bg-primary text-primary-foreground",
+  active: "border-transparent",
   completed: "border-transparent bg-muted text-muted-foreground",
-  discontinued: "border-transparent bg-destructive text-white",
+  discontinued: "border-transparent bg-destructive/10 text-destructive",
+} as const;
+
+const activeTone = {
+  backgroundColor: "var(--status-accepted)",
+  color: "var(--status-accepted-foreground)",
 } as const;
 
 type PrescriptionRow = {
@@ -61,8 +65,8 @@ export function MedicationList({
         دارویی در پرونده ثبت نشده است. نسخه فقط تجویز است و به‌معنای مصرف نیست.
       </p>
     ) : (
-      <Card size="sm" className={sitePanelClass}>
-        <CardContent className="text-center">
+      <Card size="sm">
+        <CardContent>
           <MedicationsEmptyHelp />
         </CardContent>
       </Card>
@@ -70,7 +74,7 @@ export function MedicationList({
   }
 
   return (
-    <ul className="mx-auto flex w-full max-w-2xl flex-col gap-2">
+    <ul className="flex w-full flex-col gap-2">
       {prescriptions.map((prescription) => (
         <li key={prescription.id} id={`prescription-${prescription.id}`}>
           <Card size="sm">
@@ -79,6 +83,7 @@ export function MedicationList({
                 <Badge
                   variant="outline"
                   className={cn("w-fit", statusClass[prescription.currentStatus])}
+                  style={prescription.currentStatus === "active" ? activeTone : undefined}
                 >
                   {statusLabel[prescription.currentStatus]}
                 </Badge>

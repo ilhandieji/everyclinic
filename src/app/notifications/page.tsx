@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
+import { SiteLoading } from "@/components/layout/site-shell";
 import { NotificationCenterPage } from "@/components/layout/notification-center";
 import { currentUser } from "@/lib/access";
 import { loadNotificationInbox } from "@/lib/notification-inbox";
@@ -20,11 +21,7 @@ async function InboxPage() {
 export default function NotificationsPage() {
   return (
     <Suspense
-      fallback={
-        <div className="fixed inset-0 flex items-center justify-center bg-background">
-          <p className="text-sm text-muted-foreground">در حال بارگذاری اعلان‌ها…</p>
-        </div>
-      }
+      fallback={<SiteLoading label="در حال بارگذاری اعلان‌ها…" />}
     >
       <InboxPage />
     </Suspense>

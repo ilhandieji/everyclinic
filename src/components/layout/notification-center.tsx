@@ -52,9 +52,9 @@ function BellTrigger({
     <Button
       type="button"
       variant="ghost"
-      size="icon-sm"
+      size="icon"
       className={cn(
-        "relative text-muted-foreground hover:text-foreground data-[state=open]:bg-muted data-[state=open]:text-foreground",
+        "relative size-11 text-muted-foreground hover:text-foreground data-[state=open]:bg-muted data-[state=open]:text-foreground",
         className,
       )}
       aria-label={label}
@@ -212,7 +212,7 @@ export function NotificationCenter({
               <header className="flex shrink-0 items-center justify-between border-b border-border/80 px-3 py-2.5">
                 <span className="text-sm font-semibold text-foreground">اعلان‌ها</span>
                 <Dialog.Close asChild>
-                  <Button type="button" size="icon" variant="ghost" aria-label="بستن اعلان‌ها">
+                  <Button type="button" variant="ghost" className="size-11" aria-label="بستن اعلان‌ها">
                     <X aria-hidden className="size-5" />
                   </Button>
                 </Dialog.Close>
@@ -291,13 +291,13 @@ export function NotificationCenterPage({
   return (
     <div className="fixed inset-0 z-[80] flex flex-col bg-background">
       <header className="flex shrink-0 items-center justify-between gap-2 border-b border-border/80 px-3 py-2.5">
-        <span className="text-sm font-semibold text-foreground">اعلان‌ها</span>
+        <h1 className="text-xl font-semibold text-foreground">اعلان‌ها</h1>
         <div className="flex items-center gap-1">
           {items.length > 0 ? (
             <Button
               type="button"
-              size="sm"
               variant="ghost"
+              className="h-11"
               disabled={clearing}
               onClick={clearAll}
             >
@@ -306,8 +306,8 @@ export function NotificationCenterPage({
           ) : null}
           <Button
             type="button"
-            size="icon"
             variant="ghost"
+            className="size-11"
             aria-label="بستن"
             onClick={() => router.push(closeHref)}
           >

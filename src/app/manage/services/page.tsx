@@ -2,7 +2,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { SiteShell } from "@/components/layout/site-shell";
+import { EmptyState } from "@/components/layout/empty-state";
+import { PageHeader } from "@/components/layout/page-header";
+import { SiteLoading, SiteShell } from "@/components/layout/site-shell";
 import { ServiceForm } from "@/components/site/service-form";
 import { createService } from "@/lib/actions/services";
 import { currentPhysician } from "@/lib/access";
@@ -25,19 +27,13 @@ async function ManageServices() {
 
   return (
     <SiteShell className="flex flex-col gap-10">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-lg font-semibold text-foreground">خدمات</h1>
-        <p className="text-sm text-muted-foreground">
-          خدمات منتشرشده در صفحهٔ عمومی «خدمات» دیده می‌شوند.
-        </p>
-      </header>
+      <PageHeader
+        title="خدمات"
+        lede="خدمات منتشرشده در صفحهٔ عمومی «خدمات» دیده می‌شوند."
+      />
 
       {services.length === 0 ? (
-        <Card>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">هنوز خدمتی ثبت نشده است.</p>
-          </CardContent>
-        </Card>
+        <EmptyState>هنوز خدمتی ثبت نشده است. فرم پایین را پر کنید.</EmptyState>
       ) : (
         <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => (
@@ -48,7 +44,7 @@ async function ManageServices() {
                     <CardTitle>{service.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <Badge variant={service.published ? "default" : "secondary"}>
+                    <Badge variant={service.published ? "secondary" : "outline"}>
                       {service.published ? "نمایش در سایت" : "پنهان"}
                     </Badge>
                   </CardContent>
@@ -60,7 +56,7 @@ async function ManageServices() {
       )}
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold">خدمت جدید</h2>
+        <h2 className="text-lg font-semibold text-foreground">خدمت جدید</h2>
         <ServiceForm action={createService} />
       </section>
     </SiteShell>
@@ -69,7 +65,7 @@ async function ManageServices() {
 
 export default function ManageServicesPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<SiteLoading label="در حال بارگذاری خدمات…" />}>
       <ManageServices />
     </Suspense>
   );

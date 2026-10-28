@@ -9,8 +9,7 @@ export function SignOutButton() {
     <Button
       type="button"
       variant="destructive"
-      size="sm"
-      className="bg-destructive text-white shadow-md shadow-destructive/30 hover:bg-destructive/90"
+      className="h-11 w-full"
       onClick={() => signOut({ callbackUrl: "/" })}
     >
       <LogOut aria-hidden />

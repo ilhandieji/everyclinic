@@ -1,7 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { SiteShell } from "@/components/layout/site-shell";
+import { PageHeader } from "@/components/layout/page-header";
+import { SiteLoading, SiteShell } from "@/components/layout/site-shell";
 import { ServiceForm } from "@/components/site/service-form";
 import { updateService } from "@/lib/actions/services";
 import { currentPhysician } from "@/lib/access";
@@ -25,7 +26,8 @@ async function EditService({ params }: { params: Promise<{ id: string }> }) {
   }
 
   return (
-    <SiteShell>
+    <SiteShell className="flex flex-col gap-6">
+      <PageHeader title="ویرایش خدمت" lede={service.title} />
       <ServiceForm
         action={updateService}
         service={{
@@ -53,7 +55,7 @@ export default function EditServicePage({
   params: Promise<{ id: string }>;
 }) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<SiteLoading label="در حال بارگذاری خدمت…" />}>
       <EditService params={params} />
     </Suspense>
   );

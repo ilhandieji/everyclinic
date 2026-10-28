@@ -67,11 +67,11 @@ export function ServiceCard({
         ) : null}
         <PriceText min={priceMin} max={priceMax} label={currencyLabel} />
         {physicianView ? (
-          <Button asChild size="lg" className="mt-auto h-10 w-full text-sm">
+          <Button asChild className="mt-auto h-11 w-full">
             <Link href={`/manage/services/${id}`}>ویرایش خدمت</Link>
           </Button>
         ) : (
-          <Button asChild size="lg" className="mt-auto h-10 w-full text-sm">
+          <Button asChild className="mt-auto h-11 w-full">
             <Link href={`/services/${id}`}>درخواست رزرو</Link>
           </Button>
         )}

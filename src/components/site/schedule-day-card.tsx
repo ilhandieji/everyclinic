@@ -56,7 +56,7 @@ export function ScheduleDayEditor({
         <form action={closeAction}>
           <input type="hidden" name="date" value={day.date} />
           <input type="hidden" name="closed" value={day.closed ? "false" : "true"} />
-          <Button type="submit" size="sm" variant="outline" disabled={closing}>
+          <Button type="submit" variant="outline" className="h-11" disabled={closing}>
             {day.closed ? "باز کردن رزرو" : "بستن رزرو این روز"}
           </Button>
         </form>
@@ -103,7 +103,7 @@ export function ScheduleDayEditor({
               بازه اضافه شد.
             </p>
           ) : null}
-          <Button type="submit" size="sm" disabled={adding} className="w-fit">
+          <Button type="submit" disabled={adding} className="h-11 w-fit">
             افزودن بازه
           </Button>
         </FieldGroup>

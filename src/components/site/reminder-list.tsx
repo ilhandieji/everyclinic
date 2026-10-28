@@ -7,7 +7,6 @@ import { useToast } from "@/components/providers/toast-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { sitePanelClass } from "@/components/layout/site-shell";
 import { RemindersEmptyHelp } from "@/components/site/patient-care-help";
 import { cn } from "@/lib/utils";
 import { formatFaDateTime } from "@/lib/tehran";
@@ -43,8 +42,8 @@ export function ReminderList({
     return canManage ? (
       <p className="text-sm text-muted-foreground">یادآوری پیگیری ثبت نشده است.</p>
     ) : (
-      <Card size="sm" className={sitePanelClass}>
-        <CardContent className="text-center">
+      <Card size="sm">
+        <CardContent>
           <RemindersEmptyHelp />
         </CardContent>
       </Card>
@@ -54,7 +53,7 @@ export function ReminderList({
   const asOfMs = new Date(asOf).getTime();
 
   return (
-    <ul className="mx-auto flex w-full max-w-2xl flex-col gap-2">
+    <ul className="flex w-full flex-col gap-2">
       {reminders.map((reminder) => {
         const duePast = reminder.dueAt.getTime() <= asOfMs;
         const dueHint =

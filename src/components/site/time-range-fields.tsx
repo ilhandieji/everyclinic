@@ -6,7 +6,7 @@ const HOURS = Array.from({ length: 24 }, (_, hour) => String(hour).padStart(2, "
 const MINUTES = Array.from({ length: 60 }, (_, minute) => String(minute).padStart(2, "0"));
 
 const clockSelectClass =
-  "h-9 min-w-0 flex-1 rounded-lg border border-input bg-[var(--field-background)] px-2 text-sm text-foreground outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50";
+  "h-9 min-w-0 flex-1 rounded-lg border border-input bg-field px-2 text-sm text-foreground outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-60";
 
 function splitClock(value: string): [string, string] {
   const [hour = "07", minute = "00"] = value.split(":");

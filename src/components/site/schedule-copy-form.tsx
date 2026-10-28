@@ -33,6 +33,11 @@ export function ScheduleCopyForm({
           </p>
           <Field>
             <FieldLabel htmlFor={`copy-until-${sourceDate}`}>تا چه تاریخی؟</FieldLabel>
+            {preview ? (
+              <p id={`copy-until-preview-${sourceDate}`} className="text-base font-semibold text-foreground">
+                {preview}
+              </p>
+            ) : null}
             <Input
               id={`copy-until-${sourceDate}`}
               name="endDate"
@@ -42,6 +47,7 @@ export function ScheduleCopyForm({
               min={sourceDate}
               dir="ltr"
               lang="en"
+              aria-describedby={preview ? `copy-until-preview-${sourceDate}` : undefined}
               onChange={(event) => {
                 const value = event.target.value;
                 setEndDate(value);
@@ -49,9 +55,6 @@ export function ScheduleCopyForm({
                 setPreview(instant ? formatFaDate(instant) : "");
               }}
             />
-            {preview ? (
-              <p className="text-sm text-foreground">{preview}</p>
-            ) : null}
           </Field>
           {state?.ok === false ? <FieldError>{state.error}</FieldError> : null}
           {state?.ok ? (

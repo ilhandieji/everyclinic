@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { sitePanelClass } from "@/components/layout/site-shell";
 import {
   TimelineEmptyHelp,
   TimelinePhysicianEmpty,
@@ -28,8 +27,8 @@ export function CareTimeline({
 }) {
   if (entries.length === 0) {
     return (
-      <Card size="sm" className={sitePanelClass}>
-        <CardContent className="text-center">
+      <Card size="sm">
+        <CardContent>
           {audience === "physician" ? (
             <TimelinePhysicianEmpty />
           ) : (
@@ -44,7 +43,7 @@ export function CareTimeline({
     <ol className="flex flex-col gap-2">
       {entries.map((entry) => (
         <li key={entry.id}>
-          <Card size="sm" className={sitePanelClass}>
+          <Card size="sm">
             <CardContent className="flex flex-col gap-1">
               <div className="flex flex-wrap items-center gap-1.5">
                 <Badge variant="outline">{kindLabel[entry.kind]}</Badge>

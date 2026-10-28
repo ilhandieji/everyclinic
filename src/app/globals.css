@@ -26,6 +26,7 @@
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
+  --color-field: var(--field-background);
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
@@ -75,6 +76,8 @@
   --status-pending-foreground: #5c3b00;
   --status-reserved: #d7eef6;
   --status-reserved-foreground: #0c3d4d;
+  --status-accepted: #d7f3ee;
+  --status-accepted-foreground: #0c4f48;
   --foreground: #17332c;
   --card: #ffffff;
   --card-foreground: #17332c;
@@ -84,14 +87,14 @@
   --primary-foreground: #ffffff;
   --secondary: #e4f5ec;
   --secondary-foreground: #164e45;
-  --muted: #eef7f2;
-  --muted-foreground: #526b63;
+  --muted: #e8e8ee;
+  --muted-foreground: #455e56;
   --accent: #ddf5ea;
   --accent-foreground: #164e45;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: color-mix(in oklch, var(--muted-foreground) 24%, var(--background));
-  --input: color-mix(in oklch, var(--muted-foreground) 34%, var(--background));
-  --field-background: #d4eee7;
+  --border: #c2c8c5;
+  --input: #7d8683;
+  --field-background: #e0e0e0;
   --ring: #0f9a8e;
   --chart-1: var(--palette-green);
   --chart-2: var(--palette-bright-fern);
@@ -111,29 +114,31 @@
 
 html.dark,
 .dark {
-  /* Black canvas; green on filled controls; blue accents only (ring, charts, toggle). */
+  /* Same teal primary as light. Surfaces step up from the black page. */
   --background: #121212;
   --status-pending: #3a2a10;
   --status-pending-foreground: #f3e6c8;
   --status-reserved: #143646;
   --status-reserved-foreground: #d7eef6;
+  --status-accepted: #143f3a;
+  --status-accepted-foreground: #d7f3ee;
   --foreground: #f5f5f5;
   --card: #272727;
   --card-foreground: #f5f5f5;
-  --popover: #141414;
+  --popover: #323232;
   --popover-foreground: #f5f5f5;
-  --primary: var(--palette-bright-fern);
-  --primary-foreground: #06141c;
-  --secondary: #1a1a1a;
+  --primary: #0f766e;
+  --primary-foreground: #ffffff;
+  --secondary: #2a2a2a;
   --secondary-foreground: #f5f5f5;
-  --muted: #1a1a1a;
+  --muted: #222222;
   --muted-foreground: #a3a3a3;
-  --accent: var(--palette-bright-fern);
-  --accent-foreground: #06141c;
+  --accent: #1a3f3b;
+  --accent-foreground: #e7f6f2;
   --destructive: oklch(63.532% 0.2449 27.505);
-  --border: color-mix(in oklch, #ffffff 14%, transparent);
-  --input: color-mix(in oklch, #ffffff 8%, transparent);
-  --field-background: #383838;
+  --border: #5c6563;
+  --input: #8d9896;
+  --field-background: #323232;
   --ring: var(--palette-sky-aqua);
   --chart-1: var(--palette-green);
   --chart-2: var(--palette-bright-fern);

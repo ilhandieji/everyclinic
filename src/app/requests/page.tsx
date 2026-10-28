@@ -2,11 +2,14 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
+import { EmptyState } from "@/components/layout/empty-state";
+import { PageHeader } from "@/components/layout/page-header";
+import { SiteLoading, SiteShell } from "@/components/layout/site-shell";
 import { CancelRequestForm } from "@/components/site/cancel-request-form";
 import { StatusBadge } from "@/components/site/status-badge";
 import { currentPatient, currentPhysician } from "@/lib/access";
-import { SiteShell, sitePanelClass, siteProseClass } from "@/components/layout/site-shell";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
 import { formatFaClock, formatFaDate, formatFaDateTime, parseTehranDateTime, utcDateToCivil } from "@/lib/tehran";
 
@@ -43,40 +46,39 @@ async function MyRequests() {
 
   return (
     <SiteShell className="flex flex-col gap-6">
-      <header className={`${siteProseClass} flex flex-col gap-1`}>
-        <h1 className="text-lg font-semibold text-foreground">درخواست‌های من</h1>
-        <p className="text-sm text-muted-foreground">
-          وضعیت درخواست‌های رزرو خدمت را اینجا ببینید.
-        </p>
-      </header>
+      <PageHeader
+        title="درخواست‌های من"
+        lede="وضعیت درخواست‌های رزرو خدمت را اینجا ببینید."
+      />
 
       {requests.length === 0 ? (
-        <Card className={sitePanelClass}>
-          <CardContent className="flex flex-col items-center gap-3 text-center">
-            <p className="text-sm text-muted-foreground">هنوز درخواستی ثبت نکرده‌اید.</p>
-            <Link href="/services" className="text-sm font-medium text-foreground underline-offset-4 hover:underline">
-              مشاهدهٔ خدمات
-            </Link>
-          </CardContent>
-        </Card>
+        <EmptyState
+          action={
+            <Button asChild className="h-11">
+              <Link href="/services">مشاهدهٔ خدمات</Link>
+            </Button>
+          }
+        >
+          هنوز درخواستی ثبت نکرده‌اید.
+        </EmptyState>
       ) : (
         <ul className="grid gap-3 lg:grid-cols-2">
           {requests.map((request) => (
             <li key={request.id}>
               <Card className="h-full">
-                <CardContent className="flex flex-col gap-2">
+                <CardHeader>
                   {request.service.published ? (
-                    <Link
-                      href={`/services/${request.service.id}`}
-                      className="text-sm font-semibold text-foreground hover:underline"
-                    >
-                      {request.service.title}
-                    </Link>
+                    <CardTitle>
+                      <Link href={`/services/${request.service.id}`} className="hover:underline">
+                        {request.service.title}
+                      </Link>
+                    </CardTitle>
                   ) : (
-                    <p className="text-sm font-semibold text-foreground">{request.service.title}</p>
+                    <CardTitle>{request.service.title}</CardTitle>
                   )}
                   <StatusBadge status={request.status} />
-                  {request.status === "pending" ? <CancelRequestForm id={request.id} /> : null}
+                </CardHeader>
+                <CardContent className="flex flex-col gap-3">
                   {request.note ? (
                     <p className="whitespace-pre-wrap text-sm text-foreground">{request.note}</p>
                   ) : null}
@@ -111,6 +113,7 @@ async function MyRequests() {
                       day: "numeric",
                     })}
                   </time>
+                  {request.status === "pending" ? <CancelRequestForm id={request.id} /> : null}
                 </CardContent>
               </Card>
             </li>
@@ -123,7 +126,7 @@ async function MyRequests() {
 
 export default function RequestsPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<SiteLoading label="در حال بارگذاری درخواست‌ها…" />}>
       <MyRequests />
     </Suspense>
   );

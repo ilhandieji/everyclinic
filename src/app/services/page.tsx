@@ -2,7 +2,9 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { currentPhysician } from "@/lib/access";
-import { SiteShell } from "@/components/layout/site-shell";
+import { EmptyState } from "@/components/layout/empty-state";
+import { PageHeader } from "@/components/layout/page-header";
+import { SiteLoading, SiteShell } from "@/components/layout/site-shell";
 import { ServiceCard } from "@/components/site/service-card";
 import { displayPrices } from "@/lib/money";
 import prisma from "@/lib/prisma";
@@ -28,14 +30,19 @@ async function ServiceList() {
 
   if (services.length === 0) {
     return (
-      <SiteShell>
-        <p className="text-sm text-muted-foreground">فعلاً خدمتی برای نمایش نیست.</p>
+      <SiteShell className="flex flex-col gap-6">
+        <PageHeader title="خدمات" lede="فعلاً خدمتی برای نمایش نیست." />
+        <EmptyState>وقتی پزشک خدمتی را منتشر کند، اینجا دیده می‌شود.</EmptyState>
       </SiteShell>
     );
   }
 
   return (
-    <SiteShell>
+    <SiteShell className="flex flex-col gap-6">
+      <PageHeader
+        title="خدمات"
+        lede="نوع ویزیت را ببینید و برای هماهنگی، درخواست ثبت کنید."
+      />
       <ul className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 lg:grid-cols-3">
         {services.map((service) => (
           <li key={service.id} className="min-w-0">
@@ -56,7 +63,7 @@ async function ServiceList() {
 
 export default function ServicesPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<SiteLoading label="در حال بارگذاری خدمات…" />}>
       <ServiceList />
     </Suspense>
   );

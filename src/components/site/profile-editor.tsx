@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { PageHeader } from "@/components/layout/page-header";
 import { SiteShell } from "@/components/layout/site-shell";
 import { cn } from "@/lib/utils";
 
@@ -89,14 +90,11 @@ export function ProfileEditor({
   }
 
   return (
-    <SiteShell>
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-lg font-semibold text-foreground">پروفایل عمومی</h1>
-        <p className="text-sm text-muted-foreground">
-          نام، معرفی و تصویر شما در صفحهٔ اصلی سایت برای بیماران نمایش داده می‌شود.
-        </p>
-      </header>
+    <SiteShell className="flex flex-col gap-8">
+      <PageHeader
+        title="پروفایل عمومی"
+        lede="نام، معرفی و تصویر شما در صفحهٔ اصلی سایت برای بیماران نمایش داده می‌شود."
+      />
 
       <form className="flex flex-col gap-3" onSubmit={(event) => event.preventDefault()}>
         <div
@@ -230,14 +228,13 @@ export function ProfileEditor({
                   ذخیره شد.
                 </p>
               ) : null}
-              <Button type="submit" disabled={pending} className="w-fit">
+              <Button type="submit" disabled={pending} className="h-11 w-fit">
                 {pending ? "در حال ذخیره" : "ذخیره"}
               </Button>
             </FieldGroup>
           </form>
         </CardContent>
       </Card>
-      </div>
     </SiteShell>
   );
 }

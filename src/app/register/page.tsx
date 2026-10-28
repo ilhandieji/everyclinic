@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
+import { SiteLoading } from "@/components/layout/site-shell";
 import { AuthCard } from "@/components/ui/auth-card";
 import { authOptions, isAuthenticatedSession } from "@/lib/auth";
 
@@ -21,7 +22,7 @@ async function RegisterGate() {
 
 export default function RegisterPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<SiteLoading label="در حال بارگذاری ثبت‌نام…" />}>
       <RegisterGate />
     </Suspense>
   );

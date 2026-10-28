@@ -44,6 +44,19 @@ function dayStatusLabel(day: ScheduleDayView): string {
   return `${day.openWindowCountLabel} بازه`;
 }
 
+function dayTone(day: ScheduleDayView): string {
+  if (day.closed) {
+    return "border-border bg-muted text-muted-foreground";
+  }
+  if (day.windows.some((window) => window.reserved)) {
+    return "border-transparent bg-[var(--status-reserved)] text-[var(--status-reserved-foreground)]";
+  }
+  if (day.windows.length === 0) {
+    return "border-dashed border-border bg-card text-foreground";
+  }
+  return "border-border bg-card text-foreground";
+}
+
 function dayAriaLabel(day: ScheduleDayView, today: string): string {
   const parts = [day.weekdayLong, day.dateLabel, dayStatusLabel(day)];
   if (day.date === today) {
@@ -130,13 +143,15 @@ export function ScheduleBoard({
               <div
                 key={header.long}
                 role="columnheader"
+                aria-label={header.long}
                 className="px-0.5 text-center text-xs text-muted-foreground"
               >
                 <span className="sm:hidden" aria-hidden>
                   {header.narrow}
                 </span>
-                <span className="hidden sm:inline">{header.short}</span>
-                <span className="sr-only sm:hidden">{header.long}</span>
+                <span className="hidden sm:inline" aria-hidden>
+                  {header.short}
+                </span>
               </div>
             ))}
           </div>
@@ -154,19 +169,8 @@ export function ScheduleBoard({
                       id={`schedule-day-${day.date}`}
                       className={cn(
                         "focus-ring flex min-h-14 w-full scroll-mt-20 flex-col items-center justify-center gap-0.5 rounded-lg border px-0.5 py-1 text-center",
-                        selected.date === day.date &&
-                          "border-primary bg-accent outline-2 outline-offset-2 outline-ring",
-                        selected.date !== day.date &&
-                          day.closed &&
-                          "border-border bg-muted text-muted-foreground",
-                        selected.date !== day.date &&
-                          !day.closed &&
-                          day.windows.length === 0 &&
-                          "border-dashed border-border bg-card",
-                        selected.date !== day.date &&
-                          !day.closed &&
-                          day.windows.length > 0 &&
-                          "border-border bg-card",
+                        dayTone(day),
+                        selected.date === day.date && "border-primary ring-2 ring-ring",
                       )}
                       aria-current={day.date === today ? "date" : undefined}
                       aria-label={dayAriaLabel(day, today)}
@@ -189,7 +193,7 @@ export function ScheduleBoard({
                       {days[0]?.date === day.date ||
                       days[days.findIndex((item) => item.date === day.date) - 1]?.monthShort !==
                         day.monthShort ? (
-                        <span className="text-[0.65rem] leading-none text-muted-foreground">
+                        <span className="text-[0.65rem] leading-none opacity-80">
                           {day.monthShort}
                         </span>
                       ) : null}
@@ -201,7 +205,7 @@ export function ScheduleBoard({
                       >
                         {day.dayNumber}
                       </span>
-                      <span className="text-[0.65rem] leading-tight text-muted-foreground">
+                      <span className="text-[0.65rem] leading-tight">
                         {dayStatusLabel(day)}
                       </span>
                     </button>

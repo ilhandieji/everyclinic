@@ -59,7 +59,11 @@ export default function SkyToggle({
 const StyledWrapper = styled.div`
   .theme-switch {
     position: relative;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
     --toggle-size: 10px;
     --container-width: 5.625em;
     --container-height: 2.5em;

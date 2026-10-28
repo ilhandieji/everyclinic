@@ -2,6 +2,7 @@
 
 import { createContext, Suspense, useContext, useState, type ReactNode } from "react";
 import { Dialog } from "radix-ui";
+import { Button } from "@/components/ui/button";
 import { AuthCard, type AuthCardMode } from "@/components/ui/auth-card";
 
 type AuthOverlayValue = {
@@ -36,14 +37,16 @@ export function AuthOverlayProvider({ children }: { children: ReactNode }) {
             }}
           >
             <div className="flex w-full max-w-sm flex-col gap-2">
-            <Dialog.Close className="self-start rounded-sm px-2 py-1 text-sm text-foreground">
-              بستن
+            <Dialog.Close asChild>
+              <Button type="button" variant="outline" className="h-11 self-start">
+                بستن
+              </Button>
             </Dialog.Close>
             <Dialog.Title className="sr-only">
               {mode === "register" ? "ثبت‌نام" : "ورود"}
             </Dialog.Title>
             {mode ? (
-              <Suspense fallback={null}>
+              <Suspense fallback={<p className="text-sm text-muted-foreground">در حال بارگذاری…</p>}>
                 <AuthCard
                   key={mode}
                   mode={mode}
