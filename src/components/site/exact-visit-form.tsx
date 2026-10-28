@@ -16,6 +16,14 @@ export function ExactVisitForm({
 }) {
   const [state, action, pending] = useActionState(setExactVisitTime, null as ActionState);
 
+  if (state?.ok) {
+    return (
+      <p role="status" className="text-sm">
+        ساعت ویزیت ثبت شد.
+      </p>
+    );
+  }
+
   return (
     <form action={action}>
       <input type="hidden" name="id" value={id} />
@@ -39,11 +47,6 @@ export function ExactVisitForm({
           />
         </Field>
         {state?.ok === false ? <FieldError>{state.error}</FieldError> : null}
-        {state?.ok ? (
-          <p role="status" className="text-sm">
-            ساعت ویزیت ثبت شد.
-          </p>
-        ) : null}
         <Button type="submit" size="sm" disabled={pending} className="w-fit">
           ثبت ساعت ویزیت
         </Button>

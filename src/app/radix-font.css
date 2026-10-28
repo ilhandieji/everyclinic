@@ -1,0 +1,8 @@
+/* Loaded after Radix Themes so its default system font does not replace Vazirmatn. */
+.radix-themes {
+  font-family: var(--font-ui);
+}
+
+.radix-themes :lang(en):not(.font-mono) {
+  font-family: var(--font-latin);
+}

@@ -19,3 +19,13 @@ export function SiteShell({
 }) {
   return <div className={cn(siteShellClass, "py-10", className)}>{children}</div>;
 }
+
+export function SiteLoading({ label }: { label: string }) {
+  return (
+    <SiteShell>
+      <p role="status" className="text-sm text-muted-foreground">
+        {label}
+      </p>
+    </SiteShell>
+  );
+}

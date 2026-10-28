@@ -7,7 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-ui);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -65,8 +65,16 @@
   --palette-blue-mist: #9ec9de;
 
 
+  /* System faces only: Vazirmatn for Persian UI, Inter for lang=en. Not bundled. */
   
-  --background: #eeeeee;
+  --background: #e1e1e7;
+  --font-ui: "Vazirmatn", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-ui);
+  --font-latin: "Inter", "Vazirmatn", ui-sans-serif, system-ui, sans-serif;
+  --status-pending: #f4e4c4;
+  --status-pending-foreground: #5c3b00;
+  --status-reserved: #d7eef6;
+  --status-reserved-foreground: #0c3d4d;
   --foreground: #17332c;
   --card: #ffffff;
   --card-foreground: #17332c;
@@ -81,10 +89,9 @@
   --accent: #ddf5ea;
   --accent-foreground: #164e45;
   --destructive: oklch(0.577 0.245 27.325);
-  /* Light mode: soft edges tuned to canvas + ink (not flat gray-green hex) */
   --border: color-mix(in oklch, var(--muted-foreground) 24%, var(--background));
   --input: color-mix(in oklch, var(--muted-foreground) 34%, var(--background));
-  --field-background: #ffffff;
+  --field-background: #d4eee7;
   --ring: #0f9a8e;
   --chart-1: var(--palette-green);
   --chart-2: var(--palette-bright-fern);
@@ -106,6 +113,10 @@ html.dark,
 .dark {
   /* Black canvas; green on filled controls; blue accents only (ring, charts, toggle). */
   --background: #121212;
+  --status-pending: #3a2a10;
+  --status-pending-foreground: #f3e6c8;
+  --status-reserved: #143646;
+  --status-reserved-foreground: #d7eef6;
   --foreground: #f5f5f5;
   --card: #272727;
   --card-foreground: #f5f5f5;
@@ -119,10 +130,10 @@ html.dark,
   --muted-foreground: #a3a3a3;
   --accent: var(--palette-bright-fern);
   --accent-foreground: #06141c;
-  --destructive: oklch(0.704 0.191 22.216);
+  --destructive: oklch(63.532% 0.2449 27.505);
   --border: color-mix(in oklch, #ffffff 14%, transparent);
   --input: color-mix(in oklch, #ffffff 8%, transparent);
-  --field-background: #272727;
+  --field-background: #383838;
   --ring: var(--palette-sky-aqua);
   --chart-1: var(--palette-green);
   --chart-2: var(--palette-bright-fern);
@@ -148,6 +159,10 @@ html.dark .radix-themes {
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-ui);
+  }
+  :lang(en):not(.font-mono) {
+    font-family: var(--font-latin);
   }
   button:not(:disabled), [role="button"]:not(:disabled) {
     cursor: pointer;
@@ -179,21 +194,6 @@ html.dark .radix-themes {
     background-color: color-mix(in oklch, var(--field-background) 70%, var(--muted)) !important;
   }
 
-  html:not(.dark) [data-slot="card"] {
-    border-width: 3px;
-    border-color: var(--border);
-    box-shadow:
-      0 0 0 1px color-mix(in oklch, var(--background) 55%, var(--border)),
-      0 2px 6px color-mix(in oklch, var(--foreground) 6%, transparent);
-  }
-
-  html:not(.dark) [data-slot="input"],
-  html:not(.dark) [data-slot="textarea"],
-  html:not(.dark) [data-slot="select-trigger"],
-  html:not(.dark) [data-slot="checkbox"]:not([data-state="checked"]) {
-    border-width: 3px;
-    border-color: var(--input);
-  }
 }
 
 @layer components {
@@ -271,6 +271,43 @@ html.dark .radix-themes {
 
 .hero-stage__icon--syringe {
   animation-delay: 6s;
+}
+
+/* Light mode: no white chip. Glyphs use the palette, not a pale ink. */
+html:not(.dark) .hero-stage__icon {
+  background: transparent;
+  box-shadow: none;
+}
+
+html:not(.dark) .hero-stage__icon--heart {
+  color: var(--palette-bright-fern);
+}
+
+html:not(.dark) .hero-stage__icon--scope {
+  color: var(--palette-sky-deep);
+}
+
+html:not(.dark) .hero-stage__icon--shield {
+  color: var(--palette-green);
+}
+
+html:not(.dark) .hero-stage__icon--syringe {
+  color: color-mix(in oklch, var(--palette-sky-aqua) 35%, var(--palette-sky-deep));
+}
+
+html:not(.dark) .service-tile--mint {
+  background: color-mix(in oklch, var(--palette-tropical-mint) 28%, transparent);
+  color: var(--palette-green-2);
+}
+
+html:not(.dark) .service-tile--fern {
+  background: color-mix(in oklch, var(--palette-bright-fern) 22%, transparent);
+  color: var(--palette-bright-fern);
+}
+
+html:not(.dark) .service-tile--sky {
+  background: color-mix(in oklch, var(--palette-sky-aqua) 24%, transparent);
+  color: var(--palette-sky-deep);
 }
 
 @keyframes hero-appear {

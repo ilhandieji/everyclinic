@@ -341,6 +341,7 @@ export async function setExactVisitTime(
         },
         select: {
           id: true,
+          exactVisitAt: true,
           serviceId: true,
           service: { select: { title: true } },
           patient: { select: { userId: true } },
@@ -355,6 +356,9 @@ export async function setExactVisitTime(
       });
       if (!request) {
         throw new RequestRejected("فقط برای درخواست پذیرفته‌شده می‌توان ساعت ویزیت گذاشت.");
+      }
+      if (request.exactVisitAt) {
+        throw new RequestRejected("ساعت ویزیت قبلاً ثبت شده است.");
       }
       if (!request.bookingWindow) {
         throw new RequestRejected("این درخواست بازهٔ زمانی ندارد.");

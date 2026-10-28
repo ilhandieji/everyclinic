@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import "@radix-ui/themes/styles.css";
+import "./radix-font.css";
 import { Suspense } from "react";
 import { AuthOverlayProvider } from "@/components/auth/auth-overlay";
 import { SiteHeader } from "@/components/layout/site-header";

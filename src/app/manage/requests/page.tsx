@@ -104,7 +104,9 @@ async function RequestList() {
                     </p>
                   ) : null}
                   {request.status === "pending" ? <RequestDecision id={request.id} /> : null}
-                  {request.status === "accepted" && request.bookingWindow ? (
+                  {request.status === "accepted" &&
+                  request.bookingWindow &&
+                  !request.exactVisitAt ? (
                     <ExactVisitForm
                       id={request.id}
                       windowLabel={`${formatFaClock(request.bookingWindow.startTime)} تا ${formatFaClock(request.bookingWindow.endTime)}`}

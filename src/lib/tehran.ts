@@ -75,6 +75,55 @@ export function addCivilDays(civil: string, days: number): string | null {
   return utcDateToCivil(start);
 }
 
+function tehranInstant(civil: string): Date | null {
+  return parseTehranDateTime(civil, "12:00");
+}
+
+export function formatFaWeekday(
+  civil: string,
+  width: "narrow" | "short" | "long" = "short",
+): string {
+  const instant = tehranInstant(civil);
+  if (!instant) {
+    return "";
+  }
+  return instant.toLocaleDateString("fa-IR", {
+    timeZone: "Asia/Tehran",
+    weekday: width,
+  });
+}
+
+export function formatFaDayNumber(civil: string): string {
+  const instant = tehranInstant(civil);
+  if (!instant) {
+    return "";
+  }
+  return instant.toLocaleDateString("fa-IR", {
+    timeZone: "Asia/Tehran",
+    day: "numeric",
+  });
+}
+
+export function formatFaMonthShort(civil: string): string {
+  const instant = tehranInstant(civil);
+  if (!instant) {
+    return "";
+  }
+  return instant.toLocaleDateString("fa-IR", {
+    timeZone: "Asia/Tehran",
+    month: "short",
+  });
+}
+
+/** Saturday = 0 … Friday = 6, from the stored civil date. */
+export function saturdayWeekIndex(civil: string): number | null {
+  const date = civilToUtcDate(civil);
+  if (!date) {
+    return null;
+  }
+  return (date.getUTCDay() + 1) % 7;
+}
+
 export function formatFaClock(hhmm: string): string {
   const parsed = parseTehranDateTime("2026-01-01", hhmm);
   if (!parsed) {

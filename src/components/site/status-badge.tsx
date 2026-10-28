@@ -9,10 +9,11 @@ const statusLabel = {
 } as const;
 
 const statusClass = {
-  pending: "border-transparent bg-amber-200 text-amber-950 dark:bg-amber-900 dark:text-amber-100",
+  pending:
+    "border-transparent bg-[var(--status-pending)] text-[var(--status-pending-foreground)]",
   accepted: "border-transparent bg-primary text-primary-foreground",
-  declined: "border-transparent bg-destructive text-white",
-  cancelled: "border-transparent bg-destructive text-white",
+  declined: "border-transparent bg-destructive/10 text-destructive",
+  cancelled: "border-transparent bg-muted text-muted-foreground",
 } as const;
 
 export type RequestStatus = keyof typeof statusLabel;
