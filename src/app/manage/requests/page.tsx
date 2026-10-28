@@ -58,11 +58,11 @@ async function RequestList() {
       {requests.length === 0 ? (
         <EmptyState
           action={
-            <Button asChild variant="outline" className="h-11">
+            <Button asChild variant="outline">
               <Link href="/manage/schedule">زمان‌بندی پذیرش</Link>
             </Button>
           }
-        >
+       >
           درخواستی نیست. اگر هنوز ساعتی نگذاشته‌اید، اول بازهٔ پذیرش را مشخص کنید.
         </EmptyState>
       ) : (
@@ -71,10 +71,12 @@ async function RequestList() {
             <li key={request.id}>
               <Card className="h-full">
                 <CardHeader>
-                  <CardTitle>{request.service.title}</CardTitle>
-                  <StatusBadge status={request.status} />
+                  <div className="flex items-start justify-between gap-3">
+                    <CardTitle className="min-w-0 text-base">{request.service.title}</CardTitle>
+                    <StatusBadge status={request.status} />
+                  </div>
                 </CardHeader>
-                <CardContent className="flex flex-col gap-3">
+                <CardContent className="flex flex-col gap-2">
                   <PatientNameLink
                     href={`/manage/patients/${request.patient.id}`}
                     name={request.patient.user.name}
@@ -82,7 +84,7 @@ async function RequestList() {
                   <time
                     dateTime={request.createdAt.toISOString()}
                     className="text-xs text-muted-foreground"
-                  >
+                 >
                     ارسال: {formatFaDateTime(request.createdAt)}
                   </time>
                   {request.note ? (

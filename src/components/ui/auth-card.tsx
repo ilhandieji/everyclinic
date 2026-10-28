@@ -130,7 +130,6 @@ export function AuthCard({
                 maxLength={120}
                 value={fullName}
                 onChange={(event) => setFullName(event.target.value)}
-                className="h-11"
               />
             </Field>
           ) : null}
@@ -148,7 +147,6 @@ export function AuthCard({
               placeholder="email@example.com"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="h-11"
             />
           </Field>
 
@@ -165,12 +163,12 @@ export function AuthCard({
                 lang="en"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                className="h-11"
               />
               <Button
                 type="button"
                 variant="outline"
-                className="size-11 shrink-0"
+                size="icon"
+                className="shrink-0"
                 aria-label={showPassword ? "پنهان کردن رمز" : "نمایش رمز"}
                 onClick={() => setShowPassword((current) => !current)}
               >
@@ -193,13 +191,13 @@ export function AuthCard({
                   lang="en"
                   value={confirmPassword}
                   onChange={(event) => setConfirmPassword(event.target.value)}
-                  className="h-11"
                 />
                 <Button
                   type="button"
                   variant="outline"
-                  className="size-11 shrink-0"
-                  aria-label={showConfirmPassword ? "پنهان کردن تکرار رمز" : "نمایش تکرار رمز"}
+                  size="icon"
+                  className="shrink-0"
+                  aria-label={showConfirmPassword ? "پنهان کردن تکرار رمز" : "نمایش رمز"}
                   onClick={() => setShowConfirmPassword((current) => !current)}
                 >
                   {showConfirmPassword ? <EyeClosed aria-hidden /> : <Eye aria-hidden />}
@@ -224,7 +222,7 @@ export function AuthCard({
             </p>
           )}
 
-          <Button type="submit" disabled={isLoading} className="h-11 w-full">
+          <Button type="submit" disabled={isLoading} className="w-full">
             {isLoading ? "در حال انجام" : submitLabel}
           </Button>
 
@@ -235,7 +233,7 @@ export function AuthCard({
                 type="button"
                 onClick={() => onModeChange(isLogin ? "register" : "login")}
                 className="font-medium text-foreground underline-offset-4 hover:underline"
-              >
+             >
                 {alternateAction}
               </button>
             ) : (

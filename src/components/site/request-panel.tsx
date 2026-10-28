@@ -33,7 +33,7 @@ export function RequestPanel({
 
   if (!signedIn) {
     return (
-      <Button type="button" className="h-11" onClick={() => openAuth("login")}>
+      <Button type="button"  onClick={() => openAuth("login")}>
         برای درخواست رزرو وارد شوید
       </Button>
     );
@@ -41,7 +41,7 @@ export function RequestPanel({
 
   if (request?.status === "pending") {
     return (
-      <div className="flex max-w-md flex-col gap-2">
+      <div className="flex w-full max-w-prose flex-col gap-2">
         <StatusBadge status="pending" />
         <CancelRequestForm id={request.id} />
       </div>
@@ -53,7 +53,7 @@ export function RequestPanel({
   }
 
   return (
-    <Card className="max-w-xl">
+    <Card className="w-full max-w-prose">
       <CardContent>
         <form action={action}>
           <input type="hidden" name="serviceId" value={serviceId} />
@@ -72,7 +72,7 @@ export function RequestPanel({
                 درخواست ثبت شد.
               </p>
             ) : null}
-            <Button type="submit" disabled={pending || days.length === 0} className="h-11 w-fit">
+            <Button type="submit" disabled={pending || days.length === 0} className="w-fit">
               درخواست رزرو
             </Button>
           </FieldGroup>

@@ -16,7 +16,7 @@ export function CancelRequestForm({ id }: { id: string }) {
     <form action={cancelAction} className="flex max-w-md flex-col gap-2">
       <input type="hidden" name="id" value={id} />
       {cancelState?.ok === false ? <FieldError>{cancelState.error}</FieldError> : null}
-      <Button type="submit" variant="destructive" disabled={cancelling} className="h-11 w-fit">
+      <Button type="submit" variant="destructive" disabled={cancelling} className="w-fit">
         لغو درخواست
       </Button>
     </form>

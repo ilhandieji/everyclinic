@@ -15,6 +15,7 @@ import {
 } from "@/lib/validators/booking";
 
 function revalidateSchedule() {
+  revalidatePath("/");
   revalidatePath("/manage/schedule");
   revalidatePath("/manage/requests");
   revalidatePath("/services");

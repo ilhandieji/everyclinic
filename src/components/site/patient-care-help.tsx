@@ -21,13 +21,13 @@ export function CareFirstVisitWelcome() {
         پزشک چیزی در پرونده ثبت کند. برای شروع، خدمات مطب را ببینید.
       </p>
       <div className="flex flex-row flex-wrap items-center gap-3">
-        <Button asChild className="h-11">
+        <Button asChild>
           <Link href="/services">مشاهدهٔ خدمات و درخواست رزرو</Link>
         </Button>
         <Link
           href="/requests"
           className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
-        >
+       >
           درخواست‌های من
         </Link>
       </div>
@@ -39,7 +39,7 @@ export function CareRecordGuide() {
   return (
     <details
       className="group rounded-lg border border-border bg-card px-4 py-3 text-sm shadow-sm"
-    >
+      >
       <summary className="cursor-pointer font-medium text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring">
         راهنمای پرونده پزشکی
       </summary>
@@ -108,7 +108,7 @@ export function TimelineEmptyHelp({
         <Link
           href="/services"
           className="w-fit text-sm font-medium text-foreground underline-offset-4 hover:underline"
-        >
+       >
           مشاهدهٔ خدمات
         </Link>
       ) : null}

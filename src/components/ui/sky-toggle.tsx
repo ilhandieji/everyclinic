@@ -32,7 +32,7 @@ export default function SkyToggle({
               viewBox="0 0 144 55"
               fill="none"
               aria-hidden
-            >
+           >
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -62,9 +62,9 @@ const StyledWrapper = styled.div`
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 44px;
-    min-height: 44px;
-    --toggle-size: 10px;
+    min-width: 32px;
+    min-height: 32px;
+    --toggle-size: 7px;
     --container-width: 5.625em;
     --container-height: 2.5em;
     --container-radius: 6.25em;

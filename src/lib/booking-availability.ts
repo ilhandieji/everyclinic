@@ -1,10 +1,20 @@
-import { BOOKING_HORIZON_DAYS, bookingWindowBookable, civilRange } from "@/lib/booking-windows";
+import {
+  BOOKING_HORIZON_DAYS,
+  RECEPTION_WEEK_DAYS,
+  bookingWindowBookable,
+  civilRange,
+  receptionDayStatus,
+  type ReceptionDayStatus,
+} from "@/lib/booking-windows";
 import prisma from "@/lib/prisma";
 import {
   addCivilDays,
   civilToUtcDate,
   formatFaClock,
   formatFaDate,
+  formatFaDayNumber,
+  formatFaMonthShort,
+  formatFaWeekday,
   parseTehranDateTime,
   tehranCivilDate,
   utcDateToCivil,
@@ -34,6 +44,15 @@ export type AdminBookingDay = {
   windows: AdminBookingWindow[];
 };
 
+export type PublicReceptionDay = {
+  date: string;
+  weekday: string;
+  dateLabel: string;
+  today: boolean;
+  status: ReceptionDayStatus;
+  hoursLabel: string | null;
+};
+
 function windowLabel(startTime: string, endTime: string): string {
   return `${formatFaClock(startTime)} تا ${formatFaClock(endTime)}`;
 }
@@ -50,6 +69,59 @@ export function defaultHorizonRange(now = new Date()): { start: string; end: str
   const start = tehranCivilDate(now);
   const end = addCivilDays(start, BOOKING_HORIZON_DAYS - 1) ?? start;
   return { start, end };
+}
+
+export function receptionWeekRange(now = new Date()): { start: string; end: string } {
+  const start = tehranCivilDate(now);
+  const end = addCivilDays(start, RECEPTION_WEEK_DAYS - 1) ?? start;
+  return { start, end };
+}
+
+export async function loadPublicReceptionWeek(
+  now = new Date(),
+): Promise<PublicReceptionDay[]> {
+  const { start, end } = receptionWeekRange(now);
+  const startDate = civilToUtcDate(start);
+  const endDate = civilToUtcDate(end);
+  if (!startDate || !endDate) {
+    return [];
+  }
+
+  const rows = await prisma.bookingDay.findMany({
+    where: {
+      physician: { singleton: 1 },
+      date: { gte: startDate, lte: endDate },
+    },
+    select: {
+      date: true,
+      closed: true,
+      windows: {
+        orderBy: { startTime: "asc" },
+        select: { startTime: true, endTime: true },
+      },
+    },
+  });
+
+  const byDate = new Map(rows.map((row) => [utcDateToCivil(row.date), row]));
+  return civilRange(start, end).map((date) => {
+    const row = byDate.get(date);
+    const status = receptionDayStatus({
+      exists: row !== undefined,
+      closed: row?.closed ?? false,
+      windowCount: row?.windows.length ?? 0,
+    });
+    return {
+      date,
+      weekday: formatFaWeekday(date, "long"),
+      dateLabel: `${formatFaDayNumber(date)} ${formatFaMonthShort(date)}`.trim(),
+      today: date === start,
+      status,
+      hoursLabel:
+        status === "open" && row
+          ? row.windows.map((window) => windowLabel(window.startTime, window.endTime)).join(" و ")
+          : null,
+    };
+  });
 }
 
 export async function loadOpenAvailability(

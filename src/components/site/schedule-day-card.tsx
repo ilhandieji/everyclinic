@@ -48,7 +48,7 @@ export function ScheduleDayEditor({
     <section
       aria-labelledby="schedule-day-heading"
       className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4"
-    >
+      >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <h2 id="schedule-day-heading" className="text-base font-semibold text-foreground">
           {heading}
@@ -56,7 +56,7 @@ export function ScheduleDayEditor({
         <form action={closeAction}>
           <input type="hidden" name="date" value={day.date} />
           <input type="hidden" name="closed" value={day.closed ? "false" : "true"} />
-          <Button type="submit" variant="outline" className="h-11" disabled={closing}>
+          <Button type="submit" variant="outline"  disabled={closing}>
             {day.closed ? "باز کردن رزرو" : "بستن رزرو این روز"}
           </Button>
         </form>
@@ -73,7 +73,7 @@ export function ScheduleDayEditor({
             <li
               key={window.id}
               className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border px-3 py-2"
-            >
+           >
               <span className="text-sm font-medium text-foreground">{window.label}</span>
               {window.reserved ? (
                 <span className="rounded-md bg-[var(--status-reserved)] px-1.5 py-0.5 text-xs text-[var(--status-reserved-foreground)]">
@@ -103,7 +103,7 @@ export function ScheduleDayEditor({
               بازه اضافه شد.
             </p>
           ) : null}
-          <Button type="submit" disabled={adding} className="h-11 w-fit">
+          <Button type="submit" disabled={adding} className="w-fit">
             افزودن بازه
           </Button>
         </FieldGroup>

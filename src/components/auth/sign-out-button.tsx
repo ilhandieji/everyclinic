@@ -9,9 +9,9 @@ export function SignOutButton() {
     <Button
       type="button"
       variant="destructive"
-      className="h-11 w-full"
+      className="w-full"
       onClick={() => signOut({ callbackUrl: "/" })}
-    >
+      >
       <LogOut aria-hidden />
       خروج
     </Button>

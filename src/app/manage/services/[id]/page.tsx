@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { SiteLoading, SiteShell } from "@/components/layout/site-shell";
 import { ServiceForm } from "@/components/site/service-form";
+import { ServiceIcon, serviceTileClass } from "@/components/site/service-icon";
 import { updateService } from "@/lib/actions/services";
 import { currentPhysician } from "@/lib/access";
 import { displayPrices } from "@/lib/money";
@@ -27,7 +28,12 @@ async function EditService({ params }: { params: Promise<{ id: string }> }) {
 
   return (
     <SiteShell className="flex flex-col gap-6">
-      <PageHeader title="ویرایش خدمت" lede={service.title} />
+      <div className="flex items-start gap-3">
+        <span className={`service-tile mt-0.5 ${serviceTileClass(service.title)}`}>
+          <ServiceIcon title={service.title} className="size-6" />
+        </span>
+        <PageHeader title="ویرایش خدمت" lede={service.title} />
+      </div>
       <ServiceForm
         action={updateService}
         service={{

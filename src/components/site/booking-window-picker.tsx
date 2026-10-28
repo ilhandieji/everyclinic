@@ -21,8 +21,8 @@ export function BookingWindowPicker({ days }: { days: PublicBookingDay[] }) {
               {day.windows.map((window) => (
                 <label
                   key={window.id}
-                  className="flex min-h-11 cursor-pointer items-center gap-2 rounded-lg border border-border bg-field px-3 py-2 text-sm has-[:checked]:border-primary has-[:checked]:bg-accent"
-                >
+                  className="flex min-h-9 cursor-pointer items-center gap-2 rounded-lg border border-border bg-field px-2.5 py-1.5 text-sm has-[:checked]:border-primary has-[:checked]:bg-accent"
+               >
                   <input
                     type="radio"
                     name="bookingWindowId"

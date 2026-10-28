@@ -43,7 +43,7 @@ export function ReminderForm({ patientProfileId }: { patientProfileId: string })
           <Input id="reminder-time" name="dueTime" type="time" required dir="ltr" lang="en" />
         </Field>
         {state?.ok === false ? <FieldError>{state.error}</FieldError> : null}
-        <Button type="submit" disabled={pending} aria-busy={pending} className="h-11 w-fit">
+        <Button type="submit" disabled={pending} aria-busy={pending} className="w-fit">
           {pending ? "در حال ثبت" : "ثبت یادآوری"}
         </Button>
       </FieldGroup>

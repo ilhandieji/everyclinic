@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "@fontsource-variable/vazirmatn/wght.css";
+@import "@fontsource-variable/inter/wght.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -8,7 +10,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-ui);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -66,12 +68,13 @@
   --palette-blue-mist: #9ec9de;
 
 
-  /* System faces only: Vazirmatn for Persian UI, Inter for lang=en. Not bundled. */
-  
   --background: #e1e1e7;
-  --font-ui: "Vazirmatn", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-ui: "Vazirmatn Variable", "Vazirmatn", ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-ui);
-  --font-latin: "Inter", "Vazirmatn", ui-sans-serif, system-ui, sans-serif;
+  --font-latin: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --text-base-size: 1rem;
+  --text-base-leading: 1.65;
+  --text-sm-leading: 1.6;
   --status-pending: #f4e4c4;
   --status-pending-foreground: #5c3b00;
   --status-reserved: #d7eef6;
@@ -94,7 +97,7 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: #c2c8c5;
   --input: #7d8683;
-  --field-background: #e0e0e0;
+  --field-background: #ffffff;
   --ring: #0f9a8e;
   --chart-1: var(--palette-green);
   --chart-2: var(--palette-bright-fern);
@@ -165,9 +168,23 @@ html.dark .radix-themes {
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-ui);
+    font-size: var(--text-base-size);
+    line-height: var(--text-base-leading);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
   }
   :lang(en):not(.font-mono) {
     font-family: var(--font-latin);
+  }
+  :where(p, li, label, figcaption, td, th, [data-slot="field-label"], [data-slot="field-description"]) {
+    line-height: var(--text-base-leading);
+  }
+  :where(h1, h2, h3, h4) {
+    line-height: 1.35;
+  }
+  .text-sm {
+    line-height: var(--text-sm-leading);
   }
   button:not(:disabled), [role="button"]:not(:disabled) {
     cursor: pointer;
@@ -202,104 +219,6 @@ html.dark .radix-themes {
 }
 
 @layer components {
-.hero-stage {
-  position: relative;
-  width: 100%;
-  max-width: 28rem;
-  min-height: 11rem;
-  margin-inline: auto;
-  pointer-events: none;
-  user-select: none;
-}
-
-@media (min-width: 64rem) {
-  .hero-stage {
-    max-width: none;
-    min-height: 22rem;
-    margin-inline: 0;
-  }
-}
-
-.hero-stage__shape {
-  position: absolute;
-  inset: 8% 4%;
-  border-radius: 46% 54% 42% 58% / 48% 38% 62% 52%;
-  background: linear-gradient(
-    155deg,
-    color-mix(in oklch, var(--palette-radioactive-grass) 55%, var(--card)),
-    color-mix(in oklch, var(--secondary) 78%, var(--card)),
-    color-mix(in oklch, var(--palette-blue-mist) 42%, var(--card))
-  );
-}
-
-.hero-stage__icon {
-  position: absolute;
-  display: grid;
-  width: 3.25rem;
-  height: 3.25rem;
-  place-items: center;
-  border-radius: calc(var(--radius) * 1.4);
-  background: color-mix(in oklch, var(--card) 82%, white);
-  color: var(--foreground);
-  box-shadow: 0 0.6rem 1.4rem color-mix(in oklch, var(--foreground) 8%, transparent);
-}
-
-.hero-stage__icon svg {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-
-.hero-stage__icon--heart {
-  inset-block-start: 18%;
-  inset-inline-start: 14%;
-}
-
-.hero-stage__icon--scope {
-  inset-block-end: 18%;
-  inset-inline-end: 12%;
-}
-
-.hero-stage__icon--shield {
-  inset-block-start: 20%;
-  inset-inline-end: 16%;
-}
-
-.hero-stage__icon--syringe {
-  inset-block-end: 16%;
-  inset-inline-start: 18%;
-}
-
-.hero-stage__icon--late {
-  opacity: 0;
-  animation: hero-appear 18s ease-in-out infinite;
-}
-
-.hero-stage__icon--syringe {
-  animation-delay: 6s;
-}
-
-/* Light mode: no white chip. Glyphs use the palette, not a pale ink. */
-html:not(.dark) .hero-stage__icon {
-  background: transparent;
-  box-shadow: none;
-}
-
-html:not(.dark) .hero-stage__icon--heart {
-  color: var(--palette-bright-fern);
-}
-
-html:not(.dark) .hero-stage__icon--scope {
-  color: var(--palette-sky-deep);
-}
-
-html:not(.dark) .hero-stage__icon--shield {
-  color: var(--palette-green);
-}
-
-html:not(.dark) .hero-stage__icon--syringe {
-  color: color-mix(in oklch, var(--palette-sky-aqua) 35%, var(--palette-sky-deep));
-}
-
 html:not(.dark) .service-tile--mint {
   background: color-mix(in oklch, var(--palette-tropical-mint) 28%, transparent);
   color: var(--palette-green-2);
@@ -315,36 +234,16 @@ html:not(.dark) .service-tile--sky {
   color: var(--palette-sky-deep);
 }
 
-@keyframes hero-appear {
-  0%,
-  20% {
-    opacity: 0;
-    transform: translateY(0.35rem) scale(0.94);
-  }
-  32%,
-  62% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  78%,
-  100% {
-    opacity: 0;
-    transform: translateY(0.2rem) scale(0.96);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-stage__icon--late {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
+html:not(.dark) .service-tile--calm {
+  background: color-mix(in oklch, var(--accent) 80%, transparent);
+  color: var(--primary);
 }
 
 .service-tile {
   display: flex;
   width: 3.25rem;
   height: 3.25rem;
+  flex: none;
   align-items: center;
   justify-content: center;
   border-radius: calc(var(--radius) * 1.4);
@@ -361,5 +260,279 @@ html:not(.dark) .service-tile--sky {
 
 .service-tile--sky {
   background: color-mix(in oklch, var(--palette-sky-aqua) 26%, var(--card));
+}
+
+.service-tile--calm {
+  background: color-mix(in oklch, var(--accent) 70%, var(--card));
+  color: var(--accent-foreground);
+}
+
+.service-tile--line {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--foreground);
+}
+
+.hero-mark {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 2.25rem 4.75rem 2.75rem 4.25rem;
+  box-shadow: 0 1.25rem 2.75rem color-mix(in oklch, var(--palette-blue-harbor) 16%, transparent);
+  container-type: inline-size;
+}
+
+.hero-mark__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-mark__stage {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-mark__chip {
+  position: absolute;
+  display: grid;
+  width: 1.875rem;
+  height: 1.875rem;
+  place-items: center;
+  border-radius: 999px;
+  background: color-mix(in oklch, white 52%, transparent);
+  color: color-mix(in oklch, var(--palette-blue-harbor) 72%, transparent);
+  box-shadow: 0 0.35rem 0.85rem color-mix(in oklch, var(--palette-blue-harbor) 10%, transparent);
+}
+
+.hero-mark__chip svg {
+  width: 1.3125rem;
+  height: 1.3125rem;
+}
+
+.hero-mark__chip--pulse {
+  inset-block-start: 14%;
+  inset-inline-start: 18%;
+  animation: hero-chip-heart 16s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  animation-delay: -4.2s;
+}
+
+.hero-mark__chip--shield {
+  inset-block-end: 20%;
+  inset-inline-start: 36%;
+  animation: hero-chip-shield 21s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  animation-delay: -11s;
+}
+
+@keyframes hero-chip-heart {
+  0%,
+  100% {
+    opacity: 0;
+    filter: blur(2.5px);
+    transform: translate3d(0, 0, 0) scale(0.92);
+  }
+  12% {
+    opacity: 0.72;
+    filter: blur(0);
+    transform: translate3d(-10cqi, 4cqi, 0) scale(1);
+  }
+  34% {
+    opacity: 0.72;
+    filter: blur(0);
+    transform: translate3d(-30cqi, 12cqi, 0) scale(1);
+  }
+  56% {
+    opacity: 0.72;
+    filter: blur(0);
+    transform: translate3d(-8cqi, 20cqi, 0) scale(1);
+  }
+  76% {
+    opacity: 0.72;
+    filter: blur(0);
+    transform: translate3d(6cqi, 6cqi, 0) scale(1);
+  }
+  90% {
+    opacity: 0;
+    filter: blur(2.5px);
+    transform: translate3d(-2cqi, 2cqi, 0) scale(0.94);
+  }
+}
+
+@keyframes hero-chip-shield {
+  0%,
+  100% {
+    opacity: 0;
+    filter: blur(2.5px);
+    transform: translate3d(0, 0, 0) scale(0.92);
+  }
+  14% {
+    opacity: 0.72;
+    filter: blur(0);
+    transform: translate3d(9cqi, -5cqi, 0) scale(1);
+  }
+  36% {
+    opacity: 0.72;
+    filter: blur(0);
+    transform: translate3d(-20cqi, -18cqi, 0) scale(1);
+  }
+  58% {
+    opacity: 0.72;
+    filter: blur(0);
+    transform: translate3d(12cqi, -8cqi, 0) scale(1);
+  }
+  78% {
+    opacity: 0.72;
+    filter: blur(0);
+    transform: translate3d(-8cqi, 5cqi, 0) scale(1);
+  }
+  92% {
+    opacity: 0;
+    filter: blur(2.5px);
+    transform: translate3d(3cqi, -2cqi, 0) scale(0.94);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-mark__chip {
+    animation: none;
+    opacity: 0.72;
+    filter: none;
+    transform: none;
+  }
+}
+
+.service-panel {
+  position: relative;
+  display: grid;
+  min-height: 11.25rem;
+  place-items: center;
+  overflow: hidden;
+}
+
+.service-panel__ring {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 6.75rem;
+  height: 6.75rem;
+  place-items: center;
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--card) 78%, transparent);
+  box-shadow: inset 0 0 0 1.5px color-mix(in oklch, currentColor 42%, transparent);
+}
+
+.service-panel__orb {
+  position: absolute;
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--card) 62%, transparent);
+}
+
+.service-panel__orb--a {
+  width: 4.5rem;
+  height: 4.5rem;
+  inset-block-start: 12%;
+  inset-inline-end: 10%;
+}
+
+.service-panel__orb--b {
+  width: 3rem;
+  height: 3rem;
+  inset-block-end: 14%;
+  inset-inline-start: 12%;
+}
+
+.service-panel__orb--c {
+  width: 1.75rem;
+  height: 1.75rem;
+  inset-block-start: 22%;
+  inset-inline-start: 18%;
+}
+
+.service-panel--psychiatry {
+  background: color-mix(in oklch, var(--palette-bright-fern) 26%, var(--card));
+  color: var(--palette-green);
+}
+
+.service-panel--neurology {
+  background: color-mix(in oklch, var(--palette-sky-aqua) 30%, var(--card));
+  color: var(--palette-sky-deep);
+}
+
+.service-panel--followup {
+  background: color-mix(in oklch, var(--palette-tropical-mint) 32%, var(--card));
+  color: var(--palette-green-2);
+}
+
+.service-panel--assessment {
+  background: color-mix(in oklch, var(--accent) 88%, var(--card));
+  color: var(--primary);
+}
+
+.service-panel--visit {
+  background: color-mix(in oklch, var(--secondary) 92%, var(--card));
+  color: var(--primary);
+}
+
+html.dark .service-panel--psychiatry {
+  background: color-mix(in oklch, var(--palette-green) 48%, var(--card));
+  color: var(--palette-radioactive-grass-2);
+}
+
+html.dark .service-panel--neurology {
+  background: color-mix(in oklch, var(--palette-sky-deep) 55%, var(--card));
+  color: var(--palette-blue-mist);
+}
+
+html.dark .service-panel--followup {
+  background: color-mix(in oklch, var(--palette-green-2) 42%, var(--card));
+  color: var(--palette-tropical-mint);
+}
+
+html.dark .service-panel--assessment,
+html.dark .service-panel--visit {
+  background: color-mix(in oklch, var(--primary) 38%, var(--card));
+  color: var(--palette-tropical-mint);
+}
+
+.service-mark {
+  display: flex;
+  height: 9.25rem;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.service-mark__art {
+  height: 8.25rem;
+  width: 8.25rem;
+  max-width: 68%;
+  object-fit: cover;
+  -webkit-mask-image: radial-gradient(circle at center, #000 62%, transparent 80%);
+  mask-image: radial-gradient(circle at center, #000 62%, transparent 80%);
+}
+
+.service-mark--psychiatry {
+  background: color-mix(in oklch, var(--palette-bright-fern) 74%, white);
+}
+
+.service-mark--neurology {
+  background: color-mix(in oklch, var(--palette-sky-aqua) 64%, white);
+}
+
+.service-mark--followup {
+  background: color-mix(in oklch, var(--palette-tropical-mint) 62%, white);
+}
+
+.service-mark--detail {
+  height: auto;
+  aspect-ratio: 5 / 3;
+}
+
+.service-mark--detail .service-mark__art {
+  height: min(72%, 13rem);
+  width: min(72%, 13rem);
+  max-width: 72%;
 }
 }

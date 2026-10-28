@@ -23,13 +23,13 @@ export function RequestDecision({ id }: { id: string }) {
     <div className="flex flex-wrap items-center gap-2">
       <form action={acceptAction}>
         <input type="hidden" name="id" value={id} />
-        <Button type="submit" className="h-11" disabled={accepting || declining}>
+        <Button type="submit"  disabled={accepting || declining}>
           پذیرفتن
         </Button>
       </form>
       <form action={declineAction}>
         <input type="hidden" name="id" value={id} />
-        <Button type="submit" variant="destructive" className="h-11" disabled={accepting || declining}>
+        <Button type="submit" variant="destructive"  disabled={accepting || declining}>
           رد کردن
         </Button>
       </form>

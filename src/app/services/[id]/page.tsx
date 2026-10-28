@@ -1,9 +1,9 @@
-import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { SiteLoading, SiteShell } from "@/components/layout/site-shell";
 import { PriceText } from "@/components/site/price-text";
+import { ServiceVisual } from "@/components/site/service-icon";
 import { RequestPanel } from "@/components/site/request-panel";
 import { currentPatient, currentPhysician, currentUser } from "@/lib/access";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,45 +51,40 @@ async function ServiceDetail({ params }: { params: Promise<{ id: string }> }) {
 
   return (
     <SiteShell>
-    <article className="flex w-full flex-col gap-6">
-      {service.imageKey ? (
-        <Image
-          src={`/media/${service.imageKey}`}
-          alt={service.title}
-          width={960}
-          height={448}
-          unoptimized
-          className="h-56 w-full object-cover"
-        />
-      ) : null}
-      <h1 className="text-2xl font-semibold">{service.title}</h1>
-      {service.description ? (
-        <p className="whitespace-pre-wrap text-sm leading-relaxed">{service.description}</p>
-      ) : null}
-      <PriceText
-        min={prices.priceMin}
-        max={prices.priceMax}
-        label={service.currencyLabel}
-      />
-      {service.sections.map((section) => (
-        <Card key={section.id}>
-          <CardHeader>
-            <CardTitle>{section.title}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="whitespace-pre-wrap text-sm leading-relaxed">{section.body}</p>
-          </CardContent>
-        </Card>
-      ))}
-      {owns || physician ? null : (
-        <RequestPanel
-          serviceId={service.id}
-          signedIn={Boolean(user && patient && !physician)}
-          request={mine}
-          days={days}
-        />
-      )}
-    </article>
+      <article className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(14rem,0.75fr)]">
+        <div className="lg:col-start-2 lg:row-start-1">
+          <ServiceVisual title={service.title} imageKey={service.imageKey} layout="detail" priority />
+        </div>
+        <div className="flex min-w-0 flex-col gap-6 lg:col-start-1 lg:row-start-1">
+          <h1 className="text-2xl font-semibold text-balance sm:text-3xl">{service.title}</h1>
+          {service.description ? (
+            <p className="max-w-[65ch] whitespace-pre-wrap text-sm leading-relaxed">{service.description}</p>
+          ) : null}
+          <PriceText
+            min={prices.priceMin}
+            max={prices.priceMax}
+            label={service.currencyLabel}
+          />
+          {service.sections.map((section) => (
+            <Card key={section.id}>
+              <CardHeader>
+                <CardTitle>{section.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="whitespace-pre-wrap text-sm leading-relaxed">{section.body}</p>
+              </CardContent>
+            </Card>
+          ))}
+          {owns || physician ? null : (
+            <RequestPanel
+              serviceId={service.id}
+              signedIn={Boolean(user && patient && !physician)}
+              request={mine}
+              days={days}
+            />
+          )}
+        </div>
+      </article>
     </SiteShell>
   );
 }

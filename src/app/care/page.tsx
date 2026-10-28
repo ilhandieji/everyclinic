@@ -48,8 +48,8 @@ async function MyCare() {
           summary.unreadCare > 0 ? (
             <Link
               href="/notifications"
-              className="inline-flex h-11 items-center gap-1 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground hover:bg-muted"
-            >
+              className="inline-flex h-8 items-center gap-1 rounded-lg border border-border bg-card px-2.5 text-sm font-medium text-foreground hover:bg-muted"
+           >
               اعلان خوانده‌نشده
               <CountBadge count={summary.unreadCare} />
             </Link>

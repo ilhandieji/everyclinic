@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   bookingWindowBookable,
+  receptionDayStatus,
   timeToMinutes,
   windowContainsTime,
   windowsOverlap,
@@ -56,6 +57,29 @@ describe("booking window helpers", () => {
     assert.equal(windowContainsTime(window, "13:59"), true);
     assert.equal(windowContainsTime(window, "14:00"), false);
     assert.equal(windowContainsTime(window, "15:00"), false);
+  });
+
+  it("keeps an unset reception day distinct from a closed day", () => {
+    assert.equal(
+      receptionDayStatus({ exists: false, closed: false, windowCount: 0 }),
+      "undeclared",
+    );
+    assert.equal(
+      receptionDayStatus({ exists: true, closed: false, windowCount: 0 }),
+      "undeclared",
+    );
+    assert.equal(
+      receptionDayStatus({ exists: true, closed: true, windowCount: 0 }),
+      "closed",
+    );
+    assert.equal(
+      receptionDayStatus({ exists: true, closed: true, windowCount: 2 }),
+      "closed",
+    );
+    assert.equal(
+      receptionDayStatus({ exists: true, closed: false, windowCount: 1 }),
+      "open",
+    );
   });
 
   it("rejects closed, taken, or ended windows", () => {

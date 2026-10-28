@@ -1,5 +1,19 @@
-function formatAmount(value: number) {
-  return value.toLocaleString("en-US").replaceAll(",", "،");
+/** Dollar keeps Latin digits; تومان and ریال use Persian locale formatting. */
+function usesLatinNumerals(label: string | null) {
+  return label === "دلار";
+}
+
+function formatAmount(value: number, label: string | null) {
+  if (usesLatinNumerals(label)) {
+    return value.toLocaleString("en-US").replaceAll(",", "،");
+  }
+  return value.toLocaleString("fa-IR");
+}
+
+function amountLang(label: string | null): { dir: "ltr"; lang: "en" | "fa-IR" } {
+  return usesLatinNumerals(label)
+    ? { dir: "ltr", lang: "en" }
+    : { dir: "ltr", lang: "fa-IR" };
 }
 
 export function PriceText({
@@ -15,24 +29,20 @@ export function PriceText({
     return null;
   }
 
+  const amountProps = amountLang(label);
+
   return (
     <p className="text-sm text-foreground">
       {min === max ? (
         <>
-          <span dir="ltr" lang="en">
-            {formatAmount(min)}
-          </span>
+          <span {...amountProps}>{formatAmount(min, label)}</span>
           {label ? <span> {label}</span> : null}
         </>
       ) : (
         <>
-          <span dir="ltr" lang="en">
-            {formatAmount(min)}
-          </span>
+          <span {...amountProps}>{formatAmount(min, label)}</span>
           {" الی "}
-          <span dir="ltr" lang="en">
-            {formatAmount(max)}
-          </span>
+          <span {...amountProps}>{formatAmount(max, label)}</span>
           {label ? <span> {label}</span> : null}
         </>
       )}

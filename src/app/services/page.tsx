@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { currentPhysician } from "@/lib/access";
 import { EmptyState } from "@/components/layout/empty-state";
 import { PageHeader } from "@/components/layout/page-header";
-import { SiteLoading, SiteShell } from "@/components/layout/site-shell";
+import { SiteLoading, SiteShell, siteServiceGridClass } from "@/components/layout/site-shell";
 import { ServiceCard } from "@/components/site/service-card";
 import { displayPrices } from "@/lib/money";
 import prisma from "@/lib/prisma";
@@ -43,7 +43,7 @@ async function ServiceList() {
         title="خدمات"
         lede="نوع ویزیت را ببینید و برای هماهنگی، درخواست ثبت کنید."
       />
-      <ul className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <ul className={siteServiceGridClass}>
         {services.map((service) => (
           <li key={service.id} className="min-w-0">
             <ServiceCard

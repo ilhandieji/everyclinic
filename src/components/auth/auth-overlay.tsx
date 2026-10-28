@@ -35,10 +35,10 @@ export function AuthOverlayProvider({ children }: { children: ReactNode }) {
                 setMode(null);
               }
             }}
-          >
+         >
             <div className="flex w-full max-w-sm flex-col gap-2">
             <Dialog.Close asChild>
-              <Button type="button" variant="outline" className="h-11 self-start">
+              <Button type="button" variant="outline" className="self-start">
                 بستن
               </Button>
             </Dialog.Close>

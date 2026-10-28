@@ -2,6 +2,27 @@ import { TIME_RE, addCivilDays } from "@/lib/tehran";
 
 export const BOOKING_HORIZON_DAYS = 28;
 export const BOOKING_COPY_MAX_DAYS = 60;
+export const RECEPTION_WEEK_DAYS = 7;
+
+export type ReceptionDayStatus = "open" | "closed" | "undeclared";
+
+/** Public reception row: a missing day is not the same as a day the physician closed. */
+export function receptionDayStatus(input: {
+  exists: boolean;
+  closed: boolean;
+  windowCount: number;
+}): ReceptionDayStatus {
+  if (!input.exists) {
+    return "undeclared";
+  }
+  if (input.closed) {
+    return "closed";
+  }
+  if (input.windowCount < 1) {
+    return "undeclared";
+  }
+  return "open";
+}
 
 export function timeToMinutes(hhmm: string): number | null {
   if (!TIME_RE.test(hhmm)) {

@@ -54,7 +54,7 @@ function BellTrigger({
       variant="ghost"
       size="icon"
       className={cn(
-        "relative size-11 text-muted-foreground hover:text-foreground data-[state=open]:bg-muted data-[state=open]:text-foreground",
+        "relative text-muted-foreground hover:text-foreground data-[state=open]:bg-muted data-[state=open]:text-foreground",
         className,
       )}
       aria-label={label}
@@ -102,7 +102,7 @@ function InboxPanel({
               className="text-muted-foreground hover:text-foreground"
               disabled={clearing}
               onClick={onClearAll}
-            >
+           >
               {clearing ? "در حال پاک‌سازی…" : "پاک کردن همه"}
             </Button>
           ) : null}
@@ -212,7 +212,7 @@ export function NotificationCenter({
               <header className="flex shrink-0 items-center justify-between border-b border-border/80 px-3 py-2.5">
                 <span className="text-sm font-semibold text-foreground">اعلان‌ها</span>
                 <Dialog.Close asChild>
-                  <Button type="button" variant="ghost" className="size-11" aria-label="بستن اعلان‌ها">
+                  <Button type="button" variant="ghost" size="icon" aria-label="بستن اعلان‌ها">
                     <X aria-hidden className="size-5" />
                   </Button>
                 </Dialog.Close>
@@ -246,7 +246,7 @@ export function NotificationCenter({
           collisionPadding={12}
           className="z-[60] w-[min(24rem,calc(100vw-1.5rem))] overflow-hidden rounded-xl border border-border bg-popover text-popover-foreground shadow-lg outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95"
           onOpenAutoFocus={(event) => event.preventDefault()}
-        >
+       >
           <InboxPanel
             items={items}
             loading={loading}
@@ -297,7 +297,7 @@ export function NotificationCenterPage({
             <Button
               type="button"
               variant="ghost"
-              className="h-11"
+              size="sm"
               disabled={clearing}
               onClick={clearAll}
             >
@@ -307,7 +307,7 @@ export function NotificationCenterPage({
           <Button
             type="button"
             variant="ghost"
-            className="size-11"
+            size="icon"
             aria-label="بستن"
             onClick={() => router.push(closeHref)}
           >
