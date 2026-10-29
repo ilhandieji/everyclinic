@@ -202,6 +202,7 @@ export function NotificationCenter({
           label={bellLabel}
           count={summary.unreadTotal}
           expanded={open}
+          className="size-10"
           onClick={() => handleOpenChange(true)}
         />
         <Dialog.Root open={open} onOpenChange={handleOpenChange}>
@@ -236,7 +237,7 @@ export function NotificationCenter({
   return (
     <Popover.Root open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger asChild>
-        <BellTrigger label={bellLabel} count={summary.unreadTotal} expanded={open} />
+        <BellTrigger label={bellLabel} count={summary.unreadTotal} expanded={open} className="size-10" />
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content

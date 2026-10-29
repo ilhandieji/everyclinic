@@ -6,16 +6,11 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Popover } from "radix-ui";
 import {
-  CalendarDays,
   CircleUser,
-  ClipboardList,
-  FolderOpen,
-  House,
-  Inbox,
-  LayoutDashboard,
   LogIn,
   Menu,
-  Stethoscope,
+  Moon,
+  Sun,
   UserPlus,
   X,
 } from "lucide-react";
@@ -26,12 +21,12 @@ import { NotificationCenter } from "@/components/layout/notification-center";
 import { NotificationLive } from "@/components/layout/notification-live";
 import { useAppTheme } from "@/components/providers/theme-provider";
 import { Button } from "@/components/ui/button";
-import SkyToggle from "@/components/ui/sky-toggle";
 import { siteNavShellClass } from "@/components/layout/site-shell";
 import {
   emptyNotificationSummary,
   type NotificationSummary,
 } from "@/lib/notification-types";
+import { ServiceNavSearch } from "@/components/layout/service-nav-search";
 import { cn } from "@/lib/utils";
 
 function useClientReady() {
@@ -42,12 +37,16 @@ function useClientReady() {
   );
 }
 
-function navLinkClass(active: boolean) {
+const navIconButtonClass =
+  "size-9 shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground data-[state=open]:bg-muted data-[state=open]:text-foreground";
+
+function navLinkClass(active: boolean, menu = false) {
   return cn(
-    "inline-flex min-h-8 items-center gap-1 border-b-2 px-1 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
+    "focus-ring inline-flex items-center rounded-lg font-medium transition-colors outline-none",
+    menu ? "min-h-10 w-full justify-start px-3 text-base" : "min-h-9 px-2.5 text-sm",
     active
-      ? "border-primary text-foreground"
-      : "border-transparent text-muted-foreground hover:text-foreground",
+      ? "bg-primary/15 font-semibold text-primary ring-1 ring-primary/25 dark:bg-primary/25 dark:text-primary-foreground dark:ring-primary/40"
+      : "text-muted-foreground hover:bg-muted hover:text-foreground",
   );
 }
 
@@ -55,7 +54,7 @@ function AccountMenu({ email }: { email: string }) {
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
-        <Button type="button" variant="outline" size="icon" aria-label="حساب کاربری">
+        <Button type="button" variant="ghost" size="icon" className={navIconButtonClass} aria-label="حساب کاربری">
           <CircleUser aria-hidden />
         </Button>
       </Popover.Trigger>
@@ -87,7 +86,7 @@ function GuestAccountMenu({
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
-        <Button type="button" variant="outline" size="icon" aria-label="ورود یا ثبت‌نام">
+        <Button type="button" variant="ghost" size="icon" className={navIconButtonClass} aria-label="ورود یا ثبت‌نام">
           <UserPlus aria-hidden />
         </Button>
       </Popover.Trigger>
@@ -121,11 +120,13 @@ function GuestAccountMenu({
 function NavLink({
   href,
   active,
+  menu = false,
   onNavigate,
   children,
 }: {
   href: string;
   active: boolean;
+  menu?: boolean;
   onNavigate?: () => void;
   children: ReactNode;
 }) {
@@ -133,7 +134,7 @@ function NavLink({
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className={navLinkClass(active)}
+      className={navLinkClass(active, menu)}
       onClick={onNavigate}
     >
       {children}
@@ -146,16 +147,18 @@ export function SiteNavbar({
   physician,
   patient,
   showServices,
+  serviceSearch,
 }: {
   brand: string;
   physician: boolean;
   patient: boolean;
   showServices: boolean;
+  serviceSearch: boolean;
 }) {
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const clientReady = useClientReady();
-  const { theme, toggleTheme } = useAppTheme();
+  const { toggleTheme } = useAppTheme();
   const { openAuth } = useAuthOverlay();
   const signedIn = clientReady && Boolean(session?.user?.email) && !session?.error;
   const [menuOpen, setMenuOpen] = useState(false);
@@ -172,27 +175,23 @@ export function SiteNavbar({
     pathname.startsWith("/manage/patients") ||
     pathname.startsWith("/manage/services");
 
-  const links = (
+  const links = (menu: boolean) => (
     <>
-      <NavLink href="/" active={homeActive} onNavigate={closeMenu}>
-        <House aria-hidden className="size-4" />
+      <NavLink href="/" active={homeActive} menu={menu} onNavigate={closeMenu}>
         خانه
       </NavLink>
       {showServices ? (
-        <NavLink href="/services" active={pathname === "/services" || pathname.startsWith("/services/")} onNavigate={closeMenu}>
-          <Stethoscope aria-hidden className="size-4" />
+        <NavLink href="/services" active={pathname === "/services" || pathname.startsWith("/services/")} menu={menu} onNavigate={closeMenu}>
           خدمات
         </NavLink>
       ) : null}
       {patient ? (
         <>
-          <NavLink href="/requests" active={pathname === "/requests" || pathname.startsWith("/requests/")} onNavigate={closeMenu}>
-            <ClipboardList aria-hidden className="size-4" />
+          <NavLink href="/requests" active={pathname === "/requests" || pathname.startsWith("/requests/")} menu={menu} onNavigate={closeMenu}>
             درخواست‌های من
             <UnreadHint count={summary.unreadServiceRequest} label="اعلان خوانده‌نشدهٔ درخواست" />
           </NavLink>
-          <NavLink href="/care" active={pathname === "/care" || pathname.startsWith("/care")} onNavigate={closeMenu}>
-            <FolderOpen aria-hidden className="size-4" />
+          <NavLink href="/care" active={pathname === "/care" || pathname.startsWith("/care")} menu={menu} onNavigate={closeMenu}>
             پرونده
             <UnreadHint count={summary.unreadCare} label="اعلان خوانده‌نشدهٔ پرونده" />
           </NavLink>
@@ -200,24 +199,23 @@ export function SiteNavbar({
       ) : null}
       {physician ? (
         <>
-          <NavLink href="/manage" active={manageActive} onNavigate={closeMenu}>
-            <LayoutDashboard aria-hidden className="size-4" />
+          <NavLink href="/manage" active={manageActive} menu={menu} onNavigate={closeMenu}>
             مدیریت
           </NavLink>
           <NavLink
             href="/manage/schedule"
             active={pathname === "/manage/schedule" || pathname.startsWith("/manage/schedule/")}
+            menu={menu}
             onNavigate={closeMenu}
           >
-            <CalendarDays aria-hidden className="size-4" />
             زمان‌بندی
           </NavLink>
           <NavLink
             href="/manage/requests"
             active={pathname === "/manage/requests" || pathname.startsWith("/manage/requests/")}
+            menu={menu}
             onNavigate={closeMenu}
           >
-            <Inbox aria-hidden className="size-4" />
             درخواست‌ها
             <UnreadHint count={summary.unreadServiceRequest} label="اعلان خوانده‌نشدهٔ درخواست" />
           </NavLink>
@@ -228,13 +226,19 @@ export function SiteNavbar({
 
   const account = (
     <>
-      <SkyToggle
-        checked={theme === "dark"}
-        onCheckedChange={() => toggleTheme()}
-        label="تغییر حالت روشن و تاریک"
-      />
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className={navIconButtonClass}
+        aria-label="تغییر حالت روشن و تاریک"
+        onClick={() => toggleTheme()}
+      >
+        <Sun aria-hidden className="hidden dark:block" />
+        <Moon aria-hidden className="dark:hidden" />
+      </Button>
       {!clientReady || status === "loading" ? (
-        <div className="size-7" aria-hidden />
+        <div className="size-9" aria-hidden />
       ) : signedIn ? (
         <AccountMenu email={session?.user.email ?? ""} />
       ) : (
@@ -244,10 +248,10 @@ export function SiteNavbar({
   );
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/80 bg-background/85 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur-md">
       <NotificationLive onSummary={onSummary} />
       <nav
-        className={cn(siteNavShellClass, "flex items-center justify-between gap-2 py-1")}
+        className={cn(siteNavShellClass, "flex items-center justify-between gap-2 py-2.5")}
         aria-label="ناوبری اصلی"
       >
         <Link
@@ -255,20 +259,22 @@ export function SiteNavbar({
           aria-label={brand || "خانه"}
           aria-current={homeActive ? "page" : undefined}
           onClick={closeMenu}
-          className={cn(
-            "inline-flex min-h-8 min-w-0 max-w-[14rem] items-center gap-1 border-b-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-ring sm:max-w-xs",
-            homeActive
-              ? "border-primary text-foreground"
-              : "border-transparent text-foreground hover:text-foreground/85",
-          )}
+          className="focus-ring inline-flex min-h-9 min-w-0 max-w-[14rem] items-center rounded-lg text-base font-semibold text-foreground outline-none sm:max-w-xs"
         >
-          <House aria-hidden className="size-4 shrink-0" />
           <span className="truncate">{brand || "خانه"}</span>
         </Link>
 
-        <div className="hidden min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-1 lg:flex">{links}</div>
+        <div className="hidden min-w-0 flex-1 items-center gap-3 ps-4 lg:flex">
+          <div className="flex shrink-0 flex-wrap items-center gap-1">{links(false)}</div>
+          {serviceSearch ? <ServiceNavSearch className="min-w-0 flex-1 max-w-xl" /> : null}
+        </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex shrink-0 items-center gap-2">
+          {!physician && showServices ? (
+            <Button asChild size="sm" className="hidden lg:inline-flex">
+              <Link href="/services">رزرو نوبت</Link>
+            </Button>
+          ) : null}
           {signedIn ? (
             <NotificationCenter summary={summary} onSummary={onSummary} />
           ) : null}
@@ -276,8 +282,8 @@ export function SiteNavbar({
           <Button
             type="button"
             size="icon"
-            variant="outline"
-            className="lg:hidden"
+            variant="ghost"
+            className={cn(navIconButtonClass, "lg:hidden")}
             aria-expanded={menuOpen}
             aria-controls="site-nav-menu"
             onClick={() => setMenuOpen((open) => !open)}
@@ -290,12 +296,28 @@ export function SiteNavbar({
       {menuOpen ? (
         <div
           id="site-nav-menu"
-          className={cn(
-            siteNavShellClass,
-            "flex max-h-[calc(100dvh-3.75rem)] flex-col items-start gap-2 overflow-y-auto border-t border-border/70 py-2 lg:hidden",
-          )}
+          className="border-t border-border bg-card lg:hidden"
         >
-          {links}
+          <div
+            className={cn(
+              siteNavShellClass,
+              "flex max-h-[calc(100dvh-4.5rem)] flex-col items-stretch gap-1 overflow-y-auto py-3",
+            )}
+          >
+            {links(true)}
+            {serviceSearch ? (
+              <div className="py-2">
+                <ServiceNavSearch />
+              </div>
+            ) : null}
+            {!physician && showServices ? (
+              <Button asChild size="default" className="mt-2">
+                <Link href="/services" onClick={closeMenu}>
+                  رزرو نوبت
+                </Link>
+              </Button>
+            ) : null}
+          </div>
         </div>
       ) : null}
     </header>

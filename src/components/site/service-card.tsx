@@ -34,21 +34,21 @@ export function ServiceCard({
   const action = physicianView ? "ویرایش خدمت" : "درخواست رزرو";
 
   return (
-    <Card className="h-full py-0">
+    <Card className="h-full gap-0 py-0 text-base shadow-sm">
       <ServiceVisual title={title} imageKey={imageKey} layout="card" priority={priority} />
-      <CardHeader className="pt-4">
+      <CardHeader className="pt-5">
         <CardTitle>
-          <Title className="text-base font-semibold text-foreground">{title}</Title>
+          <Title className="text-lg font-semibold text-foreground">{title}</Title>
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-1 flex-col gap-3 pb-4">
+      <CardContent className="flex flex-1 flex-col gap-4 pb-5">
         {description ? (
-          <p className="line-clamp-4 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+          <p className="line-clamp-4 whitespace-pre-wrap text-base leading-relaxed text-muted-foreground">
             {description}
           </p>
         ) : null}
         <PriceText min={priceMin} max={priceMax} label={currencyLabel} />
-        <Button asChild className="mt-auto w-full">
+        <Button asChild size="default" className="mt-auto w-full">
           <Link href={href}>
             {action}
             <CalendarDays aria-hidden />

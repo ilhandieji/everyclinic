@@ -30,39 +30,62 @@ const tileClass: Record<ServiceIconKind, string> = {
   visit: "service-tile--line",
 };
 
+/** Landscape 16:9 banners in `public/` — bump version when replacing files (bypasses stale optimizer cache). */
+const SERVICE_ART_CACHE_VERSION = "20261029-min";
+
+const serviceMarkSrc: Record<ServiceIconKind, string> = {
+  psychiatry: "/service-psychiatry.webp",
+  neurology: "/service-neurology.webp",
+  followup: "/service-followup.webp",
+  assessment: "/service-assessment.webp",
+  visit: "/service-visit.webp",
+};
+
+function serviceArtUrl(kind: ServiceIconKind) {
+  return `${serviceMarkSrc[kind]}?${SERVICE_ART_CACHE_VERSION}`;
+}
+
 export function serviceTileClass(title: string) {
   return tileClass[serviceIconKind(title)];
 }
 
-const markSrc: Partial<Record<ServiceIconKind, string>> = {
-  psychiatry: "/service-psychiatry.webp",
-  neurology: "/service-neurology.webp",
-  followup: "/service-followup.webp",
-};
-
 export type ServiceVisualLayout = "card" | "detail";
 
-/** Colored header with the service logo kept smaller than the card. Unknown titles keep the drawn panel. */
+/** Title-matched illustration header (reference-style art). Uploaded photos stay photographic. */
 export function ServiceMark({
   title,
   layout = "card",
+  priority = false,
 }: {
   title: string;
   layout?: ServiceVisualLayout;
+  priority?: boolean;
 }) {
   const kind = serviceIconKind(title);
-  const src = markSrc[kind];
-  if (src) {
+  const artSrc = serviceMarkSrc[kind];
+
+  if (artSrc) {
     return (
-      <div className={cn(`service-mark service-mark--${kind}`, layout === "detail" && "service-mark--detail")}>
-        <Image
-          src={src}
-          alt=""
-          width={1024}
-          height={1024}
-          sizes={layout === "detail" ? "(min-width: 1024px) 24rem, 100vw" : "11rem"}
-          className="service-mark__art"
-        />
+      <div
+        className={cn(
+          "service-panel service-panel--art",
+          `service-panel--${kind}`,
+          layout === "card" && "service-panel--card",
+          layout === "detail" && "service-panel--detail",
+        )}
+      >
+        <div className="service-panel__art-inset">
+          <Image
+            src={serviceArtUrl(kind)}
+            alt=""
+            fill
+            unoptimized
+            priority={priority}
+            sizes="(min-width: 1280px) 26rem, (min-width: 640px) 45vw, 100vw"
+            className="service-panel__photo"
+            aria-hidden
+          />
+        </div>
       </div>
     );
   }
@@ -70,16 +93,15 @@ export function ServiceMark({
   return (
     <div
       className={cn(
-        `service-panel service-panel--${kind}`,
-        layout === "detail" && "service-panel--detail min-h-0 aspect-[5/3]",
+        "service-panel",
+        `service-panel--${kind}`,
+        layout === "card" && "service-panel--card",
+        layout === "detail" && "service-panel--detail",
       )}
       aria-hidden="true"
     >
-      <span className="service-panel__orb service-panel__orb--a" />
-      <span className="service-panel__orb service-panel__orb--b" />
-      <span className="service-panel__orb service-panel__orb--c" />
       <span className="service-panel__ring">
-        <ServiceIcon title={title} className="size-12" />
+        <ServiceIcon title={title} className={layout === "detail" ? "size-14" : "size-8"} />
       </span>
     </div>
   );
@@ -100,11 +122,10 @@ export function ServiceVisual({
   if (imageKey) {
     return (
       <div
-        className={
-          layout === "detail"
-            ? "relative aspect-[5/3] overflow-hidden rounded-lg bg-muted"
-            : "relative h-44 w-full bg-muted"
-        }
+        className={cn(
+          "service-panel service-panel--photo relative w-full shrink-0 overflow-hidden bg-muted",
+          layout === "detail" ? "service-panel--detail rounded-lg" : "service-panel--card",
+        )}
       >
         <Image
           src={`/media/${imageKey}`}
@@ -113,7 +134,7 @@ export function ServiceVisual({
           unoptimized
           priority={priority}
           sizes={layout === "detail" ? "(min-width: 1024px) 24rem, 100vw" : "(min-width: 1024px) 24rem, 100vw"}
-          className="object-cover"
+          className="service-panel__photo"
         />
       </div>
     );
@@ -122,24 +143,26 @@ export function ServiceVisual({
   if (layout === "detail") {
     return (
       <div className="overflow-hidden rounded-lg">
-        <ServiceMark title={title} layout="detail" />
+        <ServiceMark title={title} layout="detail" priority={priority} />
       </div>
     );
   }
 
-  return <ServiceMark title={title} layout="card" />;
+  return <ServiceMark title={title} layout="card" priority={priority} />;
 }
 
 export function ServiceIcon({
   title,
   className,
+  strokeWidth = iconProps.strokeWidth,
 }: {
   title: string;
   className?: string;
+  strokeWidth?: number;
 }) {
   const kind = serviceIconKind(title);
   return (
-    <svg {...iconProps} className={className}>
+    <svg {...iconProps} strokeWidth={strokeWidth} className={className}>
       {kind === "psychiatry" ? <PsychiatryMark /> : null}
       {kind === "neurology" ? <NeurologyMark /> : null}
       {kind === "followup" ? <FollowupMark /> : null}
@@ -208,12 +231,15 @@ export type JourneyIconName = "browse" | "account" | "note" | "status";
 export function JourneyIcon({
   name,
   className,
+  strokeWidth = iconProps.strokeWidth,
 }: {
   name: JourneyIconName;
   className?: string;
+  /** Heavier strokes for landing strip and other prominent marks. */
+  strokeWidth?: number;
 }) {
   return (
-    <svg {...iconProps} className={className}>
+    <svg {...iconProps} strokeWidth={strokeWidth} className={className}>
       {name === "browse" ? (
         <>
           <rect x="7" y="6.5" width="18" height="19" rx="2.5" />

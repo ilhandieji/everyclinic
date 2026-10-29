@@ -10,6 +10,7 @@ export async function SiteHeader() {
   let physician = false;
   let patient = false;
   let showServices = false;
+  let serviceSearch = false;
   try {
     const [profile, published, sessionPhysician, sessionPatient] = await Promise.all([
       findPublicPhysician({ displayName: true }),
@@ -21,6 +22,7 @@ export async function SiteHeader() {
     physician = Boolean(sessionPhysician);
     patient = Boolean(sessionPatient) && !physician;
     showServices = !physician && published > 0;
+    serviceSearch = published > 0;
   } catch {
     brand = "";
   }
@@ -31,6 +33,7 @@ export async function SiteHeader() {
       physician={physician}
       patient={patient}
       showServices={showServices}
+      serviceSearch={serviceSearch}
     />
   );
 }

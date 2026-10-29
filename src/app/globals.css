@@ -42,6 +42,10 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-band: var(--band);
+  --color-footer: var(--footer);
+  --color-footer-foreground: var(--footer-foreground);
+  --color-footer-muted: var(--footer-muted);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -52,7 +56,7 @@
 }
 
 :root {
-  /* Bright fern stays for small marks. It is not the card fill or the primary button. */
+  /* Chart palette only. Cards, the hero, and primary actions use the teal tokens below. */
   --palette-radioactive-grass: #1de92e;
   --palette-green: #006400;
   --palette-green-2: #007200;
@@ -68,7 +72,7 @@
   --palette-blue-mist: #9ec9de;
 
 
-  --background: #e1e1e7;
+  --background: #ffffff;
   --font-ui: "Vazirmatn Variable", "Vazirmatn", ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-ui);
   --font-latin: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
@@ -81,30 +85,34 @@
   --status-reserved-foreground: #0c3d4d;
   --status-accepted: #d7f3ee;
   --status-accepted-foreground: #0c4f48;
-  --foreground: #17332c;
+  --foreground: #1a2c28;
   --card: #ffffff;
-  --card-foreground: #17332c;
+  --card-foreground: #1a2c28;
   --popover: #ffffff;
-  --popover-foreground: #17332c;
-  --primary: #0f766e;
+  --popover-foreground: #1a2c28;
+  --primary: #10887e;
   --primary-foreground: #ffffff;
-  --secondary: #e4f5ec;
-  --secondary-foreground: #164e45;
-  --muted: #e8e8ee;
-  --muted-foreground: #455e56;
-  --accent: #ddf5ea;
-  --accent-foreground: #164e45;
+  --secondary: #e8f4f1;
+  --secondary-foreground: #134840;
+  --muted: #e8f1f2;
+  --muted-foreground: #475569;
+  --accent: #dff0eb;
+  --accent-foreground: #134840;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #c2c8c5;
-  --input: #7d8683;
+  --border: #d0ded9;
+  --input: #5e6d68;
   --field-background: #ffffff;
-  --ring: #0f9a8e;
+  --ring: #0f6e66;
+  --band: #f3f7f6;
+  --footer: #16332e;
+  --footer-foreground: #f4f7f6;
+  --footer-muted: #c5d5d0;
   --chart-1: var(--palette-green);
   --chart-2: var(--palette-bright-fern);
   --chart-3: var(--palette-radioactive-grass-2);
   --chart-4: var(--palette-tropical-mint);
   --chart-5: var(--palette-sky-aqua);
-  --radius: 0.625rem;
+  --radius: 0.75rem;
   --sidebar: var(--background);
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--primary);
@@ -118,31 +126,35 @@
 html.dark,
 .dark {
   /* Same teal primary as light. Surfaces step up from the black page. */
-  --background: #121212;
+  --background: #121615;
   --status-pending: #3a2a10;
   --status-pending-foreground: #f3e6c8;
   --status-reserved: #143646;
   --status-reserved-foreground: #d7eef6;
   --status-accepted: #143f3a;
   --status-accepted-foreground: #d7f3ee;
-  --foreground: #f5f5f5;
-  --card: #272727;
-  --card-foreground: #f5f5f5;
-  --popover: #323232;
-  --popover-foreground: #f5f5f5;
-  --primary: #0f766e;
+  --foreground: #f4f7f6;
+  --card: #1c2321;
+  --card-foreground: #f4f7f6;
+  --popover: #242c2a;
+  --popover-foreground: #f4f7f6;
+  --primary: #178077;
   --primary-foreground: #ffffff;
-  --secondary: #2a2a2a;
-  --secondary-foreground: #f5f5f5;
-  --muted: #222222;
-  --muted-foreground: #a3a3a3;
-  --accent: #1a3f3b;
-  --accent-foreground: #e7f6f2;
+  --secondary: #24302d;
+  --secondary-foreground: #f4f7f6;
+  --muted: #1a211f;
+  --muted-foreground: #b7c4be;
+  --accent: #1e3330;
+  --accent-foreground: #e7f4f1;
   --destructive: oklch(63.532% 0.2449 27.505);
-  --border: #5c6563;
-  --input: #8d9896;
-  --field-background: #323232;
-  --ring: var(--palette-sky-aqua);
+  --border: #5c6b66;
+  --input: #8ea099;
+  --field-background: #242c2a;
+  --ring: #8fd9cf;
+  --band: #181f1d;
+  --footer: #10211e;
+  --footer-foreground: #f4f7f6;
+  --footer-muted: #c5d5d0;
   --chart-1: var(--palette-green);
   --chart-2: var(--palette-bright-fern);
   --chart-3: var(--palette-radioactive-grass-2);
@@ -219,27 +231,12 @@ html.dark .radix-themes {
 }
 
 @layer components {
-html:not(.dark) .service-tile--mint {
-  background: color-mix(in oklch, var(--palette-tropical-mint) 28%, transparent);
-  color: var(--palette-green-2);
-}
-
-html:not(.dark) .service-tile--fern {
-  background: color-mix(in oklch, var(--palette-bright-fern) 22%, transparent);
-  color: var(--palette-bright-fern);
-}
-
-html:not(.dark) .service-tile--sky {
-  background: color-mix(in oklch, var(--palette-sky-aqua) 24%, transparent);
-  color: var(--palette-sky-deep);
-}
-
-html:not(.dark) .service-tile--calm {
-  background: color-mix(in oklch, var(--accent) 80%, transparent);
-  color: var(--primary);
-}
-
-.service-tile {
+.service-tile,
+.service-tile--mint,
+.service-tile--fern,
+.service-tile--sky,
+.service-tile--calm,
+.service-tile--line {
   display: flex;
   width: 3.25rem;
   height: 3.25rem;
@@ -247,30 +244,18 @@ html:not(.dark) .service-tile--calm {
   align-items: center;
   justify-content: center;
   border-radius: calc(var(--radius) * 1.4);
-  color: var(--foreground);
+  border: 1px solid color-mix(in oklch, var(--primary) 22%, var(--border));
+  background: color-mix(in oklch, var(--primary) 10%, var(--card));
+  color: var(--primary);
 }
 
-.service-tile--mint {
-  background: color-mix(in oklch, var(--palette-tropical-mint) 42%, var(--card));
-}
-
-.service-tile--fern {
-  background: color-mix(in oklch, var(--palette-bright-fern) 30%, var(--card));
-}
-
-.service-tile--sky {
-  background: color-mix(in oklch, var(--palette-sky-aqua) 26%, var(--card));
-}
-
-.service-tile--calm {
-  background: color-mix(in oklch, var(--accent) 70%, var(--card));
-  color: var(--accent-foreground);
-}
-
-.service-tile--line {
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--foreground);
+html.dark .service-tile,
+html.dark .service-tile--mint,
+html.dark .service-tile--fern,
+html.dark .service-tile--sky,
+html.dark .service-tile--calm,
+html.dark .service-tile--line {
+  color: var(--footer-muted);
 }
 
 .hero-mark {
@@ -278,261 +263,138 @@ html:not(.dark) .service-tile--calm {
   width: 100%;
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  border-radius: 2.25rem 4.75rem 2.75rem 4.25rem;
-  box-shadow: 0 1.25rem 2.75rem color-mix(in oklch, var(--palette-blue-harbor) 16%, transparent);
-  container-type: inline-size;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 2);
+  background: var(--muted);
+  box-shadow: 0 1.25rem 2.5rem -1.4rem color-mix(in oklch, var(--foreground) 45%, transparent);
 }
 
 .hero-mark__photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 62%;
 }
 
-.hero-mark__stage {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.hero-mark__chip {
-  position: absolute;
-  display: grid;
-  width: 1.875rem;
-  height: 1.875rem;
-  place-items: center;
-  border-radius: 999px;
-  background: color-mix(in oklch, white 52%, transparent);
-  color: color-mix(in oklch, var(--palette-blue-harbor) 72%, transparent);
-  box-shadow: 0 0.35rem 0.85rem color-mix(in oklch, var(--palette-blue-harbor) 10%, transparent);
-}
-
-.hero-mark__chip svg {
-  width: 1.3125rem;
-  height: 1.3125rem;
-}
-
-.hero-mark__chip--pulse {
-  inset-block-start: 14%;
-  inset-inline-start: 18%;
-  animation: hero-chip-heart 16s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
-  animation-delay: -4.2s;
-}
-
-.hero-mark__chip--shield {
-  inset-block-end: 20%;
-  inset-inline-start: 36%;
-  animation: hero-chip-shield 21s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
-  animation-delay: -11s;
-}
-
-@keyframes hero-chip-heart {
-  0%,
-  100% {
-    opacity: 0;
-    filter: blur(2.5px);
-    transform: translate3d(0, 0, 0) scale(0.92);
-  }
-  12% {
-    opacity: 0.72;
-    filter: blur(0);
-    transform: translate3d(-10cqi, 4cqi, 0) scale(1);
-  }
-  34% {
-    opacity: 0.72;
-    filter: blur(0);
-    transform: translate3d(-30cqi, 12cqi, 0) scale(1);
-  }
-  56% {
-    opacity: 0.72;
-    filter: blur(0);
-    transform: translate3d(-8cqi, 20cqi, 0) scale(1);
-  }
-  76% {
-    opacity: 0.72;
-    filter: blur(0);
-    transform: translate3d(6cqi, 6cqi, 0) scale(1);
-  }
-  90% {
-    opacity: 0;
-    filter: blur(2.5px);
-    transform: translate3d(-2cqi, 2cqi, 0) scale(0.94);
-  }
-}
-
-@keyframes hero-chip-shield {
-  0%,
-  100% {
-    opacity: 0;
-    filter: blur(2.5px);
-    transform: translate3d(0, 0, 0) scale(0.92);
-  }
-  14% {
-    opacity: 0.72;
-    filter: blur(0);
-    transform: translate3d(9cqi, -5cqi, 0) scale(1);
-  }
-  36% {
-    opacity: 0.72;
-    filter: blur(0);
-    transform: translate3d(-20cqi, -18cqi, 0) scale(1);
-  }
-  58% {
-    opacity: 0.72;
-    filter: blur(0);
-    transform: translate3d(12cqi, -8cqi, 0) scale(1);
-  }
-  78% {
-    opacity: 0.72;
-    filter: blur(0);
-    transform: translate3d(-8cqi, 5cqi, 0) scale(1);
-  }
-  92% {
-    opacity: 0;
-    filter: blur(2.5px);
-    transform: translate3d(3cqi, -2cqi, 0) scale(0.94);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-mark__chip {
-    animation: none;
-    opacity: 0.72;
-    filter: none;
-    transform: none;
-  }
-}
-
-.service-panel {
+.service-panel,
+.service-panel--psychiatry,
+.service-panel--neurology,
+.service-panel--followup,
+.service-panel--assessment,
+.service-panel--visit {
   position: relative;
   display: grid;
-  min-height: 11.25rem;
+  min-height: 11rem;
   place-items: center;
   overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  color: var(--primary);
 }
 
-.service-panel__ring {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  width: 6.75rem;
-  height: 6.75rem;
-  place-items: center;
-  border-radius: 999px;
-  background: color-mix(in oklch, var(--card) 78%, transparent);
-  box-shadow: inset 0 0 0 1.5px color-mix(in oklch, currentColor 42%, transparent);
+.service-panel--card,
+.service-panel--photo.service-panel--card {
+  width: 100%;
+  flex-shrink: 0;
+  /* Same 16:9 as service-*.webp so art is shown whole, not cropped. */
+  aspect-ratio: 16 / 9;
+  min-height: 0;
 }
 
-.service-panel__orb {
+.service-panel--art {
+  display: block;
+  background: var(--muted);
+}
+
+.service-panel__art-inset {
   position: absolute;
-  border-radius: 999px;
-  background: color-mix(in oklch, var(--card) 62%, transparent);
+  inset: 0;
 }
 
-.service-panel__orb--a {
-  width: 4.5rem;
-  height: 4.5rem;
-  inset-block-start: 12%;
-  inset-inline-end: 10%;
+.service-panel--detail .service-panel__art-inset {
+  inset: 5% 4%;
 }
 
-.service-panel__orb--b {
-  width: 3rem;
-  height: 3rem;
-  inset-block-end: 14%;
-  inset-inline-start: 12%;
+.service-panel__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
-.service-panel__orb--c {
-  width: 1.75rem;
-  height: 1.75rem;
-  inset-block-start: 22%;
-  inset-inline-start: 18%;
+.service-panel--detail.service-panel--art .service-panel__photo {
+  object-fit: contain;
+  object-position: center;
 }
 
 .service-panel--psychiatry {
-  background: color-mix(in oklch, var(--palette-bright-fern) 26%, var(--card));
-  color: var(--palette-green);
+  background: linear-gradient(
+    145deg,
+    color-mix(in oklch, #c8ead4 88%, white),
+    color-mix(in oklch, #9fd4b8 72%, white)
+  );
 }
 
 .service-panel--neurology {
-  background: color-mix(in oklch, var(--palette-sky-aqua) 30%, var(--card));
-  color: var(--palette-sky-deep);
+  background: linear-gradient(
+    145deg,
+    color-mix(in oklch, #c5e4f5 88%, white),
+    color-mix(in oklch, #93cce8 72%, white)
+  );
 }
 
 .service-panel--followup {
-  background: color-mix(in oklch, var(--palette-tropical-mint) 32%, var(--card));
-  color: var(--palette-green-2);
+  background: linear-gradient(
+    145deg,
+    color-mix(in oklch, #cceee0 88%, white),
+    color-mix(in oklch, #9edcc4 72%, white)
+  );
 }
 
 .service-panel--assessment {
-  background: color-mix(in oklch, var(--accent) 88%, var(--card));
-  color: var(--primary);
+  background: linear-gradient(
+    145deg,
+    color-mix(in oklch, #ddd4f0 88%, white),
+    color-mix(in oklch, #b8a8e8 72%, white)
+  );
 }
 
 .service-panel--visit {
-  background: color-mix(in oklch, var(--secondary) 92%, var(--card));
-  color: var(--primary);
+  background: linear-gradient(
+    145deg,
+    color-mix(in oklch, #c8dff5 88%, white),
+    color-mix(in oklch, #94c4ef 72%, white)
+  );
 }
 
-html.dark .service-panel--psychiatry {
-  background: color-mix(in oklch, var(--palette-green) 48%, var(--card));
-  color: var(--palette-radioactive-grass-2);
-}
-
-html.dark .service-panel--neurology {
-  background: color-mix(in oklch, var(--palette-sky-deep) 55%, var(--card));
-  color: var(--palette-blue-mist);
-}
-
-html.dark .service-panel--followup {
-  background: color-mix(in oklch, var(--palette-green-2) 42%, var(--card));
-  color: var(--palette-tropical-mint);
-}
-
+html.dark .service-panel:not(.service-panel--art),
+html.dark .service-panel--psychiatry,
+html.dark .service-panel--neurology,
+html.dark .service-panel--followup,
 html.dark .service-panel--assessment,
 html.dark .service-panel--visit {
-  background: color-mix(in oklch, var(--primary) 38%, var(--card));
-  color: var(--palette-tropical-mint);
+  background: color-mix(in oklch, var(--primary) 18%, var(--card));
+  color: var(--footer-muted);
 }
 
-.service-mark {
-  display: flex;
-  height: 9.25rem;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
 
-.service-mark__art {
-  height: 8.25rem;
-  width: 8.25rem;
-  max-width: 68%;
-  object-fit: cover;
-  -webkit-mask-image: radial-gradient(circle at center, #000 62%, transparent 80%);
-  mask-image: radial-gradient(circle at center, #000 62%, transparent 80%);
-}
-
-.service-mark--psychiatry {
-  background: color-mix(in oklch, var(--palette-bright-fern) 74%, white);
-}
-
-.service-mark--neurology {
-  background: color-mix(in oklch, var(--palette-sky-aqua) 64%, white);
-}
-
-.service-mark--followup {
-  background: color-mix(in oklch, var(--palette-tropical-mint) 62%, white);
-}
-
-.service-mark--detail {
-  height: auto;
+.service-panel--detail {
+  min-height: 0;
   aspect-ratio: 5 / 3;
+  width: 100%;
 }
 
-.service-mark--detail .service-mark__art {
-  height: min(72%, 13rem);
-  width: min(72%, 13rem);
-  max-width: 72%;
+.service-panel__ring {
+  display: grid;
+  width: 4.5rem;
+  height: 4.5rem;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklch, var(--primary) 28%, var(--border));
+  background: var(--card);
+}
+
+.service-panel--detail .service-panel__ring {
+  width: 5.5rem;
+  height: 5.5rem;
 }
 }

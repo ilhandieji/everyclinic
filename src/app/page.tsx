@@ -3,9 +3,9 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { EmptyState } from "@/components/layout/empty-state";
-import { SiteLoading, SiteShell, siteServiceGridClass } from "@/components/layout/site-shell";
+import { SiteLoading, siteShellClass, siteServiceGridClass } from "@/components/layout/site-shell";
 import { HeroMark } from "@/components/site/hero-mark";
-import { JourneyIcon, type JourneyIconName } from "@/components/site/service-icon";
+import { RequestPathStrip } from "@/components/site/request-path-strip";
 import { ReceptionHours } from "@/components/site/reception-hours";
 import { ServiceCard } from "@/components/site/service-card";
 import { Button } from "@/components/ui/button";
@@ -13,17 +13,8 @@ import { loadPublicReceptionWeek } from "@/lib/booking-availability";
 import { displayPrices } from "@/lib/money";
 import { currentPhysician } from "@/lib/access";
 import { findPublicPhysician } from "@/lib/physician-site";
+import { cn } from "@/lib/utils";
 import prisma from "@/lib/prisma";
-
-const requestSteps: { name: JourneyIconName; text: string }[] = [
-  { name: "browse", text: "خدمت مورد نظر را باز کنید." },
-  { name: "account", text: "اگر وارد حساب نشده‌اید، وارد شوید." },
-  { name: "note", text: "توضیح کوتاهی برای پزشک بنویسید و درخواست را ثبت کنید." },
-  {
-    name: "status",
-    text: "وضعیت درخواست را در «درخواست‌های من» ببینید تا پزشک آن را بپذیرد یا رد کند.",
-  },
-];
 
 async function Landing() {
   await connection();
@@ -57,111 +48,146 @@ async function Landing() {
   const hasProfile = Boolean(name || gender || bio || profile?.photoKey);
 
   return (
-    <SiteShell className="flex flex-col gap-10">
-      <section className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(16rem,0.88fr)] lg:gap-12">
-        <div className="flex min-w-0 flex-col items-start gap-5">
-          <div className="flex items-center gap-4">
-            {profile?.photoKey ? (
-              <Image
-                src={`/media/${profile.photoKey}`}
-                alt={name || "تصویر پزشک"}
-                width={80}
-                height={80}
-                unoptimized
-                className="size-16 shrink-0 rounded-full object-cover ring-2 ring-border sm:size-20"
-              />
+    <div className="flex flex-col">
+      <section aria-labelledby="physician-heading">
+        <div
+          className={cn(
+            siteShellClass,
+            "grid items-center gap-10 py-12 md:py-16 lg:grid-cols-2 lg:gap-16 lg:py-20",
+          )}
+        >
+          <div className="flex min-w-0 flex-col items-start gap-6 border-s-4 border-primary ps-5 sm:ps-6 md:ps-8">
+            <div className="flex items-center gap-4">
+              {profile?.photoKey ? (
+                <Image
+                  src={`/media/${profile.photoKey}`}
+                  alt={name || "تصویر پزشک"}
+                  width={96}
+                  height={96}
+                  unoptimized
+                  className="size-16 shrink-0 rounded-full object-cover ring-4 ring-card shadow-sm sm:size-20"
+                />
+              ) : null}
+              <div className="flex min-w-0 flex-col gap-1.5">
+                <p className="text-sm font-medium text-primary">مطب</p>
+                <h1
+                  id="physician-heading"
+                  className="text-4xl font-semibold text-balance text-foreground sm:text-5xl"
+                >
+                  {name || "معرفی پزشک"}
+                </h1>
+                {gender ? <p className="text-base text-muted-foreground">{gender}</p> : null}
+              </div>
+            </div>
+            {bio ? (
+              <p className="max-w-[42rem] whitespace-pre-wrap text-base leading-8 text-foreground">
+                {bio}
+              </p>
+            ) : !hasProfile ? (
+              <p className="text-base text-muted-foreground">پروفایل عمومی هنوز تکمیل نشده است.</p>
             ) : null}
-            <div className="flex min-w-0 flex-col gap-1">
-              <p className="text-sm font-medium text-primary">مطب</p>
-              <h1 className="text-3xl font-semibold text-balance text-foreground sm:text-4xl">
-                {name || "معرفی پزشک"}
-              </h1>
-              {gender ? <p className="text-sm text-muted-foreground">{gender}</p> : null}
+            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
+              <Button asChild size="lg" className="text-base">
+                <Link href={physician ? "/manage/services" : "#services"}>
+                  {physician ? "مدیریت خدمات" : "رزرو نوبت"}
+                </Link>
+              </Button>
+              {physician ? null : (
+                <Button asChild variant="outline" size="lg" className="bg-card text-base">
+                  <Link href="#request-path">چطور درخواست بدهم</Link>
+                </Button>
+              )}
             </div>
           </div>
-          {bio ? (
-            <p className="max-w-[65ch] border-s-2 border-primary ps-4 whitespace-pre-wrap text-sm leading-relaxed">
-              {bio}
+          <HeroMark />
+        </div>
+      </section>
+
+      {physician ? null : <RequestPathStrip />}
+
+      <section id="services" className="scroll-mt-24 bg-muted/60">
+        <div className={cn(siteShellClass, "flex flex-col gap-8 py-14 md:py-16")}>
+          <div className="flex max-w-[42rem] flex-col gap-2">
+            <h2 className="text-3xl font-semibold">خدمات</h2>
+            <p className="text-base leading-relaxed text-muted-foreground">
+              {physician
+                ? "فهرست خدمات منتشرشده در سایت عمومی."
+                : "نوع ویزیت را ببینید و برای هماهنگی، درخواست ثبت کنید."}
             </p>
-          ) : !hasProfile ? (
-            <p className="text-sm text-muted-foreground">پروفایل عمومی هنوز تکمیل نشده است.</p>
-          ) : null}
-          <div className="flex flex-wrap items-center gap-2">
-            <Button asChild>
-              <Link href={physician ? "/manage/services" : "/services"}>
-                {physician ? "مدیریت خدمات" : "مشاهده خدمات"}
-              </Link>
-            </Button>
+          </div>
+          {services.length === 0 ? (
+            <EmptyState>فعلاً خدمتی برای نمایش نیست.</EmptyState>
+          ) : (
+            <ul className={siteServiceGridClass}>
+              {services.map((service) => (
+                <li key={service.id} className="min-w-0">
+                  <ServiceCard
+                    id={service.id}
+                    title={service.title}
+                    description={service.description}
+                    {...displayPrices(service)}
+                    currencyLabel={service.currencyLabel}
+                    imageKey={service.imageKey}
+                    physicianView={Boolean(physician)}
+                    titleLevel="h3"
+                    priority={Boolean(service.imageKey)}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </section>
+
+      <section className="scroll-mt-24">
+        <div className={cn(siteShellClass, "py-14 md:py-16")}>
+          <ReceptionHours days={receptionDays} />
+        </div>
+      </section>
+
+      <footer className="bg-footer text-footer-foreground">
+        <div
+          className={cn(
+            siteShellClass,
+            "flex flex-col gap-6 py-10 md:flex-row md:items-end md:justify-between",
+          )}
+        >
+          <div className="flex flex-col gap-2">
+            <p className="text-lg font-semibold">{name || "مطب"}</p>
+            <p className="flex items-center gap-2 text-sm text-footer-muted">
+              <span className="sr-only">تلفن مطب</span>
+              <a
+                href="tel:09110000000"
+                dir="ltr"
+                lang="en"
+                className="focus-ring rounded-sm font-medium text-footer-foreground"
+              >
+                0911 000 000
+              </a>
+            </p>
+          </div>
+          <nav aria-label="پایان صفحه" className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+            <a href="#services" className="focus-ring rounded-sm text-footer-muted hover:text-footer-foreground">
+              خدمات
+            </a>
+            <a
+              href="#reception-hours"
+              className="focus-ring rounded-sm text-footer-muted hover:text-footer-foreground"
+            >
+              ساعات پذیرش
+            </a>
             {physician ? null : (
-              <Button asChild variant="outline">
-                <Link href="#request-path">چطور درخواست بدهم</Link>
-              </Button>
+              <a
+                href="#request-path"
+                className="focus-ring rounded-sm text-footer-muted hover:text-footer-foreground"
+              >
+                چطور درخواست بدهم
+              </a>
             )}
-          </div>
+          </nav>
         </div>
-        <HeroMark />
-      </section>
-
-      <section id="services" className="flex scroll-mt-24 flex-col gap-5">
-        <div className="flex max-w-[65ch] flex-col gap-1">
-          <h2 className="text-2xl font-semibold">خدمات</h2>
-          <p className="text-sm text-muted-foreground">
-            {physician
-              ? "فهرست خدمات منتشرشده در سایت عمومی."
-              : "نوع ویزیت را ببینید و برای هماهنگی، درخواست ثبت کنید."}
-          </p>
-        </div>
-        {services.length === 0 ? (
-          <EmptyState>فعلاً خدمتی برای نمایش نیست.</EmptyState>
-        ) : (
-          <ul className={siteServiceGridClass}>
-            {services.map((service) => (
-              <li key={service.id} className="min-w-0">
-                <ServiceCard
-                  id={service.id}
-                  title={service.title}
-                  description={service.description}
-                  {...displayPrices(service)}
-                  currencyLabel={service.currencyLabel}
-                  imageKey={service.imageKey}
-                  physicianView={Boolean(physician)}
-                  titleLevel="h3"
-                  priority={Boolean(service.imageKey)}
-                />
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <ReceptionHours days={receptionDays} />
-
-      {physician ? null : (
-        <section id="request-path" className="flex scroll-mt-24 flex-col gap-4">
-          <div className="max-w-[65ch]">
-            <h2 className="text-2xl font-semibold">چطور درخواست بدهم</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              نوبت را پزشک هماهنگ می‌کند. ثبت درخواست به‌معنای وقت قطعی نیست.
-            </p>
-          </div>
-          <ol className="grid list-none gap-4 sm:grid-cols-2">
-            {requestSteps.map((step, index) => (
-              <li key={step.name} className="flex items-start gap-3 rounded-lg border border-border bg-card p-4">
-                <span className="service-tile service-tile--calm shrink-0" aria-hidden="true">
-                  <JourneyIcon name={step.name} className="size-6" />
-                </span>
-                <p className="text-sm leading-relaxed">
-                  <span className="ms-0 me-1 font-semibold text-primary" aria-hidden="true">
-                    {index + 1}.
-                  </span>
-                  {step.text}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </section>
-      )}
-    </SiteShell>
+      </footer>
+    </div>
   );
 }
 

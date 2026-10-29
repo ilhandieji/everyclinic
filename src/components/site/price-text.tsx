@@ -32,7 +32,7 @@ export function PriceText({
   const amountProps = amountLang(label);
 
   return (
-    <p className="text-sm text-foreground">
+    <p className="text-base font-medium text-foreground">
       {min === max ? (
         <>
           <span {...amountProps}>{formatAmount(min, label)}</span>

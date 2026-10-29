@@ -37,7 +37,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 <AuthOverlayProvider>
                   <Suspense
                     fallback={
-                      <header className="h-12 border-b border-border bg-background" />
+                      <header className="h-16 border-b border-border bg-card" />
                     }
                   >
                     <SiteHeader />
