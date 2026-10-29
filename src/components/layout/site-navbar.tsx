@@ -158,7 +158,7 @@ export function SiteNavbar({
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const clientReady = useClientReady();
-  const { toggleTheme } = useAppTheme();
+  const { theme, toggleTheme } = useAppTheme();
   const { openAuth } = useAuthOverlay();
   const signedIn = clientReady && Boolean(session?.user?.email) && !session?.error;
   const [menuOpen, setMenuOpen] = useState(false);
@@ -169,6 +169,7 @@ export function SiteNavbar({
   const closeMenu = () => setMenuOpen(false);
 
   const homeActive = pathname === "/";
+  const bookHref = homeActive ? "/#services" : "/services";
   const manageActive =
     pathname === "/manage" ||
     pathname.startsWith("/manage/profile") ||
@@ -234,8 +235,13 @@ export function SiteNavbar({
         aria-label="تغییر حالت روشن و تاریک"
         onClick={() => toggleTheme()}
       >
-        <Sun aria-hidden className="hidden dark:block" />
-        <Moon aria-hidden className="dark:hidden" />
+        {!clientReady ? (
+          <Moon aria-hidden />
+        ) : theme === "dark" ? (
+          <Sun aria-hidden />
+        ) : (
+          <Moon aria-hidden />
+        )}
       </Button>
       {!clientReady || status === "loading" ? (
         <div className="size-9" aria-hidden />
@@ -272,7 +278,7 @@ export function SiteNavbar({
         <div className="flex shrink-0 items-center gap-2">
           {!physician && showServices ? (
             <Button asChild size="sm" className="hidden lg:inline-flex">
-              <Link href="/services">رزرو نوبت</Link>
+              <Link href={bookHref}>رزرو نوبت</Link>
             </Button>
           ) : null}
           {signedIn ? (
@@ -311,8 +317,8 @@ export function SiteNavbar({
               </div>
             ) : null}
             {!physician && showServices ? (
-              <Button asChild size="default" className="mt-2">
-                <Link href="/services" onClick={closeMenu}>
+              <Button asChild size="default" className="mt-2 h-11">
+                <Link href={bookHref} onClick={closeMenu}>
                   رزرو نوبت
                 </Link>
               </Button>

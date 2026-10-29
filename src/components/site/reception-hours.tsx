@@ -40,7 +40,7 @@ export function ReceptionHours({ days }: { days: PublicReceptionDay[] }) {
             </a>
           </p>
           <Button asChild className="h-11 px-5">
-            <Link href="/services">رزرو آنلاین نوبت</Link>
+            <Link href="/#services">رزرو آنلاین نوبت</Link>
           </Button>
         </div>
         {days.length > 0 ? (

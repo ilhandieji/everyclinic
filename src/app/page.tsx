@@ -56,7 +56,7 @@ async function Landing() {
             "grid items-center gap-10 py-12 md:py-16 lg:grid-cols-2 lg:gap-16 lg:py-20",
           )}
         >
-          <div className="flex min-w-0 flex-col items-start gap-6 border-s-4 border-primary ps-5 sm:ps-6 md:ps-8">
+          <div className="flex min-w-0 flex-col items-start gap-6">
             <div className="flex items-center gap-4">
               {profile?.photoKey ? (
                 <Image
@@ -65,11 +65,10 @@ async function Landing() {
                   width={96}
                   height={96}
                   unoptimized
-                  className="size-16 shrink-0 rounded-full object-cover ring-4 ring-card shadow-sm sm:size-20"
+                  className="size-16 shrink-0 rounded-full object-cover ring-2 ring-border shadow-sm sm:size-20"
                 />
               ) : null}
               <div className="flex min-w-0 flex-col gap-1.5">
-                <p className="text-sm font-medium text-primary">مطب</p>
                 <h1
                   id="physician-heading"
                   className="text-4xl font-semibold text-balance text-foreground sm:text-5xl"

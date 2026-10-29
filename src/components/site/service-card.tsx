@@ -4,6 +4,7 @@ import { PriceText } from "@/components/site/price-text";
 import { ServiceVisual } from "@/components/site/service-icon";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 export function ServiceCard({
   id,
@@ -48,7 +49,11 @@ export function ServiceCard({
           </p>
         ) : null}
         <PriceText min={priceMin} max={priceMax} label={currencyLabel} />
-        <Button asChild size="default" className="mt-auto w-full">
+        <Button
+          asChild
+          size={physicianView ? "default" : "lg"}
+          className={cn("mt-auto w-full", !physicianView && "h-11 text-base")}
+        >
           <Link href={href}>
             {action}
             <CalendarDays aria-hidden />

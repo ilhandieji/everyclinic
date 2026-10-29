@@ -31,21 +31,14 @@ export function PriceText({
 
   const amountProps = amountLang(label);
 
+  const rangeText =
+    min === max
+      ? `${formatAmount(min, label)}${label ? ` ${label}` : ""}`
+      : `${formatAmount(min, label)} الی ${formatAmount(max, label)}${label ? ` ${label}` : ""}`;
+
   return (
     <p className="text-base font-medium text-foreground">
-      {min === max ? (
-        <>
-          <span {...amountProps}>{formatAmount(min, label)}</span>
-          {label ? <span> {label}</span> : null}
-        </>
-      ) : (
-        <>
-          <span {...amountProps}>{formatAmount(min, label)}</span>
-          {" الی "}
-          <span {...amountProps}>{formatAmount(max, label)}</span>
-          {label ? <span> {label}</span> : null}
-        </>
-      )}
+      <span {...amountProps}>{rangeText}</span>
     </p>
   );
 }
