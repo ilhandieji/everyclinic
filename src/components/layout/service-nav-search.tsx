@@ -168,7 +168,7 @@ export function ServiceNavSearch({ className }: { className?: string }) {
             }
           }}
           onKeyDown={onKeyDown}
-          className="h-9 rounded-full border-border/80 bg-muted/40 ps-9 pe-3 text-sm shadow-none focus-visible:bg-card"
+          className="h-9 rounded-full border-border bg-card ps-9 pe-3 text-sm shadow-none"
         />
       </div>
       {showList ? (

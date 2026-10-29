@@ -38,15 +38,15 @@ function useClientReady() {
 }
 
 const navIconButtonClass =
-  "size-9 shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground data-[state=open]:bg-muted data-[state=open]:text-foreground";
+  "size-9 shrink-0 text-muted-foreground hover:bg-card hover:text-foreground data-[state=open]:bg-card data-[state=open]:text-foreground";
 
 function navLinkClass(active: boolean, menu = false) {
   return cn(
     "focus-ring inline-flex items-center rounded-lg font-medium transition-colors outline-none",
     menu ? "min-h-10 w-full justify-start px-3 text-base" : "min-h-9 px-2.5 text-sm",
     active
-      ? "bg-primary/15 font-semibold text-primary ring-1 ring-primary/25 dark:bg-primary/25 dark:text-primary-foreground dark:ring-primary/40"
-      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+      ? "bg-card font-semibold text-primary shadow-sm ring-1 ring-border"
+      : "text-muted-foreground hover:bg-card/80 hover:text-foreground",
   );
 }
 
@@ -254,7 +254,7 @@ export function SiteNavbar({
   );
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-border bg-muted shadow-[0_10px_24px_-18px_color-mix(in_oklch,var(--foreground)_55%,transparent)]">
       <NotificationLive onSummary={onSummary} />
       <nav
         className={cn(siteNavShellClass, "flex items-center justify-between gap-2 py-2.5")}
@@ -302,7 +302,7 @@ export function SiteNavbar({
       {menuOpen ? (
         <div
           id="site-nav-menu"
-          className="border-t border-border bg-card lg:hidden"
+          className="border-t border-border bg-muted lg:hidden"
         >
           <div
             className={cn(
