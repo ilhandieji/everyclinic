@@ -43,16 +43,23 @@ export function ServiceCard({
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-4 pb-5">
-        {description ? (
-          <p className="line-clamp-4 whitespace-pre-wrap text-base leading-relaxed text-muted-foreground">
-            {description}
-          </p>
-        ) : null}
-        <PriceText min={priceMin} max={priceMax} label={currencyLabel} />
+        <div className="flex min-h-0 flex-1 flex-col">
+          {description ? (
+            <p className="line-clamp-4 whitespace-pre-wrap text-base leading-relaxed text-muted-foreground">
+              {description}
+            </p>
+          ) : null}
+        </div>
+        <PriceText
+          min={priceMin}
+          max={priceMax}
+          label={currencyLabel}
+          className="mt-auto min-h-[1.625rem] shrink-0"
+        />
         <Button
           asChild
           size={physicianView ? "default" : "lg"}
-          className={cn("mt-auto w-full", !physicianView && "h-11 text-base")}
+          className={cn("w-full shrink-0", !physicianView && "h-11 text-base")}
         >
           <Link href={href}>
             {action}

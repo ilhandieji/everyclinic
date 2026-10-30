@@ -276,6 +276,39 @@ html.dark .service-tile--line {
   object-position: center 62%;
 }
 
+/* Landing hero only. The 404 mark stays 4:3. */
+@media (min-width: 64rem) {
+  .hero-mark.hero-mark--fill {
+    height: 100%;
+    aspect-ratio: auto;
+    min-height: 0;
+  }
+
+  .hero-mark.hero-mark--fill .hero-mark__photo {
+    position: absolute;
+    inset: 0;
+  }
+}
+
+.clinic-map-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 2);
+  background: var(--muted);
+  box-shadow: 0 1.25rem 2.5rem -1.4rem color-mix(in oklch, var(--foreground) 45%, transparent);
+}
+
+.clinic-map-frame__embed {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  border: 0;
+}
+
 .service-panel,
 .service-panel--psychiatry,
 .service-panel--neurology,
@@ -329,40 +362,40 @@ html.dark .service-tile--line {
 .service-panel--psychiatry {
   background: linear-gradient(
     145deg,
-    color-mix(in oklch, #c8ead4 88%, white),
-    color-mix(in oklch, #9fd4b8 72%, white)
+    color-mix(in oklch, #d8d0f5 96%, white),
+    color-mix(in oklch, #a898e8 86%, white)
   );
 }
 
 .service-panel--neurology {
   background: linear-gradient(
     145deg,
-    color-mix(in oklch, #c5e4f5 88%, white),
-    color-mix(in oklch, #93cce8 72%, white)
+    color-mix(in oklch, #b3dcf5 96%, white),
+    color-mix(in oklch, #6bb8e3 86%, white)
   );
 }
 
 .service-panel--followup {
   background: linear-gradient(
     145deg,
-    color-mix(in oklch, #cceee0 88%, white),
-    color-mix(in oklch, #9edcc4 72%, white)
+    color-mix(in oklch, #9fdcc4 96%, white),
+    color-mix(in oklch, #4fb896 88%, white)
   );
 }
 
 .service-panel--assessment {
   background: linear-gradient(
     145deg,
-    color-mix(in oklch, #ddd4f0 88%, white),
-    color-mix(in oklch, #b8a8e8 72%, white)
+    color-mix(in oklch, #d4c8ef 96%, white),
+    color-mix(in oklch, #a892e0 86%, white)
   );
 }
 
 .service-panel--visit {
   background: linear-gradient(
     145deg,
-    color-mix(in oklch, #c8dff5 88%, white),
-    color-mix(in oklch, #94c4ef 72%, white)
+    color-mix(in oklch, #b8daf5 96%, white),
+    color-mix(in oklch, #78b8ea 86%, white)
   );
 }
 

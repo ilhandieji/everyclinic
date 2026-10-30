@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { connection } from "next/server";
 import { EmptyState } from "@/components/layout/empty-state";
 import { SiteLoading, siteShellClass, siteServiceGridClass } from "@/components/layout/site-shell";
+import { DemoClinicLocationMap } from "@/components/site/demo-clinic-location-map";
 import { HeroMark } from "@/components/site/hero-mark";
 import { RequestPathStrip } from "@/components/site/request-path-strip";
 import { ReceptionHours } from "@/components/site/reception-hours";
@@ -53,10 +54,10 @@ async function Landing() {
         <div
           className={cn(
             siteShellClass,
-            "grid items-center gap-10 py-12 md:py-16 lg:grid-cols-2 lg:gap-16 lg:py-20",
+            "grid items-start gap-8 py-8 md:gap-10 md:py-10 lg:grid-cols-2 lg:grid-rows-[auto_auto_auto] lg:items-stretch lg:gap-x-12 lg:gap-y-6 lg:py-12",
           )}
         >
-          <div className="flex min-w-0 flex-col items-start gap-6">
+          <div className="flex min-w-0 flex-col items-start gap-5 lg:col-start-1 lg:row-start-1 lg:gap-6">
             <div className="flex items-center gap-4">
               {profile?.photoKey ? (
                 <Image
@@ -98,7 +99,8 @@ async function Landing() {
               )}
             </div>
           </div>
-          <HeroMark />
+          <DemoClinicLocationMap />
+          <HeroMark className="hero-mark--fill lg:col-start-2 lg:row-start-1 lg:row-span-2" />
         </div>
       </section>
 

@@ -31,7 +31,7 @@ const tileClass: Record<ServiceIconKind, string> = {
 };
 
 /** Landscape 16:9 banners in `public/` — bump version when replacing files (bypasses stale optimizer cache). */
-const SERVICE_ART_CACHE_VERSION = "20261029-min";
+const SERVICE_ART_CACHE_VERSION = "20261030-lilac";
 
 const serviceMarkSrc: Record<ServiceIconKind, string> = {
   psychiatry: "/service-psychiatry.webp",
