@@ -20,6 +20,7 @@ async function ManageProfile() {
       gender: true,
       bio: true,
       photoKey: true,
+      phone: true,
     },
   });
 
@@ -32,6 +33,7 @@ async function ManageProfile() {
       displayName={profile.displayName ?? ""}
       gender={profile.gender ?? ""}
       bio={profile.bio ?? ""}
+      phone={profile.phone ?? ""}
       photoKey={profile.photoKey}
     />
   );

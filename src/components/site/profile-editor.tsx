@@ -39,11 +39,13 @@ export function ProfileEditor({
   displayName,
   gender,
   bio,
+  phone,
   photoKey,
 }: {
   displayName: string;
   gender: string;
   bio: string;
+  phone: string;
   photoKey: string | null;
 }) {
   const router = useRouter();
@@ -93,7 +95,7 @@ export function ProfileEditor({
     <SiteShell className="flex flex-col gap-8">
       <PageHeader
         title="پروفایل عمومی"
-        lede="نام، معرفی و تصویر شما در صفحهٔ اصلی سایت برای بیماران نمایش داده می‌شود."
+        lede="نام، شماره موبایل، معرفی و تصویر شما در صفحهٔ اصلی سایت برای بیماران نمایش داده می‌شود."
       />
 
       <Card className={siteFormClass}>
@@ -224,6 +226,22 @@ export function ProfileEditor({
                     </Select>
                   </Field>
                 </div>
+                <Field>
+                  <FieldLabel htmlFor="phone">شماره موبایل</FieldLabel>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    inputMode="numeric"
+                    dir="ltr"
+                    lang="en"
+                    autoComplete="tel"
+                    defaultValue={phone}
+                    maxLength={13}
+                    placeholder="09121234567"
+                    className="max-w-xs text-start"
+                  />
+                </Field>
                 <Field>
                   <FieldLabel htmlFor="bio">معرفی</FieldLabel>
                   <Textarea

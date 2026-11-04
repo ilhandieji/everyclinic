@@ -82,6 +82,7 @@ model PhysicianProfile {
   gender            String?
   bio               String?            @db.Text
   photoKey          String?            @map("photo_key")
+  phone             String?
   createdAt         DateTime           @default(now()) @map("created_at")
   updatedAt         DateTime           @updatedAt @map("updated_at")
   user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)

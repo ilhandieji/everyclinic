@@ -4,18 +4,43 @@ import { Suspense } from "react";
 import { connection } from "next/server";
 import { EmptyState } from "@/components/layout/empty-state";
 import { SiteLoading, siteShellClass, siteServiceGridClass } from "@/components/layout/site-shell";
-import { DemoClinicLocationMap } from "@/components/site/demo-clinic-location-map";
 import { HeroMark } from "@/components/site/hero-mark";
 import { RequestPathStrip } from "@/components/site/request-path-strip";
 import { ReceptionHours } from "@/components/site/reception-hours";
 import { ServiceCard } from "@/components/site/service-card";
 import { Button } from "@/components/ui/button";
-import { loadPublicReceptionWeek } from "@/lib/booking-availability";
+import { loadPublicReceptionWeek, type PublicReceptionDay } from "@/lib/booking-availability";
 import { displayPrices } from "@/lib/money";
 import { currentPhysician } from "@/lib/access";
 import { findPublicPhysician } from "@/lib/physician-site";
+import { formatPublicPhone } from "@/lib/validators/site";
 import { cn } from "@/lib/utils";
 import prisma from "@/lib/prisma";
+
+const heroLeadLimit = 240;
+
+function receptionTodayLabel(day: PublicReceptionDay): string {
+  if (day.status === "open" && day.hoursLabel) {
+    return day.hoursLabel;
+  }
+  if (day.status === "closed") {
+    return "تعطیل";
+  }
+  return "این روز اعلام نشده";
+}
+
+/** First paragraph for the hero. The original bio stays intact when more remains. */
+function bioLead(bio: string): { lead: string; showFull: boolean } {
+  const paragraphs = bio
+    .split(/\n\s*\n/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  const lead = paragraphs[0] ?? bio;
+  return {
+    lead,
+    showFull: paragraphs.length > 1 || lead.length > heroLeadLimit,
+  };
+}
 
 async function Landing() {
   await connection();
@@ -26,6 +51,7 @@ async function Landing() {
       gender: true,
       bio: true,
       photoKey: true,
+      phone: true,
     }),
     prisma.medicalService.findMany({
       where: { published: true },
@@ -46,7 +72,12 @@ async function Landing() {
   const name = profile?.displayName?.trim() ?? "";
   const gender = profile?.gender?.trim() ?? "";
   const bio = profile?.bio?.trim() ?? "";
+  const phone = profile?.phone ?? null;
   const hasProfile = Boolean(name || gender || bio || profile?.photoKey);
+  const lead = bio ? bioLead(bio) : null;
+  const today = receptionDays.find((day) => day.today);
+  const primaryHref = physician ? "/manage/services" : "#services";
+  const primaryLabel = physician ? "مدیریت خدمات" : "رزرو نوبت";
 
   return (
     <div className="flex flex-col">
@@ -54,10 +85,10 @@ async function Landing() {
         <div
           className={cn(
             siteShellClass,
-            "grid items-start gap-8 py-8 md:gap-10 md:py-10 lg:grid-cols-2 lg:grid-rows-[auto_auto_auto] lg:items-stretch lg:gap-x-12 lg:gap-y-6 lg:py-12",
+            "grid items-center gap-8 py-8 md:gap-10 md:py-12 lg:grid-cols-12 lg:gap-x-12 lg:py-14",
           )}
         >
-          <div className="flex min-w-0 flex-col items-start gap-5 lg:col-start-1 lg:row-start-1 lg:gap-6">
+          <div className="flex min-w-0 flex-col items-start gap-5 lg:col-span-5 lg:gap-6">
             <div className="flex items-center gap-4">
               {profile?.photoKey ? (
                 <Image
@@ -79,18 +110,21 @@ async function Landing() {
                 {gender ? <p className="text-base text-muted-foreground">{gender}</p> : null}
               </div>
             </div>
-            {bio ? (
-              <p className="max-w-[42rem] whitespace-pre-wrap text-base leading-8 text-foreground">
-                {bio}
+            {lead ? (
+              <p
+                className={cn(
+                  "max-w-[42rem] text-base leading-8 text-foreground",
+                  lead.lead.length > heroLeadLimit ? "line-clamp-4" : "whitespace-pre-wrap",
+                )}
+              >
+                {lead.lead}
               </p>
             ) : !hasProfile ? (
               <p className="text-base text-muted-foreground">پروفایل عمومی هنوز تکمیل نشده است.</p>
             ) : null}
             <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
               <Button asChild size="lg" className="text-base">
-                <Link href={physician ? "/manage/services" : "#services"}>
-                  {physician ? "مدیریت خدمات" : "رزرو نوبت"}
-                </Link>
+                <Link href={primaryHref}>{primaryLabel}</Link>
               </Button>
               {physician ? null : (
                 <Button asChild variant="outline" size="lg" className="bg-card text-base">
@@ -98,11 +132,38 @@ async function Landing() {
                 </Button>
               )}
             </div>
+            {today ? (
+              <p className="flex max-w-[42rem] flex-wrap items-baseline gap-x-3 gap-y-1 text-sm leading-relaxed text-muted-foreground">
+                <span className="font-medium text-foreground">امروز</span>
+                <span>{receptionTodayLabel(today)}</span>
+                {phone ? (
+                  <a
+                    href={`tel:${phone}`}
+                    dir="ltr"
+                    lang="en"
+                    className="focus-ring rounded-sm font-medium text-foreground"
+                  >
+                    <span className="sr-only">تلفن مطب</span>
+                    {formatPublicPhone(phone)}
+                  </a>
+                ) : null}
+              </p>
+            ) : null}
           </div>
-          <DemoClinicLocationMap />
-          <HeroMark className="hero-mark--fill lg:col-start-2 lg:row-start-1 lg:row-span-2" />
+          <HeroMark className="lg:col-span-7" />
         </div>
       </section>
+
+      {lead?.showFull ? (
+        <section aria-labelledby="physician-bio-heading" className="border-t border-border/70">
+          <div className={cn(siteShellClass, "flex flex-col gap-4 py-10 md:py-12")}>
+            <h2 id="physician-bio-heading" className="text-2xl font-semibold text-foreground md:text-3xl">
+              دربارهٔ پزشک
+            </h2>
+            <p className="max-w-[65ch] whitespace-pre-wrap text-base leading-8 text-foreground">{bio}</p>
+          </div>
+        </section>
+      ) : null}
 
       {physician ? null : <RequestPathStrip />}
 
@@ -142,7 +203,7 @@ async function Landing() {
 
       <section className="scroll-mt-24">
         <div className={cn(siteShellClass, "py-14 md:py-16")}>
-          <ReceptionHours days={receptionDays} />
+          <ReceptionHours days={receptionDays} phone={phone} />
         </div>
       </section>
 
@@ -155,37 +216,44 @@ async function Landing() {
         >
           <div className="flex flex-col gap-2">
             <p className="text-lg font-semibold">{name || "مطب"}</p>
-            <p className="flex items-center gap-2 text-sm text-footer-muted">
-              <span className="sr-only">تلفن مطب</span>
-              <a
-                href="tel:09110000000"
-                dir="ltr"
-                lang="en"
-                className="focus-ring rounded-sm font-medium text-footer-foreground"
-              >
-                0911 000 000
-              </a>
-            </p>
+            {phone ? (
+              <p className="flex items-center gap-2 text-sm text-footer-muted">
+                <span className="sr-only">تلفن مطب</span>
+                <a
+                  href={`tel:${phone}`}
+                  dir="ltr"
+                  lang="en"
+                  className="focus-ring rounded-sm font-medium text-footer-foreground"
+                >
+                  {formatPublicPhone(phone)}
+                </a>
+              </p>
+            ) : null}
           </div>
-          <nav aria-label="پایان صفحه" className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
-            <a href="#services" className="focus-ring rounded-sm text-footer-muted hover:text-footer-foreground">
-              خدمات
-            </a>
-            <a
-              href="#reception-hours"
-              className="focus-ring rounded-sm text-footer-muted hover:text-footer-foreground"
-            >
-              ساعات پذیرش
-            </a>
-            {physician ? null : (
+          <div className="flex flex-col items-start gap-4 md:items-end">
+            <nav aria-label="پایان صفحه" className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+              <a href="#services" className="focus-ring rounded-sm text-footer-muted hover:text-footer-foreground">
+                خدمات
+              </a>
               <a
-                href="#request-path"
+                href="#reception-hours"
                 className="focus-ring rounded-sm text-footer-muted hover:text-footer-foreground"
               >
-                چطور درخواست بدهم
+                ساعات پذیرش
               </a>
-            )}
-          </nav>
+              {physician ? null : (
+                <a
+                  href="#request-path"
+                  className="focus-ring rounded-sm text-footer-muted hover:text-footer-foreground"
+                >
+                  چطور درخواست بدهم
+                </a>
+              )}
+            </nav>
+            <Button asChild size="lg" className="text-base">
+              <Link href={primaryHref}>{primaryLabel}</Link>
+            </Button>
+          </div>
         </div>
       </footer>
     </div>

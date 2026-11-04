@@ -11,7 +11,7 @@ export function HeroMark({ className }: { className?: string }) {
         width={1152}
         height={864}
         priority
-        sizes="(min-width: 1024px) 40rem, 100vw"
+        sizes="(min-width: 1024px) 46rem, 100vw"
         className="hero-mark__photo"
       />
     </div>

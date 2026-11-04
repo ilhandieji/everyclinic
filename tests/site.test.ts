@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { serviceFormSchema } from "../src/lib/validators/site";
+import { profileFormSchema, serviceFormSchema } from "../src/lib/validators/site";
 
 function form(overrides: Record<string, unknown> = {}) {
   return {
@@ -15,6 +15,39 @@ function form(overrides: Record<string, unknown> = {}) {
     ...overrides,
   };
 }
+
+function profile(overrides: Record<string, unknown> = {}) {
+  return {
+    displayName: "نام",
+    gender: "مرد",
+    bio: "",
+    phone: "",
+    ...overrides,
+  };
+}
+
+describe("profileFormSchema phone", () => {
+  it("accepts an 11-digit mobile and stores digits only", () => {
+    const parsed = profileFormSchema.safeParse(profile({ phone: "09121234567" }));
+    assert.equal(parsed.success, true);
+    if (parsed.success) {
+      assert.equal(parsed.data.phone, "09121234567");
+    }
+  });
+
+  it("rejects an incomplete mobile number", () => {
+    const parsed = profileFormSchema.safeParse(profile({ phone: "091212345" }));
+    assert.equal(parsed.success, false);
+  });
+
+  it("treats an empty mobile as no public number", () => {
+    const parsed = profileFormSchema.safeParse(profile({ phone: "  " }));
+    assert.equal(parsed.success, true);
+    if (parsed.success) {
+      assert.equal(parsed.data.phone, null);
+    }
+  });
+});
 
 describe("serviceFormSchema prices", () => {
   it("accepts a price above the 32-bit integer limit and at the written bound", () => {

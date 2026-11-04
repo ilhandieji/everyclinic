@@ -276,39 +276,6 @@ html.dark .service-tile--line {
   object-position: center 62%;
 }
 
-/* Landing hero only. The 404 mark stays 4:3. */
-@media (min-width: 64rem) {
-  .hero-mark.hero-mark--fill {
-    height: 100%;
-    aspect-ratio: auto;
-    min-height: 0;
-  }
-
-  .hero-mark.hero-mark--fill .hero-mark__photo {
-    position: absolute;
-    inset: 0;
-  }
-}
-
-.clinic-map-frame {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: calc(var(--radius) * 2);
-  background: var(--muted);
-  box-shadow: 0 1.25rem 2.5rem -1.4rem color-mix(in oklch, var(--foreground) 45%, transparent);
-}
-
-.clinic-map-frame__embed {
-  position: absolute;
-  inset: 0;
-  height: 100%;
-  width: 100%;
-  border: 0;
-}
-
 .service-panel,
 .service-panel--psychiatry,
 .service-panel--neurology,

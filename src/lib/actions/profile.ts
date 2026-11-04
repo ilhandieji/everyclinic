@@ -20,6 +20,7 @@ export async function saveProfile(
     displayName: formData.get("displayName"),
     gender: formData.get("gender"),
     bio: formData.get("bio"),
+    phone: formData.get("phone"),
   });
   if (!parsed.success) {
     return {
@@ -34,6 +35,7 @@ export async function saveProfile(
       displayName: emptyToNull(parsed.data.displayName),
       gender: parsed.data.gender,
       bio: emptyToNull(parsed.data.bio),
+      phone: parsed.data.phone,
     },
   });
 

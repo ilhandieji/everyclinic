@@ -2,13 +2,20 @@ import Link from "next/link";
 import { Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { PublicReceptionDay } from "@/lib/booking-availability";
+import { formatPublicPhone } from "@/lib/validators/site";
 
 const receptionStatusLabel = {
   closed: "تعطیل",
   undeclared: "این روز اعلام نشده",
 } as const;
 
-export function ReceptionHours({ days }: { days: PublicReceptionDay[] }) {
+export function ReceptionHours({
+  days,
+  phone,
+}: {
+  days: PublicReceptionDay[];
+  phone: string | null;
+}) {
   return (
     <section id="reception-hours" aria-labelledby="reception-hours-heading">
       <div
@@ -27,18 +34,15 @@ export function ReceptionHours({ days }: { days: PublicReceptionDay[] }) {
               ساعت‌های هفت روز آینده. روزی که ساعت ندارد هنوز از طرف پزشک اعلام نشده است.
             </p>
           </div>
-          <p className="inline-flex min-h-11 items-center gap-2 text-base font-medium text-foreground">
-            <Phone className="size-4 shrink-0 text-primary" aria-hidden="true" />
-            <span className="sr-only">تلفن مطب</span>
-            <a
-              href="tel:09110000000"
-              dir="ltr"
-              lang="en"
-              className="focus-ring rounded-sm"
-            >
-              0911 000 000
-            </a>
-          </p>
+          {phone ? (
+            <p className="inline-flex min-h-11 items-center gap-2 text-base font-medium text-foreground">
+              <Phone className="size-4 shrink-0 text-primary" aria-hidden="true" />
+              <span className="sr-only">تلفن مطب</span>
+              <a href={`tel:${phone}`} dir="ltr" lang="en" className="focus-ring rounded-sm">
+                {formatPublicPhone(phone)}
+              </a>
+            </p>
+          ) : null}
           <Button asChild className="h-11 px-5">
             <Link href="/#services">رزرو آنلاین نوبت</Link>
           </Button>

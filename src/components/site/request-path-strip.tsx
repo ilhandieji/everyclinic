@@ -38,7 +38,7 @@ export function RequestPathStrip({ className }: { className?: string }) {
       aria-labelledby="request-path-heading"
       className={cn("scroll-mt-24 border-t border-border/70 bg-muted/30", className)}
     >
-      <div className={cn(siteShellClass, "flex flex-col gap-8 py-10 md:gap-10 md:py-12")}>
+      <div className={cn(siteShellClass, "flex flex-col gap-6 py-6 md:gap-8 md:py-8")}>
         <div className="mx-auto max-w-[48rem] text-center">
           <h2 id="request-path-heading" className="text-2xl font-semibold text-foreground md:text-3xl">
             چطور درخواست بدهم
@@ -47,7 +47,7 @@ export function RequestPathStrip({ className }: { className?: string }) {
             نوبت را پزشک هماهنگ می‌کند. ثبت درخواست به‌معنای وقت قطعی نیست.
           </p>
         </div>
-        <ol className="grid list-none grid-cols-1 gap-8 sm:grid-cols-2 min-[900px]:grid-cols-4 min-[900px]:gap-x-6 min-[900px]:gap-y-0">
+        <ol className="grid list-none grid-cols-1 gap-6 sm:grid-cols-2 min-[900px]:grid-cols-4 min-[900px]:gap-x-6 min-[900px]:gap-y-0">
           {requestPathSteps.map((step, index) => (
             <li
               key={step.title}

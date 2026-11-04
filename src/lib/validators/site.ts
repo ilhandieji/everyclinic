@@ -29,13 +29,31 @@ const currencyLabelSchema = z
     ]),
   );
 
+const optionalMobile = z
+  .string()
+  .trim()
+  .transform((value) => value.replace(/[\s-]/g, ""))
+  .pipe(
+    z.union([
+      z.literal(""),
+      z.string().regex(/^09\d{9}$/, "شماره موبایل باید ۱۱ رقم و با ۰۹ شروع شود."),
+    ]),
+  )
+  .transform((value) => (value === "" ? null : value));
+
 export const profileFormSchema = z
   .object({
     displayName: z.string().trim().max(80, "نام طولانی است."),
     gender: z.enum(["مرد", "زن"], { error: "جنسیت را انتخاب کنید." }),
     bio: z.string().trim().max(4000, "معرفی طولانی است."),
+    phone: optionalMobile,
   })
   .strict();
+
+/** Public landing display for a stored `09` + 9 digits number. */
+export function formatPublicPhone(phone: string): string {
+  return `${phone.slice(0, 4)} ${phone.slice(4, 7)} ${phone.slice(7)}`;
+}
 
 const sectionSchema = z
   .object({

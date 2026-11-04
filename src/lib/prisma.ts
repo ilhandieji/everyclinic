@@ -33,7 +33,7 @@ function createPrisma() {
 type AppPrisma = ReturnType<typeof createPrisma>;
 
 /** Bump when models are added so the dev singleton is not reused after `prisma generate`. */
-const PRISMA_CLIENT_REV = 2;
+const PRISMA_CLIENT_REV = 3;
 
 const globalForPrisma = global as unknown as {
   prisma?: AppPrisma;
