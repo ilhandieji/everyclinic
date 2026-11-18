@@ -49,3 +49,6 @@ next-env.d.ts
 .windsurf
 .impeccable
 .agents/
+
+# jetbrains idea
+.idea
